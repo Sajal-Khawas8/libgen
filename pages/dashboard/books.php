@@ -39,297 +39,304 @@
         </a>
     </div>
 </header>
-<ul class="flex-1 px-6 space-y-4 overflow-y-auto">
-    <li class="px-5 py-3 bg-white rounded-md">
-        <article class="flex items-center gap-10 h-32">
-            <div class="aspect-w-16 aspect-h-9 h-full">
-                <img src="https://rukminim2.flixcart.com/image/416/416/xif0q/book/y/4/8/a-competitive-book-of-agriculture-english-language-original-imagm3rjhcc7xzdj.jpeg?q=70"
-                    alt="" class="h-full w-full object-cover object-center">
-            </div>
-            <div class="flex flex-col justify-between h-full">
-                <h2 class="text-2xl font-semibold">Title</h2>
-                <h3 class="text-lg font-semibold">Author</h3>
-                <dl class="grid grid-cols-3 gap-8">
-                    <div class="flex gap-2">
-                        <dt class="font-medium">Category:</dt>
-                        <dd>category 1</dd>
-                    </div>
-                    <div class="flex gap-2">
-                        <dt class="font-medium">Total Quantity:</dt>
-                        <dd>30</dd>
-                    </div>
-                    <div class="flex gap-2">
-                        <dt class="font-medium">Available:</dt>
-                        <dd>20</dd>
-                    </div>
-                </dl>
-                <dl class="grid grid-cols-3 gap-8">
-                    <div class="flex gap-2 font-medium">
-                        <dt>Base Price (For 30 days):</dt>
-                        <dd>&#x20B9;20</dd>
-                    </div>
-                    <div class="flex gap-2 font-medium">
-                        <dt>Rent after 30 days:</dt>
-                        <dd>&#x20B9;5/15 days</dd>
-                    </div>
-                    <div class="flex gap-2 font-medium">
-                        <dt>Fine charge:</dt>
-                        <dd>&#x20B9;5/day</dd>
-                    </div>
-                </dl>
-            </div>
-            <div class="flex flex-col justify-evenly h-full ml-auto">
-                <form action="" method="post">
-                    <button
-                        class="px-3 py-1 bg-indigo-600 text-white text-lg rounded-md hover:bg-indigo-800 min-w-full">Update
-                        Book Info</button>
-                </form>
-                <form action="" method="post">
-                    <button
-                        class="px-3 py-1 bg-red-600 text-white text-lg rounded-md hover:bg-red-700 min-w-full">Delete
-                        Book</button>
-                </form>
-            </div>
-        </article>
-    </li>
-    <li class="px-5 py-3 bg-white rounded-md">
-        <article class="flex items-center gap-10 h-32">
-            <div class="aspect-w-16 aspect-h-9 h-full">
-                <img src="https://rukminim2.flixcart.com/image/416/416/xif0q/book/y/4/8/a-competitive-book-of-agriculture-english-language-original-imagm3rjhcc7xzdj.jpeg?q=70"
-                    alt="" class="h-full w-full object-cover object-center">
-            </div>
-            <div class="flex flex-col justify-between h-full">
-                <h2 class="text-2xl font-semibold">Title</h2>
-                <h3 class="text-lg font-semibold">Author</h3>
-                <dl class="grid grid-cols-3 gap-8">
-                    <div class="flex gap-2">
-                        <dt class="font-medium">Category:</dt>
-                        <dd>category 1</dd>
-                    </div>
-                    <div class="col-span-2 flex gap-2">
-                        <dt class="font-medium">Quantity:</dt>
-                        <dd>30</dd>
-                    </div>
-                </dl>
-                <dl class="grid grid-cols-3 gap-8">
-                    <div class="flex gap-2">
-                        <dt class="font-medium">Base Price (For 30 days):</dt>
-                        <dd>20 &#8377;</dd>
-                    </div>
-                    <div class="flex gap-2">
-                        <dt class="font-medium">Rent after 30 days:</dt>
-                        <dd>5 &#8377; / 15 days</dd>
-                    </div>
-                    <div class="flex gap-2">
-                        <dt class="font-medium">Fine charge:</dt>
-                        <dd>5 &#8377; / day</dd>
-                    </div>
-                </dl>
-            </div>
-            <div class="flex flex-col justify-evenly h-full ml-auto">
-                <form action="" method="post">
-                    <button
-                        class="px-3 py-1 bg-indigo-600 text-white text-lg rounded-md hover:bg-indigo-800 min-w-full">Update
-                        Book Info</button>
-                </form>
-                <form action="" method="post">
-                    <button
-                        class="px-3 py-1 bg-red-600 text-white text-lg rounded-md hover:bg-red-700 min-w-full">Delete
-                        Book</button>
-                </form>
-            </div>
-        </article>
-    </li>
-    <li class="px-5 py-3 bg-white rounded-md">
-        <article class="flex items-center gap-10 h-32">
-            <div class="aspect-w-16 aspect-h-9 h-full">
-                <img src="https://rukminim2.flixcart.com/image/416/416/xif0q/book/y/4/8/a-competitive-book-of-agriculture-english-language-original-imagm3rjhcc7xzdj.jpeg?q=70"
-                    alt="" class="h-full w-full object-cover object-center">
-            </div>
-            <div class="flex flex-col justify-between h-full">
-                <h2 class="text-2xl font-semibold">Title</h2>
-                <h3 class="text-lg font-semibold">Author</h3>
-                <dl class="grid grid-cols-3 gap-8">
-                    <div class="flex gap-2">
-                        <dt class="font-medium">Category:</dt>
-                        <dd>category 1</dd>
-                    </div>
-                    <div class="col-span-2 flex gap-2">
-                        <dt class="font-medium">Quantity:</dt>
-                        <dd>30</dd>
-                    </div>
-                </dl>
-                <dl class="grid grid-cols-3 gap-8">
-                    <div class="flex gap-2">
-                        <dt class="font-medium">Base Price (For 30 days):</dt>
-                        <dd>20 Rs</dd>
-                    </div>
-                    <div class="flex gap-2">
-                        <dt class="font-medium">Rent after 30 days:</dt>
-                        <dd>5 Rs / 15 days</dd>
-                    </div>
-                    <div class="flex gap-2">
-                        <dt class="font-medium">Fine charge:</dt>
-                        <dd>5 Rs / day</dd>
-                    </div>
-                </dl>
-            </div>
-            <div class="flex flex-col justify-evenly h-full ml-auto">
-                <form action="" method="post">
-                    <button
-                        class="px-3 py-1 bg-indigo-600 text-white text-lg rounded-md hover:bg-indigo-800 min-w-full">Update
-                        Book Info</button>
-                </form>
-                <form action="" method="post">
-                    <button
-                        class="px-3 py-1 bg-red-600 text-white text-lg rounded-md hover:bg-red-700 min-w-full">Delete
-                        Book</button>
-                </form>
-            </div>
-        </article>
-    </li>
-    <li class="px-5 py-3 bg-white rounded-md">
-        <article class="flex items-center gap-10 h-32">
-            <div class="aspect-w-16 aspect-h-9 h-full">
-                <img src="https://rukminim2.flixcart.com/image/416/416/xif0q/book/y/4/8/a-competitive-book-of-agriculture-english-language-original-imagm3rjhcc7xzdj.jpeg?q=70"
-                    alt="" class="h-full w-full object-cover object-center">
-            </div>
-            <div class="flex flex-col justify-between h-full">
-                <h2 class="text-2xl font-semibold">Title</h2>
-                <h3 class="text-lg font-semibold">Author</h3>
-                <dl class="grid grid-cols-3 gap-8">
-                    <div class="flex gap-2">
-                        <dt class="font-medium">Category:</dt>
-                        <dd>category 1</dd>
-                    </div>
-                    <div class="col-span-2 flex gap-2">
-                        <dt class="font-medium">Quantity:</dt>
-                        <dd>30</dd>
-                    </div>
-                </dl>
-                <dl class="grid grid-cols-3 gap-8">
-                    <div class="flex gap-2">
-                        <dt class="font-medium">Base Price (For 30 days):</dt>
-                        <dd>20 Rs</dd>
-                    </div>
-                    <div class="flex gap-2">
-                        <dt class="font-medium">Rent after 30 days:</dt>
-                        <dd>5 Rs / 15 days</dd>
-                    </div>
-                    <div class="flex gap-2">
-                        <dt class="font-medium">Fine charge:</dt>
-                        <dd>5 Rs / day</dd>
-                    </div>
-                </dl>
-            </div>
-            <div class="flex flex-col justify-evenly h-full ml-auto">
-                <form action="" method="post">
-                    <button
-                        class="px-3 py-1 bg-indigo-600 text-white text-lg rounded-md hover:bg-indigo-800 min-w-full">Update
-                        Book Info</button>
-                </form>
-                <form action="" method="post">
-                    <button
-                        class="px-3 py-1 bg-red-600 text-white text-lg rounded-md hover:bg-red-700 min-w-full">Delete
-                        Book</button>
-                </form>
-            </div>
-        </article>
-    </li>
-    <li class="px-5 py-3 bg-white rounded-md">
-        <article class="flex items-center gap-10 h-32">
-            <div class="aspect-w-16 aspect-h-9 h-full">
-                <img src="https://rukminim2.flixcart.com/image/416/416/xif0q/book/y/4/8/a-competitive-book-of-agriculture-english-language-original-imagm3rjhcc7xzdj.jpeg?q=70"
-                    alt="" class="h-full w-full object-cover object-center">
-            </div>
-            <div class="flex flex-col justify-between h-full">
-                <h2 class="text-2xl font-semibold">Title</h2>
-                <h3 class="text-lg font-semibold">Author</h3>
-                <dl class="grid grid-cols-3 gap-8">
-                    <div class="flex gap-2">
-                        <dt class="font-medium">Category:</dt>
-                        <dd>category 1</dd>
-                    </div>
-                    <div class="col-span-2 flex gap-2">
-                        <dt class="font-medium">Quantity:</dt>
-                        <dd>30</dd>
-                    </div>
-                </dl>
-                <dl class="grid grid-cols-3 gap-8">
-                    <div class="flex gap-2">
-                        <dt class="font-medium">Base Price (For 30 days):</dt>
-                        <dd>20 Rs</dd>
-                    </div>
-                    <div class="flex gap-2">
-                        <dt class="font-medium">Rent after 30 days:</dt>
-                        <dd>5 Rs / 15 days</dd>
-                    </div>
-                    <div class="flex gap-2">
-                        <dt class="font-medium">Fine charge:</dt>
-                        <dd>5 Rs / day</dd>
-                    </div>
-                </dl>
-            </div>
-            <div class="flex flex-col justify-evenly h-full ml-auto">
-                <form action="" method="post">
-                    <button
-                        class="px-3 py-1 bg-indigo-600 text-white text-lg rounded-md hover:bg-indigo-800 min-w-full">Update
-                        Book Info</button>
-                </form>
-                <form action="" method="post">
-                    <button
-                        class="px-3 py-1 bg-red-600 text-white text-lg rounded-md hover:bg-red-700 min-w-full">Delete
-                        Book</button>
-                </form>
-            </div>
-        </article>
-    </li>
-    <li class="px-5 py-3 bg-white rounded-md">
-        <article class="flex items-center gap-10 h-32">
-            <div class="aspect-w-16 aspect-h-9 h-full">
-                <img src="https://rukminim2.flixcart.com/image/416/416/xif0q/book/y/4/8/a-competitive-book-of-agriculture-english-language-original-imagm3rjhcc7xzdj.jpeg?q=70"
-                    alt="" class="h-full w-full object-cover object-center">
-            </div>
-            <div class="flex flex-col justify-between h-full">
-                <h2 class="text-2xl font-semibold">Title</h2>
-                <h3 class="text-lg font-semibold">Author</h3>
-                <dl class="grid grid-cols-3 gap-8">
-                    <div class="flex gap-2">
-                        <dt class="font-medium">Category:</dt>
-                        <dd>category 1</dd>
-                    </div>
-                    <div class="col-span-2 flex gap-2">
-                        <dt class="font-medium">Quantity:</dt>
-                        <dd>30</dd>
-                    </div>
-                </dl>
-                <dl class="grid grid-cols-3 gap-8">
-                    <div class="flex gap-2">
-                        <dt class="font-medium">Base Price (For 30 days):</dt>
-                        <dd>20 Rs</dd>
-                    </div>
-                    <div class="flex gap-2">
-                        <dt class="font-medium">Rent after 30 days:</dt>
-                        <dd>5 Rs / 15 days</dd>
-                    </div>
-                    <div class="flex gap-2">
-                        <dt class="font-medium">Fine charge:</dt>
-                        <dd>5 Rs / day</dd>
-                    </div>
-                </dl>
-            </div>
-            <div class="flex flex-col justify-evenly h-full ml-auto">
-                <form action="" method="post">
-                    <button
-                        class="px-3 py-1 bg-indigo-600 text-white text-lg rounded-md hover:bg-indigo-800 min-w-full">Update
-                        Book Info</button>
-                </form>
-                <form action="" method="post">
-                    <button
-                        class="px-3 py-1 bg-red-600 text-white text-lg rounded-md hover:bg-red-700 min-w-full">Delete
-                        Book</button>
-                </form>
-            </div>
-        </article>
-    </li>
-</ul>
+<?php $query = new DatabaseQuery(); ?>
+<?php if ($query->rowCount('books') === 0): ?>
+    <section class="flex-1 flex items-center justify-center gap-8">
+        <h1 class="font-bold text-5xl text-gray-500">There Are No Books In LibGen...</h1>
+    </section>
+<?php else: ?>
+    <ul class="flex-1 px-6 space-y-4 overflow-y-auto">
+        <li class="px-5 py-3 bg-white rounded-md">
+            <article class="flex items-center gap-10 h-32">
+                <div class="aspect-w-16 aspect-h-9 h-full">
+                    <img src="https://rukminim2.flixcart.com/image/416/416/xif0q/book/y/4/8/a-competitive-book-of-agriculture-english-language-original-imagm3rjhcc7xzdj.jpeg?q=70"
+                        alt="" class="h-full w-full object-cover object-center">
+                </div>
+                <div class="flex flex-col justify-between h-full">
+                    <h2 class="text-2xl font-semibold">Title</h2>
+                    <h3 class="text-lg font-semibold">Author</h3>
+                    <dl class="grid grid-cols-3 gap-8">
+                        <div class="flex gap-2">
+                            <dt class="font-medium">Category:</dt>
+                            <dd>category 1</dd>
+                        </div>
+                        <div class="flex gap-2">
+                            <dt class="font-medium">Total Quantity:</dt>
+                            <dd>30</dd>
+                        </div>
+                        <div class="flex gap-2">
+                            <dt class="font-medium">Available:</dt>
+                            <dd>20</dd>
+                        </div>
+                    </dl>
+                    <dl class="grid grid-cols-3 gap-8">
+                        <div class="flex gap-2 font-medium">
+                            <dt>Base Price (For 30 days):</dt>
+                            <dd>&#x20B9;20</dd>
+                        </div>
+                        <div class="flex gap-2 font-medium">
+                            <dt>Rent after 30 days:</dt>
+                            <dd>&#x20B9;5/15 days</dd>
+                        </div>
+                        <div class="flex gap-2 font-medium">
+                            <dt>Fine charge:</dt>
+                            <dd>&#x20B9;5/day</dd>
+                        </div>
+                    </dl>
+                </div>
+                <div class="flex flex-col justify-evenly h-full ml-auto">
+                    <form action="" method="post">
+                        <button
+                            class="px-3 py-1 bg-indigo-600 text-white text-lg rounded-md hover:bg-indigo-800 min-w-full">Update
+                            Book Info</button>
+                    </form>
+                    <form action="" method="post">
+                        <button
+                            class="px-3 py-1 bg-red-600 text-white text-lg rounded-md hover:bg-red-700 min-w-full">Delete
+                            Book</button>
+                    </form>
+                </div>
+            </article>
+        </li>
+        <li class="px-5 py-3 bg-white rounded-md">
+            <article class="flex items-center gap-10 h-32">
+                <div class="aspect-w-16 aspect-h-9 h-full">
+                    <img src="https://rukminim2.flixcart.com/image/416/416/xif0q/book/y/4/8/a-competitive-book-of-agriculture-english-language-original-imagm3rjhcc7xzdj.jpeg?q=70"
+                        alt="" class="h-full w-full object-cover object-center">
+                </div>
+                <div class="flex flex-col justify-between h-full">
+                    <h2 class="text-2xl font-semibold">Title</h2>
+                    <h3 class="text-lg font-semibold">Author</h3>
+                    <dl class="grid grid-cols-3 gap-8">
+                        <div class="flex gap-2">
+                            <dt class="font-medium">Category:</dt>
+                            <dd>category 1</dd>
+                        </div>
+                        <div class="col-span-2 flex gap-2">
+                            <dt class="font-medium">Quantity:</dt>
+                            <dd>30</dd>
+                        </div>
+                    </dl>
+                    <dl class="grid grid-cols-3 gap-8">
+                        <div class="flex gap-2">
+                            <dt class="font-medium">Base Price (For 30 days):</dt>
+                            <dd>20 &#8377;</dd>
+                        </div>
+                        <div class="flex gap-2">
+                            <dt class="font-medium">Rent after 30 days:</dt>
+                            <dd>5 &#8377; / 15 days</dd>
+                        </div>
+                        <div class="flex gap-2">
+                            <dt class="font-medium">Fine charge:</dt>
+                            <dd>5 &#8377; / day</dd>
+                        </div>
+                    </dl>
+                </div>
+                <div class="flex flex-col justify-evenly h-full ml-auto">
+                    <form action="" method="post">
+                        <button
+                            class="px-3 py-1 bg-indigo-600 text-white text-lg rounded-md hover:bg-indigo-800 min-w-full">Update
+                            Book Info</button>
+                    </form>
+                    <form action="" method="post">
+                        <button
+                            class="px-3 py-1 bg-red-600 text-white text-lg rounded-md hover:bg-red-700 min-w-full">Delete
+                            Book</button>
+                    </form>
+                </div>
+            </article>
+        </li>
+        <li class="px-5 py-3 bg-white rounded-md">
+            <article class="flex items-center gap-10 h-32">
+                <div class="aspect-w-16 aspect-h-9 h-full">
+                    <img src="https://rukminim2.flixcart.com/image/416/416/xif0q/book/y/4/8/a-competitive-book-of-agriculture-english-language-original-imagm3rjhcc7xzdj.jpeg?q=70"
+                        alt="" class="h-full w-full object-cover object-center">
+                </div>
+                <div class="flex flex-col justify-between h-full">
+                    <h2 class="text-2xl font-semibold">Title</h2>
+                    <h3 class="text-lg font-semibold">Author</h3>
+                    <dl class="grid grid-cols-3 gap-8">
+                        <div class="flex gap-2">
+                            <dt class="font-medium">Category:</dt>
+                            <dd>category 1</dd>
+                        </div>
+                        <div class="col-span-2 flex gap-2">
+                            <dt class="font-medium">Quantity:</dt>
+                            <dd>30</dd>
+                        </div>
+                    </dl>
+                    <dl class="grid grid-cols-3 gap-8">
+                        <div class="flex gap-2">
+                            <dt class="font-medium">Base Price (For 30 days):</dt>
+                            <dd>20 Rs</dd>
+                        </div>
+                        <div class="flex gap-2">
+                            <dt class="font-medium">Rent after 30 days:</dt>
+                            <dd>5 Rs / 15 days</dd>
+                        </div>
+                        <div class="flex gap-2">
+                            <dt class="font-medium">Fine charge:</dt>
+                            <dd>5 Rs / day</dd>
+                        </div>
+                    </dl>
+                </div>
+                <div class="flex flex-col justify-evenly h-full ml-auto">
+                    <form action="" method="post">
+                        <button
+                            class="px-3 py-1 bg-indigo-600 text-white text-lg rounded-md hover:bg-indigo-800 min-w-full">Update
+                            Book Info</button>
+                    </form>
+                    <form action="" method="post">
+                        <button
+                            class="px-3 py-1 bg-red-600 text-white text-lg rounded-md hover:bg-red-700 min-w-full">Delete
+                            Book</button>
+                    </form>
+                </div>
+            </article>
+        </li>
+        <li class="px-5 py-3 bg-white rounded-md">
+            <article class="flex items-center gap-10 h-32">
+                <div class="aspect-w-16 aspect-h-9 h-full">
+                    <img src="https://rukminim2.flixcart.com/image/416/416/xif0q/book/y/4/8/a-competitive-book-of-agriculture-english-language-original-imagm3rjhcc7xzdj.jpeg?q=70"
+                        alt="" class="h-full w-full object-cover object-center">
+                </div>
+                <div class="flex flex-col justify-between h-full">
+                    <h2 class="text-2xl font-semibold">Title</h2>
+                    <h3 class="text-lg font-semibold">Author</h3>
+                    <dl class="grid grid-cols-3 gap-8">
+                        <div class="flex gap-2">
+                            <dt class="font-medium">Category:</dt>
+                            <dd>category 1</dd>
+                        </div>
+                        <div class="col-span-2 flex gap-2">
+                            <dt class="font-medium">Quantity:</dt>
+                            <dd>30</dd>
+                        </div>
+                    </dl>
+                    <dl class="grid grid-cols-3 gap-8">
+                        <div class="flex gap-2">
+                            <dt class="font-medium">Base Price (For 30 days):</dt>
+                            <dd>20 Rs</dd>
+                        </div>
+                        <div class="flex gap-2">
+                            <dt class="font-medium">Rent after 30 days:</dt>
+                            <dd>5 Rs / 15 days</dd>
+                        </div>
+                        <div class="flex gap-2">
+                            <dt class="font-medium">Fine charge:</dt>
+                            <dd>5 Rs / day</dd>
+                        </div>
+                    </dl>
+                </div>
+                <div class="flex flex-col justify-evenly h-full ml-auto">
+                    <form action="" method="post">
+                        <button
+                            class="px-3 py-1 bg-indigo-600 text-white text-lg rounded-md hover:bg-indigo-800 min-w-full">Update
+                            Book Info</button>
+                    </form>
+                    <form action="" method="post">
+                        <button
+                            class="px-3 py-1 bg-red-600 text-white text-lg rounded-md hover:bg-red-700 min-w-full">Delete
+                            Book</button>
+                    </form>
+                </div>
+            </article>
+        </li>
+        <li class="px-5 py-3 bg-white rounded-md">
+            <article class="flex items-center gap-10 h-32">
+                <div class="aspect-w-16 aspect-h-9 h-full">
+                    <img src="https://rukminim2.flixcart.com/image/416/416/xif0q/book/y/4/8/a-competitive-book-of-agriculture-english-language-original-imagm3rjhcc7xzdj.jpeg?q=70"
+                        alt="" class="h-full w-full object-cover object-center">
+                </div>
+                <div class="flex flex-col justify-between h-full">
+                    <h2 class="text-2xl font-semibold">Title</h2>
+                    <h3 class="text-lg font-semibold">Author</h3>
+                    <dl class="grid grid-cols-3 gap-8">
+                        <div class="flex gap-2">
+                            <dt class="font-medium">Category:</dt>
+                            <dd>category 1</dd>
+                        </div>
+                        <div class="col-span-2 flex gap-2">
+                            <dt class="font-medium">Quantity:</dt>
+                            <dd>30</dd>
+                        </div>
+                    </dl>
+                    <dl class="grid grid-cols-3 gap-8">
+                        <div class="flex gap-2">
+                            <dt class="font-medium">Base Price (For 30 days):</dt>
+                            <dd>20 Rs</dd>
+                        </div>
+                        <div class="flex gap-2">
+                            <dt class="font-medium">Rent after 30 days:</dt>
+                            <dd>5 Rs / 15 days</dd>
+                        </div>
+                        <div class="flex gap-2">
+                            <dt class="font-medium">Fine charge:</dt>
+                            <dd>5 Rs / day</dd>
+                        </div>
+                    </dl>
+                </div>
+                <div class="flex flex-col justify-evenly h-full ml-auto">
+                    <form action="" method="post">
+                        <button
+                            class="px-3 py-1 bg-indigo-600 text-white text-lg rounded-md hover:bg-indigo-800 min-w-full">Update
+                            Book Info</button>
+                    </form>
+                    <form action="" method="post">
+                        <button
+                            class="px-3 py-1 bg-red-600 text-white text-lg rounded-md hover:bg-red-700 min-w-full">Delete
+                            Book</button>
+                    </form>
+                </div>
+            </article>
+        </li>
+        <li class="px-5 py-3 bg-white rounded-md">
+            <article class="flex items-center gap-10 h-32">
+                <div class="aspect-w-16 aspect-h-9 h-full">
+                    <img src="https://rukminim2.flixcart.com/image/416/416/xif0q/book/y/4/8/a-competitive-book-of-agriculture-english-language-original-imagm3rjhcc7xzdj.jpeg?q=70"
+                        alt="" class="h-full w-full object-cover object-center">
+                </div>
+                <div class="flex flex-col justify-between h-full">
+                    <h2 class="text-2xl font-semibold">Title</h2>
+                    <h3 class="text-lg font-semibold">Author</h3>
+                    <dl class="grid grid-cols-3 gap-8">
+                        <div class="flex gap-2">
+                            <dt class="font-medium">Category:</dt>
+                            <dd>category 1</dd>
+                        </div>
+                        <div class="col-span-2 flex gap-2">
+                            <dt class="font-medium">Quantity:</dt>
+                            <dd>30</dd>
+                        </div>
+                    </dl>
+                    <dl class="grid grid-cols-3 gap-8">
+                        <div class="flex gap-2">
+                            <dt class="font-medium">Base Price (For 30 days):</dt>
+                            <dd>20 Rs</dd>
+                        </div>
+                        <div class="flex gap-2">
+                            <dt class="font-medium">Rent after 30 days:</dt>
+                            <dd>5 Rs / 15 days</dd>
+                        </div>
+                        <div class="flex gap-2">
+                            <dt class="font-medium">Fine charge:</dt>
+                            <dd>5 Rs / day</dd>
+                        </div>
+                    </dl>
+                </div>
+                <div class="flex flex-col justify-evenly h-full ml-auto">
+                    <form action="" method="post">
+                        <button
+                            class="px-3 py-1 bg-indigo-600 text-white text-lg rounded-md hover:bg-indigo-800 min-w-full">Update
+                            Book Info</button>
+                    </form>
+                    <form action="" method="post">
+                        <button
+                            class="px-3 py-1 bg-red-600 text-white text-lg rounded-md hover:bg-red-700 min-w-full">Delete
+                            Book</button>
+                    </form>
+                </div>
+            </article>
+        </li>
+    </ul>
+<?php endif; ?>

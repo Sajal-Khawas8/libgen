@@ -14,12 +14,14 @@
             <li>
                 <form action="" method="post" class="text-gray-800 divide-x divide-gray-500 relative w-[700px]">
                     <div class="absolute left-0 inset-y-0 px-2 divide-x divide-gray-500 rounded-l-lg">
-                        <select name="searchCriteria" id="searchCriteria" class="px-2 py-1 text-base outline-none" aria-label="Select search criteria">
+                        <select name="searchCriteria" id="searchCriteria" class="px-2 py-1 text-base outline-none"
+                            aria-label="Select search criteria">
                             <option value="title">Search by Title</option>
                             <option value="author">Search by Author</option>
                         </select>
                         <select name="category" id="category"
-                            class="px-2 py-1 text-base outline-none border-r border-gray-500" aria-label="Select category">
+                            class="px-2 py-1 text-base outline-none border-r border-gray-500"
+                            aria-label="Select category">
                             <option value="all">All</option>
                             <option value="1">Science Fiction</option>
                             <option value="2">2</option>
@@ -40,9 +42,34 @@
             </li>
         </ul>
         <ul class="flex items-center gap-3">
-            <li class="bg-indigo-600 text-white text-lg font-medium px-2 py-1 rounded-md hover:bg-white hover:text-indigo-600"><a href="/signUp">Sign Up</a></li>
-            <li class="bg-indigo-600 text-white text-lg font-medium px-2 py-1 rounded-md hover:bg-white hover:text-indigo-600"><a href="/login">Login</a></li>
-            <li class="bg-indigo-600 text-white text-lg font-medium px-2 py-1 rounded-md hover:bg-white hover:text-indigo-600"><a href="/cart">Admin Login</a></li>
+            <?php if (isset($_SESSION['isAdmin']) && $_SESSION['isAdmin']): ?>
+                <li
+                    class="bg-indigo-600 text-white text-lg font-medium px-2 py-1 rounded-md hover:bg-white hover:text-indigo-600">
+                    <a href="/admin">Dashboard</a>
+                </li>
+            <?php elseif (isset($_COOKIE['user'])): ?>
+                <li
+                    class="bg-indigo-600 text-white text-lg font-medium px-2 py-1 rounded-md hover:bg-white hover:text-indigo-600">
+                    <a href="/settings">Settings</a>
+                </li>
+                <li
+                    class="bg-indigo-600 text-white text-lg font-medium px-2 py-1 rounded-md hover:bg-white hover:text-indigo-600">
+                    <a href="/login">cart</a>
+                </li>
+            <?php else: ?>
+                <li
+                    class="bg-indigo-600 text-white text-lg font-medium px-2 py-1 rounded-md hover:bg-white hover:text-indigo-600">
+                    <a href="/signUp">Sign Up</a>
+                </li>
+                <li
+                    class="bg-indigo-600 text-white text-lg font-medium px-2 py-1 rounded-md hover:bg-white hover:text-indigo-600">
+                    <a href="/login">Login</a>
+                </li>
+                <li
+                    class="bg-indigo-600 text-white text-lg font-medium px-2 py-1 rounded-md hover:bg-white hover:text-indigo-600">
+                    <a href="/masterLogin">Admin Login</a>
+                </li>
+            <?php endif; ?>
         </ul>
     </nav>
 </header>

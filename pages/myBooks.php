@@ -1,3 +1,4 @@
+<?php setcookie('prevPage', $uri); ?>
 <main class="container border-x space-y-8">
     <h1 class="text-4xl font-semibold pt-8 pl-16">My Books</h1>
     <Section>

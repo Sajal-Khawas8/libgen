@@ -1,4 +1,11 @@
-<?php require "./templates/header.php"; ?>
+<?php
+setcookie('prevPage', $uri);
+if(!isset($_SESSION['isAdmin'])) {
+    $_SESSION['refresh'] = true;
+    header("Location: /masterLogin");
+    exit;
+}
+require "./templates/header.php"; ?>
 <div class="flex gap-0 h-screen">
     <aside class="w-64 h-full px-3 py-2.5 text-lg space-y-8 hidden lg:block">
         <header class="mx-auto my-3 w-fit">
@@ -30,7 +37,7 @@
                         </path>
                     </svg>
                     <span>Books</span>
-                    <a href="/app/dashboard" class="absolute inset-0"></a>
+                    <a href="/admin" class="absolute inset-0"></a>
                 </li>
                 <li class="flex items-center relative">
                     <svg class="w-7 h-7 mx-4" height="24" width="24" xmlns="http://www.w3.org/2000/svg"
@@ -40,7 +47,7 @@
                             fill="currentColor"></path>
                     </svg>
                     <span>Readers</span>
-                    <a href="/app/dashboard/readers" class="absolute inset-0"></a>
+                    <a href="/admin/readers" class="absolute inset-0"></a>
                 </li>
                 <li class="flex items-center relative">
                     <svg class="w-7 h-7 mx-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
@@ -50,7 +57,7 @@
                         </path>
                     </svg>
                     <span>Rented Books</span>
-                    <a href="/app/dashboard/rentedBooks" class="absolute inset-0"></a>
+                    <a href="/admin/rentedBooks" class="absolute inset-0"></a>
                 </li>
                 <li class="flex items-center relative">
                     <svg class="w-7 h-7 mx-4" xmlns="http://www.w3.org/2000/svg" fill="currentColor" stroke="none"
@@ -60,7 +67,7 @@
                         </path>
                     </svg>
                     <span>Book Categories</span>
-                    <a href="/app/dashboard/categories" class="absolute inset-0"></a>
+                    <a href="/admin/categories" class="absolute inset-0"></a>
                 </li>
                 <li class="flex items-center relative">
                     <svg class="w-7 h-7 mx-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 28 28" fill="none">
@@ -69,7 +76,7 @@
                             fill="currentColor"></path>
                     </svg>
                     <span>Payments</span>
-                    <a href="/app/dashboard/payment" class="absolute inset-0"></a>
+                    <a href="/admin/payment" class="absolute inset-0"></a>
                 </li>
                 <li class="flex items-center">
                     <h3 class="text-indigo-600 font-semibold">Others</h3>
@@ -81,8 +88,8 @@
                             d="M12,1,3,5v6c0,5.55,3.84,10.74,9,12,5.16-1.26,9-6.45,9-12V5Zm0,3.9a3,3,0,1,1-3,3A3,3,0,0,1,12,4.9Zm0,7.9c2,0,6,1.09,6,3.08a7.2,7.2,0,0,1-12,0C6,13.89,10,12.8,12,12.8Z">
                         </path>
                     </svg>
-                    <span>Admins</span>
-                    <a href="/app/dashboard/admin" class="absolute inset-0"></a>
+                    <span>Team</span>
+                    <a href="/admin/team" class="absolute inset-0"></a>
                 </li>
                 <li class="flex items-center relative">
                     <svg class="w-7 h-7 mx-4" height="24" width="24" xmlns="http://www.w3.org/2000/svg" width="24"
@@ -94,12 +101,12 @@
                         </path>
                     </svg>
                     <span>Settings</span>
-                    <a href="/app/dashboard/settings" class="absolute inset-0"></a>
+                    <a href="/admin/settings" class="absolute inset-0"></a>
                 </li>
             </ul>
         </nav>
         <footer class="mt-6 font-semibold leading-9 rounded-md bg-indigo-600 text-white hover:bg-indigo-800">
-            <form action="<?= htmlspecialchars($_SERVER['PHP_SELF']); ?>" method="post">
+            <form action="/formHandler" method="post">
                 <button name="logout" id="logout" class="flex items-center w-full">
                     <svg class="w-7 h-7 mx-4" height="24" width="24" xmlns="http://www.w3.org/2000/svg"
                         enable-background="new 0 0 24 24" viewBox="0 0 24 24" fill="currentColor">
@@ -122,17 +129,12 @@
     <main class="flex-1 bg-gray-100 overflow-y-hidden flex flex-col relative">
         <header class="flex justify-between items-center text-sm py-2.5 px-6">
             <?php
-            // $query = new DatabaseQuery();
-            // $result = $query->selectUserJoin('users', 'id', 'user_img', 'user_id', 'name, unique_name', $_SESSION['loginName'], 'email');
-            // $name = $result['name'];
-            // $image = $result['unique_name'];
+            $query=new DatabaseQuery();
+            $userData=$query->selectOne('users', $_COOKIE['user'], 'uuid');
             $svgBgColors = ['text-stone-600', 'text-red-500', 'text-red-700', 'text-orange-500', 'text-orange-700', 'text-amber-400', 'text-amber-700', 'text-yellow-400', 'text-yellow-600', 'text-lime-400', 'text-lime-600', 'text-green-500', 'text-green-700', 'text-teal-400', 'text-cyan-400', 'text-cyan-600', 'text-sky-500', 'text-sky-700', 'text-blue-600', 'text-blue-800', 'text-indigo-600', 'text-fuchsia-500', 'text-rose-500'];
             ?>
-            <h3 class="text-lg font-medium">Welcome, Admin</h3>
-            <!-- <div class="w-10 h-10 rounded-full">
-            <img src="" alt=""
-                class="h-full w-full object-cover border-2 border-gray-500 rounded-full">
-        </div> -->
+            <h3 class="text-lg font-medium">Welcome, <?= $userData['name'] ?></h3>
+            <?php if (empty($userData['image'])): ?>
             <svg class="w-10 h-10 <?= $svgBgColors[array_rand($svgBgColors)] ?>" xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                 <path fill-rule="evenodd"
@@ -140,6 +142,11 @@
                     clip-rule="evenodd"></path>
                 <title id="userIconTitle">Admin</title>
             </svg>
+            <?php else: ?>
+                <div class="w-10 h-10 rounded-full">
+                    <img src="/libgen/assets/uploads/images/<?= $userData['image'] ?>" alt="<?= $userData['name'] ?>" class="w-full h-full object-cover rounded-full">
+                </div>
+            <?php endif; ?>
         </header>
         <section class="flex-1 flex flex-col space-y-5 overflow-y-hidden">
             <?php
@@ -147,16 +154,17 @@
             $dashboardRouter->define([
                 '' => './pages/dashboard/books.php',
                 'readers' => './pages/dashboard/users.php',
-                'rentedBooks'=>'./pages/dashboard/rentedBooks.php',
-                'categories'=>'./pages/dashboard/categories.php',
-                'payment'=>'./pages/dashboard/payment.php',
-                'admin'=>'./pages/dashboard/admin.php',
-                'settings'=>'./pages/dashboard/settings.php',
-                'addBook'=>'./pages/forms/addBook.php',
-                'addCategory'=>'./pages/forms/addCategory.php',
-                'addAdmin'=>'./pages/forms/registration.php'
+                'rentedBooks' => './pages/dashboard/rentedBooks.php',
+                'categories' => './pages/dashboard/categories.php',
+                'payment' => './pages/dashboard/payment.php',
+                'team' => './pages/dashboard/admin.php',
+                'settings' => './pages/dashboard/settings.php',
+                'addBook' => './pages/forms/addBook.php',
+                'addCategory' => './pages/forms/addCategory.php',
+                'addMember' => './pages/forms/registration.php',
+                'settings/update' => './pages/forms/registration.php'
             ]);
-            $uri = trim(str_ireplace('app/dashboard', '', $_SERVER['REQUEST_URI']), '/');
+            $uri = trim(str_ireplace('admin', '', $uri), '/');
             require $dashboardRouter->direct($uri);
             ?>
         </section>

@@ -1,11 +1,11 @@
 <?php
 class Router
 {
-    private $routes=[];
+    private $routes = [];
 
     public function define($routes)
     {
-        $this->routes=$routes;
+        $this->routes = $routes;
     }
 
     public function direct($uri)
