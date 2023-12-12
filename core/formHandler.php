@@ -4,17 +4,18 @@ require "./classes/user.php";
 require "./classes/category.php";
 require "./classes/books.php";
 require "./classes/cart.php";
+require "./classes/mail.php";
 
 if (isset($_POST['masterLogin'])) {
     $isDataValid = true;
     $validation = new ValidateData();
-    $query = new DatabaseQuery();
-    $uuid = $query->selectColumn('uuid', 'users', $_POST['email'], 'email');
     $err = [
         'emailErr' => $validation->validateAdminLoginEmail($_POST['email'], $isDataValid),
-        'passwordErr' => $validation->validatePassword($_POST['password'], $uuid, $isDataValid)
+        'passwordErr' => $validation->validatePassword($_POST['password'], $_POST['email'], $isDataValid)
     ];
     if ($isDataValid) {
+        $query = new DatabaseQuery();
+        $uuid = $query->selectColumn('uuid', 'users', $_POST['email'], 'email');
         setcookie('user', $uuid);
         $_SESSION['isAdmin'] = true;
         $_SESSION['refresh'] = true;
@@ -62,14 +63,14 @@ if (isset($_POST['registerAdmin'])) {
 
 if (isset($_POST['login'])) {
     $isDataValid = true;
-    $query = new DatabaseQuery();
-    $uuid = $query->selectColumn('uuid', 'users', $_POST['email'], 'email');
     $validation = new ValidateData();
     $err = [
         'emailErr' => $validation->validateLoginEmail($_POST['email'], $isDataValid),
-        'passwordErr' => $validation->validatePassword($_POST['password'], $uuid, $isDataValid)
+        'passwordErr' => $validation->validatePassword($_POST['password'], $_POST['email'], $isDataValid)
     ];
     if ($isDataValid) {
+        $query = new DatabaseQuery();
+        $uuid = $query->selectColumn('uuid', 'users', $_POST['email'], 'email');
         setcookie('user', $uuid, time() + 86400);
         $_SESSION['refresh'] = true;
         $location = $_COOKIE['prevPage'] ?? '/libgen';
@@ -358,7 +359,7 @@ if (isset($_POST['payment'])) {
         $interval = $dueDate->diff($date);
         $days = $interval->days;
         $additional = $days > 30 ? (ceil(($days - 30) / 15) * $bookData['additional']) : 0;
-        $amount=$bookData['base']+$bookData['rent']+$additional;
+        $amount = $bookData['base'] + $bookData['rent'] + $additional;
         $paymentData = [
             'payment_id' => uniqid("pay-"),
             'user_id' => $_COOKIE['user'],
@@ -374,7 +375,7 @@ if (isset($_POST['payment'])) {
             'due_date' => $_POST['returnDate']
         ];
         $query->add('rented_books', $rentStatus);
-        $availableBooks=$bookData['available']-1;
+        $availableBooks = $bookData['available'] - 1;
         $query->update('quantity', "available=$availableBooks, ", $bookId, 'book_id');
         header("Location: /mybooks");
         exit;
@@ -561,6 +562,63 @@ if (isset($_POST['cartPayment'])) {
         setcookie('err', serialize($err), time() + 2);
         setcookie('data', serialize($_POST), time() + 2);
         header("Location: {$_COOKIE['prevPage']}");
+        exit;
+    }
+}
+
+if (isset($_POST['forgotPassword'])) {
+    $isDataValid = true;
+    $validation = new ValidateData();
+    $err = $validation->validateLoginEmail($_POST['email'], $isDataValid);
+
+    if ($isDataValid) {
+        $id = uniqid();
+        $query = new DatabaseQuery();
+        $query->update('users', "uniqueID='$id', ", $_POST['email'], 'email');
+        $config = require "./core/config.php";
+        $link = openssl_encrypt($_POST['email'] . "&" . $id, $config['openssl']['algo'], $config['openssl']['pass'], 0, $config['openssl']['iv']);
+        $mail = new MailClass();
+        $message = "<p style='display: flex; flex-direction: column; align-items: center; font-size: 18px; gap: 54px;'>Please click on the following button to reset your password:<a href='http://localhost/resetPassword?$link' style='display: inline-block; text-align: center; text-decoration: none; padding: 8px 13px; background-color: #0054ff; color: white; font-size: 20px; border-radius: 10px;'>Reset Password</a></p>";
+        $mail->sendMail('Reset Password', $message, $_POST['email']);
+        header("Location: /libgen");
+    } else {
+        $_SESSION['refresh'] = true;
+        setcookie('err', $err, time() + 2);
+        setcookie('data', $_POST['email'], time() + 2);
+        header("Location: /forgotPassword");
+        exit;
+    }
+}
+
+if (isset($_POST['resetPW'])) {
+    $isDataValid = true;
+    $validation = new ValidateData();
+    $config = require "./core/config.php";
+    $id=openssl_decrypt($_POST['id'], $config['openssl']['algo'], $config['openssl']['pass'], 0, $config['openssl']['iv']);
+    if (!$id) {
+        header("Location: /forgotPassword");
+        exit;
+    }
+    $err = [
+        'passwordErr' => $validation->validatePasswordFormat($_POST['password'], $isDataValid),
+        'cnfrmPasswordErr' => $validation->validateCnfrmPassword($_POST['cnfrmPassword'], $_POST['password'], $isDataValid),
+    ];
+    if ($isDataValid) {
+        list($email, $id)=explode("&", $id);
+        $query=new DatabaseQuery();
+        $idFromDb=$query->selectColumn('uniqueID', 'users', $email, 'email');
+        if ($idFromDb === $id) {
+            $query->update('users', "password='{$_POST['password']}', uniqueID=null, ", $email, 'email');
+            header("Location: /login");
+            exit;
+        } else {
+            header("Location: /forgotPassword");
+            exit;
+        }
+    } else {
+        $_SESSION['refresh'] = true;
+        setcookie('err', serialize($err), time() + 2);
+        header("Location: /resetPassword?" . $_POST['id']);
         exit;
     }
 }

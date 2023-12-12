@@ -415,7 +415,7 @@ class ValidateData
         }
     }
 
-    public function validatePassword($password, $uuid, &$isDataValid)
+    public function validatePassword($password, $email, &$isDataValid)
     {
         $this->cleanData($password);
         if ($this->isEmpty($password, $errMsg, 'Password')) {
@@ -424,7 +424,7 @@ class ValidateData
         }
 
         $query = new DatabaseQuery();
-        $data = $query->selectOne('users', $uuid, 'uuid');
+        $data = $query->selectOne('users', $email, 'email');
         if (!$data['active'] || !$this->verifyPasswords($password, $data['password'])) {
             $isDataValid = false;
             return "*Invalid Password";

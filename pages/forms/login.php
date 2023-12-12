@@ -26,7 +26,7 @@ if (isset($_COOKIE['data'])) {
                     class="w-full px-4 py-2 border border-gray-600 rounded outline-indigo-600 placeholder:text-gray-500">
                 <span class="text-red-600 text-sm font-medium"><?= $err['passwordErr'] ?? ''; ?></span>
             </div>
-            <a href="" class="text-indigo-600 font-medium inline-block">Forgot Password?</a>
+            <a href="/forgotPassword" class="text-indigo-600 font-medium inline-block">Forgot Password?</a>
             <?php if ($uri === 'login'): ?>
                 <button name="login" id="login"
                     class="w-full px-4 py-2 bg-indigo-600 text-white text-lg font-medium rounded-md hover:bg-indigo-800">Login</button>
