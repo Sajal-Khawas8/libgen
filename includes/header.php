@@ -54,7 +54,7 @@
                 </li>
                 <li
                     class="bg-indigo-600 text-white text-lg font-medium px-2 py-1 rounded-md hover:bg-white hover:text-indigo-600">
-                    <a href="/login">cart</a>
+                    <a href="/cart">cart</a>
                 </li>
             <?php else: ?>
                 <li

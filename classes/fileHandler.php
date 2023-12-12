@@ -11,11 +11,11 @@ class File
         $this->file=$file;
     }
 
-    public function moveFile()
+    public function moveFile($location)
     {
         $fileExtension = strtolower(pathinfo($this->file['name'])['extension']);
         $newFileName = uniqid() . "." . $fileExtension;
-        if (!move_uploaded_file($this->file['tmp_name'], "./assets/uploads/images/{$newFileName}")) {
+        if (!move_uploaded_file($this->file['tmp_name'], "./assets/uploads/images/$location/$newFileName")) {
             die("Error uploading file");
         }
         return $newFileName;

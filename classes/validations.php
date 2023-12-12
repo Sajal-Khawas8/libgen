@@ -38,7 +38,7 @@ class ValidateData
     private function isEmpty($data, &$msg, $field)
     {
         if (empty($data)) {
-            $msg = "*Please enter your $field";
+            $msg = "*Please enter $field";
             return true;
         }
     }
@@ -69,8 +69,8 @@ class ValidateData
      */
     private function isInvalidMaxLengthText($data, &$msg, $field)
     {
-        if (strlen($data) > 15) {
-            $msg = "*{$field} must contain less than 15 characters";
+        if (strlen($data) > 30) {
+            $msg = "*{$field} must contain less than 30 characters";
             return true;
         }
     }
@@ -106,6 +106,14 @@ class ValidateData
         }
     }
 
+    private function isInvalidMinRent($rent, &$msg)
+    {
+        if ($rent <= 0) {
+            $msg = "*Rent must be greater than 0";
+            return true;
+        }
+    }
+
     /**
      * Checks if the format of input data is valid or not
      * 
@@ -119,8 +127,7 @@ class ValidateData
         $field = strtok($field, " ");
         switch ($field) {
             case 'Name':
-            case 'Title':
-                if (!preg_match("/^[a-zA-Z ]*$/", $data)) {
+                if (!preg_match("/^[a-zA-Z .,]*$/", $data)) {
                     $msg = "*$field must contain only letters and white spaces";
                     return true;
                 }
@@ -137,6 +144,19 @@ class ValidateData
                     return true;
                 }
                 break;
+            case 'Rent':
+            case 'Copies':
+                if (!preg_match("/^[0-9]*$/", $data)) {
+                    $msg = "*Invalid $field";
+                    return true;
+                }
+                break;
+            case 'Title':
+                if (!preg_match("/^(?=.*[a-zA-Z]{3,})([0-9a-zA-Z ()&,-]*)$/", $data)) {
+                    $msg = "*$field must contain only letters, numbers, hyphen and paranthesis";
+                    return true;
+                }
+                break;
         }
 
     }
@@ -149,11 +169,25 @@ class ValidateData
      * @param string $field The type of input field which is to be checked
      * @return bool Returns true if the data is already present in the database, false otherwise
      */
-    private function isRedundantData($data, &$msg, $field, $dataType, $userId = null)
+    private function isRedundantData($data, &$msg, $field, $dataType, $id = null)
     {
+        switch ($field) {
+            case 'Email Address':
+                $column = 'uuid';
+                $table = 'users';
+                break;
+            case 'Category':
+                $column = 'id';
+                $table = 'category';
+                break;
+            case 'Title':
+                $column = 'uuid';
+                $table = 'books';
+                break;
+        }
         $query = new DatabaseQuery();
-        $id = $query->selectColumn('uuid', 'users', $data, $dataType);
-        if ($id !== false && $id !== $userId) {
+        $uuid = $query->selectColumn($column, $table, $data, $dataType);
+        if ($uuid !== false && $uuid !== $id) {
             $msg = "*This $field has already been taken";
             return true;
         }
@@ -279,12 +313,77 @@ class ValidateData
 
     public function validatePictureFormat($uploadedFile, &$isDataValid)
     {
-        if (!empty($uploadedFile['name']) && (!in_array(strtolower(pathinfo($uploadedFile['name'])['extension']), ['jpg', 'jpeg', 'png']))) {
+        if ($this->isEmpty($uploadedFile['name'], $msg, 'Image') || (!in_array(strtolower(pathinfo($uploadedFile['name'])['extension']), ['jpg', 'jpeg', 'png', 'webp']))) {
             $isDataValid = false;
-            return "*Please select jpg, jpeg or png file";
+            return "*Please select jpg, jpeg, png or webp file";
         }
     }
 
+    public function validateUpdatedPictureFormat($uploadedFile, &$isDataValid)
+    {
+        if (!empty($uploadedFile['name']) && (!in_array(strtolower(pathinfo($uploadedFile['name'])['extension']), ['jpg', 'jpeg', 'png', 'webp']))) {
+            $isDataValid = false;
+            return "*Please select jpg, jpeg, png or webp file";
+        }
+    }
+
+    public function validateUniqueName(&$name, &$isDataValid, $field)
+    {
+        $this->cleanData($name);
+        if ($this->isEmpty($name, $errMsg, $field) || $this->isInvalidMinLengthText($name, $errMsg, $field) || $this->isInvalidMaxLengthText($name, $errMsg, $field) || $this->isInvalidFormat($name, $errMsg, $field) || $this->isRedundantData($name, $errMsg, 'Category', 'name')) {
+            $isDataValid = false;
+            return $errMsg;
+        }
+        $name = ucwords($name);
+    }
+
+    public function validateUpdatedUniqueName(&$name, &$isDataValid, $field, $id)
+    {
+        $this->cleanData($name);
+        if (!empty($name) && ($this->isInvalidMinLengthText($name, $errMsg, $field) || $this->isInvalidMaxLengthText($name, $errMsg, $field) || $this->isInvalidFormat($name, $errMsg, $field) || $this->isRedundantData($name, $errMsg, 'Category', 'name', $id))) {
+            $isDataValid = false;
+            return $errMsg;
+        }
+        $name = ucwords($name);
+    }
+
+    public function validateNumber(&$rent, &$isDataValid, $field)
+    {
+        $this->cleanData($rent);
+        if ($this->isEmpty($rent, $errMsg, $field) || $this->isInvalidFormat($rent, $errMsg, $field) || $this->isInvalidMinRent($rent, $errMsg)) {
+            $isDataValid = false;
+            return $errMsg;
+        }
+    }
+
+    public function validateUpdatedNumber(&$rent, &$isDataValid, $field)
+    {
+        $this->cleanData($rent);
+        if (!empty($rent) && ($this->isInvalidFormat($rent, $errMsg, $field) || $this->isInvalidMinRent($rent, $errMsg))) {
+            $isDataValid = false;
+            return $errMsg;
+        }
+    }
+
+    public function validateBookTitle(&$title, &$isDataValid, $field)
+    {
+        $this->cleanData($title);
+        if ($this->isEmpty($title, $errMsg, $field) || $this->isInvalidMinLengthText($title, $errMsg, $field) || $this->isInvalidMaxLengthText($title, $errMsg, $field) || $this->isInvalidFormat($title, $errMsg, $field) || $this->isRedundantData($title, $errMsg, $field, 'title')) {
+            $isDataValid = false;
+            return $errMsg;
+        }
+        $title = ucwords($title);
+    }
+
+    public function validateSelectBox(&$data, &$isDataValid, $field)
+    {
+        $config = require "./core/config.php";
+        $data = openssl_decrypt($data, $config['openssl']['algo'], $config['openssl']['pass'], 0, $config['openssl']['iv']);
+        if (!$data) {
+            $isDataValid = false;
+            return "*Please select $field";
+        }
+    }
     public function validateAdminLoginEmail($email, &$isDataValid)
     {
         $this->cleanData($email);
@@ -294,7 +393,7 @@ class ValidateData
         }
 
         $query = new DatabaseQuery();
-        $data=$query->selectOne('users', $email, 'email');
+        $data = $query->selectOne('users', $email, 'email');
         if (!$data['active'] || !$data['role']) {
             $isDataValid = false;
             return "*Invalid Email Address";
@@ -325,10 +424,54 @@ class ValidateData
         }
 
         $query = new DatabaseQuery();
-        $data=$query->selectOne('users', $uuid, 'uuid');
-        if (!$data['active'] ||!$this->verifyPasswords($password, $data['password'])) {
+        $data = $query->selectOne('users', $uuid, 'uuid');
+        if (!$data['active'] || !$this->verifyPasswords($password, $data['password'])) {
             $isDataValid = false;
             return "*Invalid Password";
+        }
+    }
+
+    public function validateCardNumber(&$cardNumber, &$isDataValid)
+    {
+        $this->cleanData($cardNumber);
+        if (!preg_match("/^(\d{4}-\d{4}-\d{4}-\d{4})$/", $cardNumber)) {
+            $isDataValid = false;
+            return "*Please enter a valid card number";
+        }
+    }
+
+    public function validateCVV(&$cvv, &$isDataValid)
+    {
+        $this->cleanData($cvv);
+        if (!preg_match("/^\d{3}$/", $cvv)) {
+            $isDataValid = false;
+            return "*Please enter a valid CVV";
+        }
+    }
+
+    public function validateExpiryDate(&$date, &$isDataValid)
+    {
+        $this->cleanData($date);
+        if (!preg_match("/^(\d{2}\/\d{2})$/", $date)) {
+            $isDataValid = false;
+            return "*Please enter a valid card expiry date";
+        }
+        list($month, $year) = explode('/', $date);
+        if ($month > 12 || $year > date('y') + 7) {
+            $isDataValid = false;
+            return "*Please enter a valid card expiry date";
+        } elseif ($year < date('y') || ($year === date('y') && $month < date('m'))) {
+            $isDataValid = false;
+            return "*This card is expired";
+        }
+    }
+
+    public function validateReturnDate(&$date, &$isDataValid)
+    {
+        $this->cleanData($date);
+        if (!preg_match("/^(\d{4}-\d{2}-\d{2})$/", $date) || $date <= date("Y-m-d") || $date > date('Y-m-d', strtotime('+6 months', strtotime(date("Y-m-d"))))) {
+            $isDataValid = false;
+            return "*Please choose a valid return date";
         }
     }
 }

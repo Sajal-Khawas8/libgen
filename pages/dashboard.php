@@ -159,8 +159,10 @@ require "./templates/header.php"; ?>
                 'payment' => './pages/dashboard/payment.php',
                 'team' => './pages/dashboard/admin.php',
                 'settings' => './pages/dashboard/settings.php',
-                'addBook' => './pages/forms/addBook.php',
-                'addCategory' => './pages/forms/addCategory.php',
+                'books/addBook' => './pages/forms/addBook.php',
+                'books/updateBook' => './pages/forms/addBook.php',
+                'categories/addCategory' => './pages/forms/addCategory.php',
+                'categories/updateCategory' => './pages/forms/addCategory.php',
                 'addMember' => './pages/forms/registration.php',
                 'settings/update' => './pages/forms/registration.php'
             ]);

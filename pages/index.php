@@ -71,156 +71,39 @@ $query = new DatabaseQuery();
                 </article>
             </div>
         </section>
-        <Section>
-            <h2 class="font-medium text-2xl pl-16">Category 1</h2>
-            <ul class="flex items-center gap-x-20 gap-y-12 flex-wrap px-16 py-8">
-                <li class="border rounded-lg divide-y relative">
-                    <figure>
-                        <div class="aspect-w-16 aspect-h-9 h-80 border">
-                            <img src="https://rukminim2.flixcart.com/image/416/416/xif0q/book/y/4/8/a-competitive-book-of-agriculture-english-language-original-imagm3rjhcc7xzdj.jpeg?q=70"
-                                alt="Book1" class="h-full w-full object-cover object-center">
-                        </div>
-                        <figcaption class="w-64 p-2 flex flex-col justify-between min-h-[110px]">
-                            <h3 class="font-semibold text-xl text-blue-700 line-clamp-2">A competitive Book of Agriculture A
-                                competitive Book of Agriculture</h3>
-                            <h4 class="font-medium truncate">Author</h4>
-                        </figcaption>
-                    </figure>
-                    <a href="/bookDetails" class="absolute inset-0"></a>
-                </li>
-                <li class="border rounded-lg divide-y relative">
-                    <figure>
-                        <div class="aspect-w-16 aspect-h-9 h-80 border">
-                            <img src="https://rukminim2.flixcart.com/image/416/416/xif0q/book/y/4/8/a-competitive-book-of-agriculture-english-language-original-imagm3rjhcc7xzdj.jpeg?q=70"
-                                alt="Book1" class="h-full w-full object-cover object-center">
-                        </div>
-                        <figcaption class="w-64 p-2 flex flex-col justify-between min-h-[110px]">
-                            <h3 class="font-semibold text-xl text-blue-700 line-clamp-2">A competitive Book of Agriculture A
-                                competitive Book of Agriculture</h3>
-                            <h4 class="font-medium truncate">Author</h4>
-                        </figcaption>
-                    </figure>
-                    <a href="" class="absolute inset-0"></a>
-                </li>
-                <li class="border rounded-lg divide-y relative">
-                    <figure>
-                        <div class="aspect-w-16 aspect-h-9 h-80 border">
-                            <img src="https://rukminim2.flixcart.com/image/416/416/xif0q/book/y/4/8/a-competitive-book-of-agriculture-english-language-original-imagm3rjhcc7xzdj.jpeg?q=70"
-                                alt="Book1" class="h-full w-full object-cover object-center">
-                        </div>
-                        <figcaption class="w-64 p-2 flex flex-col justify-between min-h-[110px]">
-                            <h3 class="font-semibold text-xl text-blue-700 line-clamp-2">A competitive Book of Agriculture A
-                                competitive Book of Agriculture</h3>
-                            <h4 class="font-medium truncate">Author</h4>
-                        </figcaption>
-                    </figure>
-                    <a href="" class="absolute inset-0"></a>
-                </li>
-                <li class="border rounded-lg divide-y relative">
-                    <figure>
-                        <div class="aspect-w-16 aspect-h-9 h-80 border">
-                            <img src="https://rukminim2.flixcart.com/image/416/416/xif0q/book/y/4/8/a-competitive-book-of-agriculture-english-language-original-imagm3rjhcc7xzdj.jpeg?q=70"
-                                alt="Book1" class="h-full w-full object-cover object-center">
-                        </div>
-                        <figcaption class="w-64 p-2 flex flex-col justify-between min-h-[110px]">
-                            <h3 class="font-semibold text-xl text-blue-700 line-clamp-2">A competitive Book of Agriculture A
-                                competitive Book of Agriculture</h3>
-                            <h4 class="font-medium truncate">Author</h4>
-                        </figcaption>
-                    </figure>
-                    <a href="" class="absolute inset-0"></a>
-                </li>
-                <li class="border rounded-lg divide-y relative">
-                    <figure>
-                        <div class="aspect-w-16 aspect-h-9 h-80 border">
-                            <img src="https://rukminim2.flixcart.com/image/416/416/xif0q/book/y/4/8/a-competitive-book-of-agriculture-english-language-original-imagm3rjhcc7xzdj.jpeg?q=70"
-                                alt="Book1" class="h-full w-full object-cover object-center">
-                        </div>
-                        <figcaption class="w-64 p-2 flex flex-col justify-between min-h-[110px]">
-                            <h3 class="font-semibold text-xl text-blue-700 line-clamp-2">A competitive Book of Agriculture A
-                                competitive Book of Agriculture</h3>
-                            <h4 class="font-medium truncate">Author</h4>
-                        </figcaption>
-                    </figure>
-                    <a href="" class="absolute inset-0"></a>
-                </li>
-            </ul>
-        </Section>
-        <Section>
-            <h2 class="font-medium text-2xl pl-12">Category 1</h2>
-            <ul class="flex items-center justify-around gap-x-10 gap-y-12 flex-wrap px-8 py-8">
-                <li class="border rounded-lg divide-y relative">
-                    <figure>
-                        <div class="aspect-w-16 aspect-h-9 h-80 border">
-                            <img src="https://rukminim2.flixcart.com/image/416/416/xif0q/book/y/4/8/a-competitive-book-of-agriculture-english-language-original-imagm3rjhcc7xzdj.jpeg?q=70"
-                                alt="Book1" class="h-full w-full object-cover object-center">
-                        </div>
-                        <figcaption class="w-64 p-2 flex flex-col justify-between min-h-[110px]">
-                            <h3 class="font-semibold text-xl text-blue-700 line-clamp-2">A competitive Book of Agriculture A
-                                competitive Book of Agriculture</h3>
-                            <h4 class="font-medium truncate">Author</h4>
-                        </figcaption>
-                    </figure>
-                    <a href="" class="absolute inset-0"></a>
-                </li>
-                <li class="border rounded-lg divide-y relative">
-                    <figure>
-                        <div class="aspect-w-16 aspect-h-9 h-80 border">
-                            <img src="https://rukminim2.flixcart.com/image/416/416/xif0q/book/y/4/8/a-competitive-book-of-agriculture-english-language-original-imagm3rjhcc7xzdj.jpeg?q=70"
-                                alt="Book1" class="h-full w-full object-cover object-center">
-                        </div>
-                        <figcaption class="w-64 p-2 flex flex-col justify-between min-h-[110px]">
-                            <h3 class="font-semibold text-xl text-blue-700 line-clamp-2">A competitive Book of Agriculture A
-                                competitive Book of Agriculture</h3>
-                            <h4 class="font-medium truncate">Author</h4>
-                        </figcaption>
-                    </figure>
-                    <a href="" class="absolute inset-0"></a>
-                </li>
-                <li class="border rounded-lg divide-y relative">
-                    <figure>
-                        <div class="aspect-w-16 aspect-h-9 h-80 border">
-                            <img src="https://rukminim2.flixcart.com/image/416/416/xif0q/book/y/4/8/a-competitive-book-of-agriculture-english-language-original-imagm3rjhcc7xzdj.jpeg?q=70"
-                                alt="Book1" class="h-full w-full object-cover object-center">
-                        </div>
-                        <figcaption class="w-64 p-2 flex flex-col justify-between min-h-[110px]">
-                            <h3 class="font-semibold text-xl text-blue-700 line-clamp-2">A competitive Book of Agriculture A
-                                competitive Book of Agriculture</h3>
-                            <h4 class="font-medium truncate">Author</h4>
-                        </figcaption>
-                    </figure>
-                    <a href="" class="absolute inset-0"></a>
-                </li>
-                <li class="border rounded-lg divide-y relative">
-                    <figure>
-                        <div class="aspect-w-16 aspect-h-9 h-80 border">
-                            <img src="https://rukminim2.flixcart.com/image/416/416/xif0q/book/y/4/8/a-competitive-book-of-agriculture-english-language-original-imagm3rjhcc7xzdj.jpeg?q=70"
-                                alt="Book1" class="h-full w-full object-cover object-center">
-                        </div>
-                        <figcaption class="w-64 p-2 flex flex-col justify-between min-h-[110px]">
-                            <h3 class="font-semibold text-xl text-blue-700 line-clamp-2">A competitive Book of Agriculture A
-                                competitive Book of Agriculture</h3>
-                            <h4 class="font-medium truncate">Author</h4>
-                        </figcaption>
-                    </figure>
-                    <a href="" class="absolute inset-0"></a>
-                </li>
-                <li class="border rounded-lg divide-y relative">
-                    <figure>
-                        <div class="aspect-w-16 aspect-h-9 h-80 border">
-                            <img src="https://rukminim2.flixcart.com/image/416/416/xif0q/book/y/4/8/a-competitive-book-of-agriculture-english-language-original-imagm3rjhcc7xzdj.jpeg?q=70"
-                                alt="Book1" class="h-full w-full object-cover object-center">
-                        </div>
-                        <figcaption class="w-64 p-2 flex flex-col justify-between min-h-[110px]">
-                            <h3 class="font-semibold text-xl text-blue-700 line-clamp-2">A competitive Book of Agriculture A
-                                competitive Book of Agriculture</h3>
-                            <h4 class="font-medium truncate">Author</h4>
-                        </figcaption>
-                    </figure>
-                    <a href="" class="absolute inset-0"></a>
-                </li>
-            </ul>
-        </Section>
+        <?php
+        $categories = $query->selectAll('Category');
+        foreach ($categories as $category):
+            $books = $query->selectAllSpecific('books', $category['id'], 'category_id');
+            if ($books):
+            ?>
+            <Section>
+                <h2 class="font-medium text-2xl pl-16"><?= $category['name'] ?></h2>
+                <ul class="flex items-center gap-x-20 gap-y-12 flex-wrap px-16 py-8">
+                    <?php
+                    foreach ($books as $book):
+                        ?>
+                        <li class="border rounded-lg divide-y relative">
+                            <figure>
+                                <div class="aspect-w-16 aspect-h-9 h-80 border">
+                                    <img src="/libgen/assets/uploads/images/books/<?= $book['cover']; ?>"
+                                        alt="<?= $book['title']; ?>" class="h-full w-full object-cover object-center">
+                                </div>
+                                <figcaption class="w-64 p-2 flex flex-col justify-between min-h-[110px]">
+                                    <h3 class="font-semibold text-xl text-blue-700 line-clamp-2"><?= $book['title']; ?></h3>
+                                    <h4 class="font-medium truncate"><?= $book['author']; ?></h4>
+                                </figcaption>
+                            </figure>
+                            <?php
+                            $config=require "./core/config.php";
+                            $bookId=openssl_encrypt($book['book_uuid'], $config['openssl']['algo'], $config['openssl']['pass'], 0, $config['openssl']['iv']);
+                            ?>
+                            <a href="/bookDetails?<?= $bookId; ?>" class="absolute inset-0"></a>
+                        </li>
+                    <?php endforeach; ?>
+                </ul>
+            </Section>
+        <?php endif; endforeach; ?>
         <!-- Reviews section -->
         <section id="reviews" class="bg-slate-100 space-y-8 py-4">
             <h2 class="font-medium text-3xl pl-16">User Reviews</h2>

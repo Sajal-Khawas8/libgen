@@ -31,11 +31,12 @@ interface CRUD
     public function selectAll($table);
     public function selectAllSpecific($table, $searchId, $searchCriteria);
     public function selectOne($table, $id);
+    public function selectNegate($table, $searchId, $searchCriteria = 'id');
     public function selectColumn($column, $table, $searchId, $searchCriteria);
-    public function selectAllJoin($table1, $table1MatchCol, $table2, $table2MatchCol);
-    public function selectOneJoin($table1, $table1MatchCol, $table2, $table2MatchCol, $columnStr, $searchId, $searchCriteria = 'id');
+    public function selectAllJoin($table1, $joins);
+    public function selectOneJoin($table, $joins, $columnStr, $searchId, $searchCriteria = 'id');
     public function rowCount($table);
-    public function lastEntry($table, $column='uuid');
+    public function lastEntry($table, $column = 'uuid');
 }
 
 class DatabaseQuery implements CRUD
@@ -93,6 +94,16 @@ class DatabaseQuery implements CRUD
         }
         return $result->fetch_assoc();
     }
+
+    public function selectNegate($table, $searchId, $searchCriteria = 'id')
+    {
+        $sql = "SELECT * FROM $table WHERE $searchCriteria != $searchId";
+        $result = $this->conn->query($sql);
+        if (!$result) {
+            die("Some Error Occured: " . $this->conn->error);
+        }
+        return $result->fetch_all(MYSQLI_ASSOC);
+    }
     public function selectColumn($column, $table, $searchId, $searchCriteria = 'id')
     {
         $sql = "SELECT $column FROM $table WHERE $searchCriteria = '$searchId'";
@@ -103,9 +114,28 @@ class DatabaseQuery implements CRUD
         return $result->fetch_column();
     }
 
-    public function selectAllJoin($table1, $table1MatchCol, $table2, $table2MatchCol)
+    public function selectColumnMultiCondition($column, $table, $conditions)
     {
-        $sql = "SELECT *, $table1.creation_date, $table1.modification_date AS {$table1}_modification_date, $table2.modification_date AS {$table2}_modification_date FROM $table1 LEFT JOIN $table2 ON $table1.$table1MatchCol = $table2.$table2MatchCol ORDER BY $table1.$table1MatchCol";
+        $sql = "SELECT $column FROM $table WHERE {$conditions[0]['criteria']} = '{$conditions[0]['id']}'";
+        unset($conditions[0]);
+        foreach ($conditions as $condition) {
+            $sql .= " AND {$condition['criteria']} = '{$condition['id']}'";
+        }
+        $result = $this->conn->query($sql);
+        if (!$result) {
+            die("Some Error Occured: " . $this->conn->error);
+        }
+        return $result->fetch_column();
+    }
+
+    public function selectAllJoin($table, $joins)
+    {
+        $sql = "SELECT * FROM $table";
+
+        foreach ($joins as $join) {
+            $sql .= " LEFT JOIN {$join['table']} ON {$join['condition']}";
+        }
+
         $result = $this->conn->query($sql);
         if (!$result) {
             die("Error searching user: " . $this->conn->error);
@@ -113,9 +143,29 @@ class DatabaseQuery implements CRUD
         return $result->fetch_all(MYSQLI_ASSOC);
     }
 
-    public function selectOneJoin($table1, $table1MatchCol, $table2, $table2MatchCol, $columnStr, $searchId, $searchCriteria = 'id')
+    public function selectAllJoinSpecific($table, $joins, $searchId, $searchCriteria = 'id')
     {
-        $sql = "SELECT $columnStr, $table1.creation_date AS {$table1}_creation_date, $table1.modification_date AS {$table1}_modification_date, $table2.creation_date AS {$table2}_creation_date, $table2.modification_date AS {$table2}_modification_date FROM $table1 LEFT JOIN $table2 ON $table1.$table1MatchCol = $table2.$table2MatchCol WHERE $searchCriteria='$searchId'";
+        $sql = "SELECT * FROM $table";
+
+        foreach ($joins as $join) {
+            $sql .= " LEFT JOIN {$join['table']} ON {$join['condition']}";
+        }
+        $sql .= " WHERE $searchCriteria='$searchId'";
+        $result = $this->conn->query($sql);
+        if (!$result) {
+            die("Error searching user: " . $this->conn->error);
+        }
+        return $result->fetch_all(MYSQLI_ASSOC);
+    }
+
+    public function selectOneJoin($table, $joins, $columnStr, $searchId, $searchCriteria = 'id')
+    {
+        $sql = "SELECT $columnStr FROM $table";
+
+        foreach ($joins as $join) {
+            $sql .= " LEFT JOIN {$join['table']} ON {$join['condition']}";
+        }
+        $sql .= " WHERE $searchCriteria='$searchId'";
         $result = $this->conn->query($sql);
         if (!$result) {
             die("Error searching user: " . $this->conn->error);
@@ -133,9 +183,9 @@ class DatabaseQuery implements CRUD
         return $result->num_rows;
     }
 
-    public function lastEntry($table, $column='uuid')
+    public function lastEntry($table, $column = 'uuid')
     {
-        $sql="SELECT $column FROM $table ORDER BY id DESC LIMIT 1";
+        $sql = "SELECT $column FROM $table ORDER BY id DESC LIMIT 1";
         $result = $this->conn->query($sql);
         if (!$result) {
             die("Some Error Occured: " . $this->conn->error);

@@ -1,20 +1,31 @@
+<?php
+$config = require "./core/config.php";
+$bookId = openssl_decrypt($_SERVER['QUERY_STRING'], $config['openssl']['algo'], $config['openssl']['pass'], 0, $config['openssl']['iv']);
+$query = new DatabaseQuery();
+// $books = $query->selectAllJoin('books', 'category_id', 'quantity', 'book_id', 'category', 'id');
+$joins = [
+    [
+        'table' => 'category',
+        'condition' => 'books.category_id = category.id'
+    ],
+    [
+        'table' => 'quantity',
+        'condition' => 'quantity.book_id = books.id'
+    ],
+];
+$bookData = $query->selectOneJoin('books', $joins, '*', $bookId, 'book_uuid');
+?>
+
 <section class="flex-1 space-y-3 px-6 py-4 bg-slate-100">
     <div class="h-96">
-        <img src="https://rukminim2.flixcart.com/image/416/416/xif0q/book/y/4/8/a-competitive-book-of-agriculture-english-language-original-imagm3rjhcc7xzdj.jpeg?q=70"
+        <img src="/libgen/assets/uploads/images/books/<?= $bookData['cover']; ?>"
             alt="Book1" class="h-full object-cover object-center mx-auto">
     </div>
-    <h1 class="font-semibold text-3xl">Title</h1>
-    <h2 class="font-medium text-xl">Author</h2>
+    <h1 class="font-semibold text-3xl"><?= $bookData['title']; ?></h1>
+    <h2 class="font-medium text-xl"><?= $bookData['author']; ?></h2>
     <dl class="flex gap-2 text-lg">
         <dt class="font-medium">Category:</dt>
-        <dd>Category1</dd>
+        <dd><?= $bookData['name']; ?></dd>
     </dl>
-    <p>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Suscipit quia dolores repudiandae magnam ipsum ad!
-        Dolor odit voluptatum nemo maiores amet quaerat tempore, nostrum quas, blanditiis assumenda ipsa dolorum
-        autem corrupti ratione repellendus voluptatem repellat consequuntur commodi quasi sunt nobis vel? Voluptatem
-        aliquam reprehenderit iste ut! Ullam aperiam voluptatem voluptatibus, expedita in quis. Aliquam ut quo,
-        deleniti quidem officiis dolor facilis perferendis, eligendi exercitationem, delectus veniam laborum sunt
-        eaque eum! Aut quisquam, delectus eos minima rerum, similique veritatis eius id fuga eum aspernatur, ipsa
-        asperiores consequatur! Inventore, exercitationem. Debitis in neque quibusdam exercitationem eaque possimus,
-        quam enim aut accusantium provident.</p>
+    <p><?= $bookData['description']; ?></p>
 </section>
