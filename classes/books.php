@@ -40,7 +40,7 @@ class Book
             $_SESSION['refresh'] = true;
             setcookie('err', serialize($err), time() + 2);
             setcookie('data', serialize($data), time() + 2);
-            header("Location: admin/book/addBook");
+            header("Location: admin/books/addBook");
             exit;
         }
     }

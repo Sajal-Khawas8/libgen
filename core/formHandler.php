@@ -210,44 +210,6 @@ if (isset($_POST['blockUser'])) {
     exit;
 }
 
-if (isset($_POST['searchUser'])) {
-    $query = new DatabaseQuery();
-    $validation = new ValidateData();
-    $isDataValid = true;
-    $err = $validation->validateLoginEmail($_POST['email'], $isDataValid);
-    if ($isDataValid) {
-        $uuid = $query->selectColumn('uuid', 'users', $_POST['email'], 'email');
-        $config = require "./core/config.php";
-        $uuid = openssl_encrypt($uuid, $config['openssl']['algo'], $config['openssl']['pass'], 0, $config['openssl']['iv']);
-        header("Location: /admin/readers?$uuid");
-        exit;
-    } else {
-        setcookie('err', $err, time() + 2);
-        setcookie('data', $_POST['email'], time() + 2);
-        header("Location: /admin/readers");
-        exit;
-    }
-}
-
-if (isset($_POST['searchAdmin'])) {
-    $query = new DatabaseQuery();
-    $validation = new ValidateData();
-    $isDataValid = true;
-    $err = $validation->validateLoginEmail($_POST['email'], $isDataValid);
-    if ($isDataValid) {
-        $uuid = $query->selectColumn('uuid', 'users', $_POST['email'], 'email');
-        $config = require "./core/config.php";
-        $uuid = openssl_encrypt($uuid, $config['openssl']['algo'], $config['openssl']['pass'], 0, $config['openssl']['iv']);
-        header("Location: /admin/team?$uuid");
-        exit;
-    } else {
-        setcookie('err', $err, time() + 2);
-        setcookie('data', $_POST['email'], time() + 2);
-        header("Location: /admin/team");
-        exit;
-    }
-}
-
 if (isset($_POST['addCategory'])) {
     $validationObj = new ValidateData();
     $category = new Category($validationObj);
@@ -594,7 +556,7 @@ if (isset($_POST['resetPW'])) {
     $isDataValid = true;
     $validation = new ValidateData();
     $config = require "./core/config.php";
-    $id=openssl_decrypt($_POST['id'], $config['openssl']['algo'], $config['openssl']['pass'], 0, $config['openssl']['iv']);
+    $id = openssl_decrypt($_POST['id'], $config['openssl']['algo'], $config['openssl']['pass'], 0, $config['openssl']['iv']);
     if (!$id) {
         header("Location: /forgotPassword");
         exit;
@@ -604,9 +566,9 @@ if (isset($_POST['resetPW'])) {
         'cnfrmPasswordErr' => $validation->validateCnfrmPassword($_POST['cnfrmPassword'], $_POST['password'], $isDataValid),
     ];
     if ($isDataValid) {
-        list($email, $id)=explode("&", $id);
-        $query=new DatabaseQuery();
-        $idFromDb=$query->selectColumn('uniqueID', 'users', $email, 'email');
+        list($email, $id) = explode("&", $id);
+        $query = new DatabaseQuery();
+        $idFromDb = $query->selectColumn('uniqueID', 'users', $email, 'email');
         if ($idFromDb === $id) {
             $query->update('users', "password='{$_POST['password']}', uniqueID=null, ", $email, 'email');
             header("Location: /login");
@@ -621,5 +583,157 @@ if (isset($_POST['resetPW'])) {
         header("Location: /resetPassword?" . $_POST['id']);
         exit;
     }
+}
+
+if (isset($_POST['searchBookHome'])) {
+    $config = require "./core/config.php";
+    $categoryId = openssl_decrypt($_POST['category'], $config['openssl']['algo'], $config['openssl']['pass'], 0, $config['openssl']['iv']);
+    if (!$categoryId) {
+        header("Location: /libgen");
+        exit;
+    }
+    $query = new DatabaseQuery();
+    $condition = [];
+    if ($categoryId !== 'all') {
+        $condition = [
+            [
+                'criteria' => 'category_id',
+                'id' => $categoryId
+            ]
+        ];
+    }
+    $books = $query->selectPartial('books', ['title', 'author'], $_POST['bookName'], $condition);
+    $bookIds = '';
+    foreach ($books as $book) {
+        $bookIds .= "&" . $book['id'];
+    }
+    $bookIds = openssl_encrypt($bookIds, $config['openssl']['algo'], $config['openssl']['pass'], 0, $config['openssl']['iv']);
+    header("Location: /libgen?" . $bookIds . "#search");
+    exit;
+}
+
+if (isset($_POST['searchBookAdmin'])) {
+    $config = require "./core/config.php";
+    $categoryId = openssl_decrypt($_POST['category'], $config['openssl']['algo'], $config['openssl']['pass'], 0, $config['openssl']['iv']);
+    if (!$categoryId) {
+        setcookie("err", "*Something went wrong!", time() + 2);
+        header("Location: /admin");
+        exit;
+    }
+    $query = new DatabaseQuery();
+    $condition = [];
+    if ($categoryId !== 'all') {
+        $condition = [
+            [
+                'criteria' => 'category_id',
+                'id' => $categoryId
+            ]
+        ];
+    }
+    $books = $query->selectPartial('books', ['title', 'author'], $_POST['bookName'], $condition);
+    $bookIds = '';
+    foreach ($books as $book) {
+        $bookIds .= "&" . $book['id'];
+    }
+    $bookIds = openssl_encrypt($bookIds, $config['openssl']['algo'], $config['openssl']['pass'], 0, $config['openssl']['iv']);
+    header("Location: /admin?" . $bookIds);
+    exit;
+}
+
+if (isset($_POST['searchRentedBook'])) {
+    $config = require "./core/config.php";
+    $categoryId = openssl_decrypt($_POST['category'], $config['openssl']['algo'], $config['openssl']['pass'], 0, $config['openssl']['iv']);
+    if (!$categoryId) {
+        setcookie("err", "*Something went wrong!", time() + 2);
+        header("Location: admin/rentedBooks");
+        exit;
+    }
+    $query = new DatabaseQuery();
+    $condition = [];
+    if ($categoryId !== 'all') {
+        $condition = [
+            [
+                'criteria' => 'category_id',
+                'id' => $categoryId
+            ]
+        ];
+    }
+    $books = $query->selectPartial('books', ['title', 'author'], $_POST['bookName'], $condition);
+    $bookIds = '';
+    foreach ($books as $book) {
+        $bookIds .= "&" . $book['id'];
+    }
+    $bookIds = openssl_encrypt($bookIds, $config['openssl']['algo'], $config['openssl']['pass'], 0, $config['openssl']['iv']);
+    header("Location: /admin/rentedBooks?" . $bookIds);
+    exit;
+}
+
+if (isset($_POST['searchCategory'])) {
+    $config = require "./core/config.php";
+    $query = new DatabaseQuery();
+    $categories = $query->selectPartial('category', ['name'], $_POST['categoryName']);
+    $categoryIds = '';
+    foreach ($categories as $category) {
+        $categoryIds .= "&" . $category['id'];
+    }
+    $categoryIds = openssl_encrypt($categoryIds, $config['openssl']['algo'], $config['openssl']['pass'], 0, $config['openssl']['iv']);
+    header("Location: /admin/categories?" . $categoryIds);
+    exit;
+}
+
+if (isset($_POST['searchUser'])) {
+    $config = require "./core/config.php";
+    $query = new DatabaseQuery();
+    $condition = [
+        [
+            'criteria' => 'active',
+            'id' => true
+        ]
+    ];
+    $users = $query->selectPartial('users', ['name', 'email'], $_POST['userName'], $condition);
+    $userIds = '';
+    foreach ($users as $user) {
+        $userIds .= "&" . $user['id'];
+    }
+    $userIds = openssl_encrypt($userIds, $config['openssl']['algo'], $config['openssl']['pass'], 0, $config['openssl']['iv']);
+    header("Location: /admin/readers?" . $userIds);
+    exit;
+}
+
+if (isset($_POST['searchAdmin'])) {
+    $config = require "./core/config.php";
+    $query = new DatabaseQuery();
+    $condition = [
+        [
+            'criteria' => 'active',
+            'id' => true
+        ],
+        [
+            'criteria' => 'role',
+            'id' => true
+        ]
+    ];
+    $admins = $query->selectPartial('users', ['name', 'email'], $_POST['adminName'], $condition);
+    print_r($admins);
+    $adminIds = '';
+    foreach ($admins as $admin) {
+        $adminIds .= "&" . $admin['id'];
+    }
+    $adminIds = openssl_encrypt($adminIds, $config['openssl']['algo'], $config['openssl']['pass'], 0, $config['openssl']['iv']);
+    header("Location: /admin/team?" . $adminIds);
+    exit;
+}
+
+if (isset($_POST['searchPayment'])) {
+    $config = require "./core/config.php";
+    $query = new DatabaseQuery();
+    $users = $query->selectPartial('users', ['name', 'email'], $_POST['userName']);
+    $userIds = '';
+    foreach ($users as $user) {
+        $userIds .= "&" . $user['id'];
+    }
+    $userIds = openssl_encrypt($userIds, $config['openssl']['algo'], $config['openssl']['pass'], 0, $config['openssl']['iv']);
+    header("Location: /admin/payment?" . $userIds);
+    exit;
 }
 ?>

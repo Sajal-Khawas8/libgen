@@ -10,7 +10,7 @@ require "./templates/header.php"; ?>
     <aside class="w-64 h-full px-3 py-2.5 text-lg space-y-8 hidden lg:block">
         <header class="mx-auto my-3 w-fit">
             <a href="/libgen" class="flex items-center">
-                <img src="/libgen/assets/images/logo.png" alt="LibGen Logo" class="h-12 w-8 object-cover">
+                <img src="/libgen/assets/images/logo.png" alt="LibGen Logo" class="h-12 w-12 object-cover">
                 <span class="text-red-800 font-medium text-2xl px-3">LibGen</span>
             </a>
         </header>

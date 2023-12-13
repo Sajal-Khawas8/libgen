@@ -1,47 +1,19 @@
 <?php require "./templates/header.php"; ?>
 
-<header class="bg-sky-400 px-4 py-2 h-16 sticky top-0 z-50">
-    <nav class="flex justify-around items-center gap-4">
-        <div class="">
+<header class="bg-gray-700 px-4 py-2 h-16 sticky top-0 z-50">
+    <nav class="flex justify-between items-center gap-4">
+        <div class="pl-20">
             <a href="/libgen" class="flex items-center">
-                <img src="/libgen/assets/images/logo.png" alt="LibGen Logo" class="h-12 w-8 object-cover">
-                <span class="text-red-800 font-medium text-2xl px-3">LibGen</span>
+                <img src="/libgen/assets/images/logo.png" alt="LibGen Logo" class="h-12 w-12 object-cover">
+                <span class="text-red-600 font-medium text-2xl px-3">LibGen</span>
             </a>
         </div>
-        <ul class="flex items-center gap-7 text-xl text-white">
-            <li class="hover:text-indigo-800"><a href="/libgen">Home</a></li>
-            <li class="hover:text-indigo-800"><a href="/mybooks">My Books</a></li>
-            <li>
-                <form action="" method="post" class="text-gray-800 divide-x divide-gray-500 relative w-[700px]">
-                    <div class="absolute left-0 inset-y-0 px-2 divide-x divide-gray-500 rounded-l-lg">
-                        <select name="searchCriteria" id="searchCriteria" class="px-2 py-1 text-base outline-none"
-                            aria-label="Select search criteria">
-                            <option value="title">Search by Title</option>
-                            <option value="author">Search by Author</option>
-                        </select>
-                        <select name="category" id="category"
-                            class="px-2 py-1 text-base outline-none border-r border-gray-500"
-                            aria-label="Select category">
-                            <option value="all">All</option>
-                            <option value="1">Science Fiction</option>
-                            <option value="2">2</option>
-                        </select>
-                        <div class="bg-gray-500 absolute right-0 inset-y-0 w-0"></div>
-                    </div>
-                    <input type="text" name="searchBox" id="searchBox" placeholder="Search Books by Title or Author"
-                        class="pl-[21rem] pr-4 py-1 text-base outline-none w-full rounded-lg">
-                    <button class="absolute inset-y-0 right-0 px-2 rounded-r-lg" aria-label="Search">
-                        <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                            viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
-                            stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0"></path>
-                            <path d="M21 21l-6 -6"></path>
-                        </svg>
-                    </button>
-                </form>
-            </li>
+        <ul class="flex items-center gap-16 text-xl text-white">
+            <li class="hover:text-indigo-500"><a href="/libgen">Home</a></li>
+            <li class="hover:text-indigo-500"><a href="/mybooks">My Books</a></li>
+            <li class="hover:text-indigo-500"><a href="/libgen#reviews">Reviews</a></li>
         </ul>
-        <ul class="flex items-center gap-3">
+        <ul class="flex items-center gap-9 pr-20">
             <?php if (isset($_SESSION['isAdmin']) && $_SESSION['isAdmin']): ?>
                 <li
                     class="bg-indigo-600 text-white text-lg font-medium px-2 py-1 rounded-md hover:bg-white hover:text-indigo-600">
@@ -49,12 +21,32 @@
                 </li>
             <?php elseif (isset($_COOKIE['user'])): ?>
                 <li
-                    class="bg-indigo-600 text-white text-lg font-medium px-2 py-1 rounded-md hover:bg-white hover:text-indigo-600">
-                    <a href="/settings">Settings</a>
+                    class="text-white text-lg font-medium px-2 py-1 rounded-md hover:text-indigo-600">
+                    <a href="/cart">
+                        <svg fill="currentColor" class="w-7 h-7" version="1.1" xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 32 32">
+                            <title>cart</title>
+                            <path d="M12 29c0 1.657-1.343 3-3 3s-3-1.343-3-3c0-1.657 1.343-3 3-3s3 1.343 3 3z"></path>
+                            <path d="M32 29c0 1.657-1.343 3-3 3s-3-1.343-3-3c0-1.657 1.343-3 3-3s3 1.343 3 3z"></path>
+                            <path
+                                d="M32 16v-12h-24c0-1.105-0.895-2-2-2h-6v2h4l1.502 12.877c-0.915 0.733-1.502 1.859-1.502 3.123 0 2.209 1.791 4 4 4h24v-2h-24c-1.105 0-2-0.895-2-2 0-0.007 0-0.014 0-0.020l26-3.98z">
+                            </path>
+                            <title>Cart</title>
+                        </svg>
+                    </a>
                 </li>
                 <li
-                    class="bg-indigo-600 text-white text-lg font-medium px-2 py-1 rounded-md hover:bg-white hover:text-indigo-600">
-                    <a href="/cart">cart</a>
+                    class="text-white text-lg font-medium px-2 py-1 rounded-md hover:text-indigo-600">
+                    <a href="/settings">
+                        <svg class="w-8 h-8" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                            <g>
+                                <path fill="none" d="M0 0h24v24H0z"></path>
+                                <path
+                                    d="M5.334 4.545a9.99 9.99 0 0 1 3.542-2.048A3.993 3.993 0 0 0 12 3.999a3.993 3.993 0 0 0 3.124-1.502 9.99 9.99 0 0 1 3.542 2.048 3.993 3.993 0 0 0 .262 3.454 3.993 3.993 0 0 0 2.863 1.955 10.043 10.043 0 0 1 0 4.09c-1.16.178-2.23.86-2.863 1.955a3.993 3.993 0 0 0-.262 3.455 9.99 9.99 0 0 1-3.542 2.047A3.993 3.993 0 0 0 12 20a3.993 3.993 0 0 0-3.124 1.502 9.99 9.99 0 0 1-3.542-2.047 3.993 3.993 0 0 0-.262-3.455 3.993 3.993 0 0 0-2.863-1.954 10.043 10.043 0 0 1 0-4.091 3.993 3.993 0 0 0 2.863-1.955 3.993 3.993 0 0 0 .262-3.454zM13.5 14.597a3 3 0 1 0-3-5.196 3 3 0 0 0 3 5.196z">
+                                </path>
+                            </g>
+                        </svg>
+                    </a>
                 </li>
             <?php else: ?>
                 <li

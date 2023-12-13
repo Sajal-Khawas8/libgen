@@ -192,4 +192,25 @@ class DatabaseQuery implements CRUD
         }
         return $result->fetch_column();
     }
+
+    public function selectPartial($table, $columns, $search, $conditions=[])
+    {
+        $sql="SELECT * FROM $table WHERE ($columns[0] LIKE '%$search%'";
+        unset($columns[0]);
+        foreach($columns as $column)
+        {
+            $sql .= " OR $column LIKE '%$search%'";
+        }
+        $sql .= ")";
+        foreach($conditions as $condition)
+        {
+            $sql .= " AND {$condition['criteria']} = {$condition['id']}";
+        }
+        echo $sql;
+        $result = $this->conn->query($sql);
+        if (!$result) {
+            die("Error searching: " . $this->conn->error);
+        }
+        return $result->fetch_all(MYSQLI_ASSOC);
+    }
 }
