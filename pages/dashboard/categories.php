@@ -1,9 +1,14 @@
+<?php
+if (isset($_COOKIE['data'])) {
+    $data = unserialize($_COOKIE['data']);
+}
+?>
 <header class="py-2.5 px-6">
     <h1 class="my-2.5 text-2xl font-medium text-center xl:text-left">Book Categories</h1>
     <div class="flex items-center gap-2">
         <form action="/formHandler" method="post" class="text-gray-800 divide-gray-500 relative w-[500px]">
             <input type="text" name="categoryName" id="categoryName" placeholder="Search categories"
-                class="px-4 py-2 text-base outline-none w-full rounded-md">
+                value="<?= $data['categoryName'] ?? ''; ?>" class="px-4 py-2 text-base outline-none w-full rounded-md">
             <button name="searchCategory"
                 class="absolute inset-y-0 right-0 px-3 rounded-r-md bg-slate-200 hover:bg-indigo-600 hover:text-white"
                 aria-label="Search">
@@ -47,7 +52,20 @@ $categories = $query->selectAll('category');
             <ul class="flex-1 px-6 flex flex-wrap gap-8 overflow-y-auto">
                 <?php foreach ($categoryIds as $categoryId): ?>
                     <?php $category = $query->selectOne('category', $categoryId); ?>
-                    <li class="px-5 py-3 bg-white rounded-md h-fit">
+                    <li class="px-5 py-3 bg-white rounded-md h-fit relative">
+                        <?php if (isset($_COOKIE['deleteId']) && $_COOKIE['deleteId'] === $category['id']): ?>
+                            <div class="absolute top-0 inset-x-0 bg-red-500 text-white py-1 px-3 text-lg">
+                                <?= $_COOKIE['errCategory'] ?>
+                            </div>
+                            <button type="button" class="absolute top-2 right-1 text-white font-medium"
+                                onclick="window.location.reload()">
+                                <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill="currentColor"
+                                        d="M3.21878052,2.15447998 L9.99678993,8.92744993 L16.7026814,2.22182541 C17.1598053,1.8145752 17.6339389,2.05757141 17.8218994,2.2625885 C18.0098599,2.46760559 18.1171875,2.95117187 17.7781746,3.29731856 L11.0707899,10.0014499 L17.7781746,16.7026814 C18.0764771,16.9529419 18.0764771,17.4433594 17.8370056,17.7165527 C17.5975342,17.9897461 17.1575623,18.148407 16.7415466,17.8244324 L9.99678993,11.0754499 L3.24360657,17.8271179 C2.948349,18.0919647 2.46049253,18.038208 2.21878052,17.7746429 C1.9770685,17.5110779 1.8853302,17.0549164 2.19441469,16.7330362 L8.92278993,10.0014499 L2.22182541,3.29731856 C1.97729492,3.02648926 1.89189987,2.53264694 2.22182541,2.22182541 C2.55175094,1.91100387 3.04367065,1.95437622 3.21878052,2.15447998 Z">
+                                    </path>
+                                </svg>
+                            </button>
+                        <?php endif; ?>
                         <article class="flex gap-10">
                             <div class="space-y-4">
                                 <h2 class="text-2xl font-semibold"><?= $category['name']; ?></h2>
@@ -112,7 +130,20 @@ $categories = $query->selectAll('category');
     <div>
         <ul class="flex-1 px-6 flex flex-wrap gap-8 overflow-y-auto">
             <?php foreach ($categories as $category): ?>
-                <li class="px-5 py-3 bg-white rounded-md h-fit">
+                <li class="px-5 py-3 bg-white rounded-md h-fit relative">
+                    <?php if (isset($_COOKIE['deleteId']) && $_COOKIE['deleteId'] === $category['id']): ?>
+                        <div class="absolute top-0 inset-x-0 bg-red-500 text-white py-1 px-3 text-lg">
+                            <?= $_COOKIE['errCategory'] ?>
+                        </div>
+                        <button type="button" class="absolute top-2 right-1 text-white font-medium"
+                            onclick="window.location.reload()">
+                            <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill="currentColor"
+                                    d="M3.21878052,2.15447998 L9.99678993,8.92744993 L16.7026814,2.22182541 C17.1598053,1.8145752 17.6339389,2.05757141 17.8218994,2.2625885 C18.0098599,2.46760559 18.1171875,2.95117187 17.7781746,3.29731856 L11.0707899,10.0014499 L17.7781746,16.7026814 C18.0764771,16.9529419 18.0764771,17.4433594 17.8370056,17.7165527 C17.5975342,17.9897461 17.1575623,18.148407 16.7415466,17.8244324 L9.99678993,11.0754499 L3.24360657,17.8271179 C2.948349,18.0919647 2.46049253,18.038208 2.21878052,17.7746429 C1.9770685,17.5110779 1.8853302,17.0549164 2.19441469,16.7330362 L8.92278993,10.0014499 L2.22182541,3.29731856 C1.97729492,3.02648926 1.89189987,2.53264694 2.22182541,2.22182541 C2.55175094,1.91100387 3.04367065,1.95437622 3.21878052,2.15447998 Z">
+                                </path>
+                            </svg>
+                        </button>
+                    <?php endif; ?>
                     <article class="flex gap-10">
                         <div class="space-y-4">
                             <h2 class="text-2xl font-semibold"><?= $category['name']; ?></h2>

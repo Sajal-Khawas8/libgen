@@ -12,6 +12,13 @@ if (empty($categories)): ?>
         $query = new DatabaseQuery();
         $config = require "./core/config.php";
         $id = openssl_decrypt($_SERVER['QUERY_STRING'], $config['openssl']['algo'], $config['openssl']['pass'], 0, $config['openssl']['iv']);
+        if (!$id) {
+            setcookie('user', '', time() - 1);
+            unset($_SESSION['isAdmin']);
+            $_SESSION['refresh'] = true;
+            header("Location: /libgen");
+            exit;
+        }
         $joins = [
             [
                 'table' => 'quantity',

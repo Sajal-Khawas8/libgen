@@ -8,7 +8,7 @@ class File
     public function __construct($file)
     {
         $this->fileExist = !empty($file['name']);
-        $this->file=$file;
+        $this->file = $file;
     }
 
     public function moveFile($location)

@@ -41,13 +41,15 @@ class User
 
     public function updateUser($data, $uuid)
     {
+        $query = new DatabaseQuery();
+        $email = $query->selectColumn('email', 'users', $uuid, 'uuid');
         $isDataValid = true;
         $err = [
             'nameErr' => $this->validation->validateUpdatedTextData($data['name'], $isDataValid, 'Name'),
             'emailErr' => $this->validation->validateUpdatedEmail($data['email'], $isDataValid, $uuid),
             'pictureErr' => $this->validation->validateUpdatedPictureFormat($_FILES['profilePicture'], $isDataValid),
             'addressErr' => $this->validation->validateTextArea($data['address'], $isDataValid, 'Address'),
-            'cnfrmPasswordErr' => $this->validation->validatePassword($data['oldPassword'], $uuid, $isDataValid),
+            'cnfrmPasswordErr' => $this->validation->validatePassword($data['oldPassword'], $email, $isDataValid),
             'passwordErr' => $this->validation->validatePasswordFormat($data['password'], $isDataValid),
         ];
 
@@ -57,7 +59,7 @@ class User
             if ($file->fileExist) {
                 $data['image'] = $file->moveFile('users');
                 $query = new DatabaseQuery();
-                $oldImage=$query->selectColumn('image', 'users', $uuid, 'uuid');
+                $oldImage = $query->selectColumn('image', 'users', $uuid, 'uuid');
                 unlink("assets/uploads/images/users/$oldImage");
             }
             $updateStr = '';

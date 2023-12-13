@@ -105,8 +105,8 @@ class Book
         ];
         $bookData = $query->selectOneJoin('quantity', $joins, '*', $id, 'book_uuid');
         if ($bookData['copies'] !== $bookData['available']) {
-            setcookie('deleteId', $id, time()+5);
-            setcookie('err', "This book can't be deleted at this time because " . ($bookData['copies'] - $bookData['available']) . " copies of this book are given on rent", time() + 5);
+            setcookie('deleteId', $id, time() + 5);
+            setcookie('errBook', "This book can't be deleted at this time because " . ($bookData['copies'] - $bookData['available']) . " copies of this book are given on rent", time() + 5);
             return;
         }
         $query->delete('books', $id, 'book_uuid');

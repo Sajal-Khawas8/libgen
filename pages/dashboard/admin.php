@@ -1,9 +1,14 @@
+<?php
+if (isset($_COOKIE['data'])) {
+    $data = unserialize($_COOKIE['data']);
+}
+?>
 <header class="py-2.5 px-6">
     <h1 class="my-2.5 text-2xl font-medium text-center xl:text-left">Admins</h1>
     <div class="flex items-center gap-2">
         <form action="/formHandler" method="post" class="text-gray-800 divide-gray-500 relative w-[500px]">
             <input type="text" name="adminName" id="adminName" placeholder="Search admins by Name or Email"
-                value="<?= $_COOKIE['data'] ?? ''; ?>" class="px-4 py-2 text-lg outline-none w-full rounded-md">
+                value="<?= $data['adminName'] ?? ''; ?>" class="px-4 py-2 text-lg outline-none w-full rounded-md">
             <button name="searchAdmin"
                 class="absolute inset-y-0 right-0 px-3 rounded-r-md bg-slate-200 hover:bg-indigo-600 hover:text-white"
                 aria-label="Search">

@@ -1,9 +1,14 @@
+<?php
+if (isset($_COOKIE['data'])) {
+    $data = unserialize($_COOKIE['data']);
+}
+?>
 <header class="py-2.5 px-6">
     <h1 class="my-2.5 text-2xl font-medium text-center xl:text-left">LibGen Readers</h1>
     <div class="flex items-center gap-2">
         <form action="/formHandler" method="post" class="text-gray-800 divide-gray-500 relative w-[500px]">
             <input type="text" name="userName" id="userName" placeholder="Search readers by Name or Email"
-                value="<?= $_COOKIE['data'] ?? ''; ?>" class="px-4 py-2 text-lg outline-none w-full rounded-md">
+                value="<?= $data['userName'] ?? ''; ?>" class="px-4 py-2 text-lg outline-none w-full rounded-md">
             <button name="searchUser"
                 class="absolute inset-y-0 right-0 px-3 rounded-r-md bg-slate-200 hover:bg-indigo-600 hover:text-white"
                 aria-label="Search">
@@ -19,7 +24,7 @@
 </header>
 <?php if ($_SERVER['QUERY_STRING']): ?>
     <?php
-    $config=require "./core/config.php";
+    $config = require "./core/config.php";
     $userIds = openssl_decrypt($_SERVER['QUERY_STRING'], $config['openssl']['algo'], $config['openssl']['pass'], 0, $config['openssl']['iv']);
     if ($userIds):
         $userIds = explode("&", $userIds);
@@ -29,7 +34,7 @@
             <ul class="flex gap-8 flex-wrap">
                 <?php
                 foreach ($userIds as $userKey => $userId):
-                    $user=$query->selectOne('users', $userId);
+                    $user = $query->selectOne('users', $userId);
                     ?>
                     <?php
                     $rentedBooks = $query->selectAllSpecific('rented_books', $user['uuid'], 'user_id');

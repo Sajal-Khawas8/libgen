@@ -1,6 +1,6 @@
 <?php
 setcookie('prevPage', $uri);
-if(!isset($_SESSION['isAdmin'])) {
+if (!isset($_SESSION['isAdmin'])) {
     $_SESSION['refresh'] = true;
     header("Location: /masterLogin");
     exit;
@@ -129,22 +129,23 @@ require "./templates/header.php"; ?>
     <main class="flex-1 bg-gray-100 overflow-y-hidden flex flex-col relative">
         <header class="flex justify-between items-center text-sm py-2.5 px-6">
             <?php
-            $query=new DatabaseQuery();
-            $userData=$query->selectOne('users', $_COOKIE['user'], 'uuid');
+            $query = new DatabaseQuery();
+            $userData = $query->selectOne('users', $_COOKIE['user'], 'uuid');
             $svgBgColors = ['text-stone-600', 'text-red-500', 'text-red-700', 'text-orange-500', 'text-orange-700', 'text-amber-400', 'text-amber-700', 'text-yellow-400', 'text-yellow-600', 'text-lime-400', 'text-lime-600', 'text-green-500', 'text-green-700', 'text-teal-400', 'text-cyan-400', 'text-cyan-600', 'text-sky-500', 'text-sky-700', 'text-blue-600', 'text-blue-800', 'text-indigo-600', 'text-fuchsia-500', 'text-rose-500'];
             ?>
             <h3 class="text-lg font-medium">Welcome, <?= $userData['name'] ?></h3>
             <?php if (empty($userData['image'])): ?>
-            <svg class="w-10 h-10 <?= $svgBgColors[array_rand($svgBgColors)] ?>" xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                <path fill-rule="evenodd"
-                    d="M18.685 19.097A9.723 9.723 0 0021.75 12c0-5.385-4.365-9.75-9.75-9.75S2.25 6.615 2.25 12a9.723 9.723 0 003.065 7.097A9.716 9.716 0 0012 21.75a9.716 9.716 0 006.685-2.653zm-12.54-1.285A7.486 7.486 0 0112 15a7.486 7.486 0 015.855 2.812A8.224 8.224 0 0112 20.25a8.224 8.224 0 01-5.855-2.438zM15.75 9a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z"
-                    clip-rule="evenodd"></path>
-                <title id="userIconTitle">Admin</title>
-            </svg>
+                <svg class="w-10 h-10 <?= $svgBgColors[array_rand($svgBgColors)] ?>" xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                    <path fill-rule="evenodd"
+                        d="M18.685 19.097A9.723 9.723 0 0021.75 12c0-5.385-4.365-9.75-9.75-9.75S2.25 6.615 2.25 12a9.723 9.723 0 003.065 7.097A9.716 9.716 0 0012 21.75a9.716 9.716 0 006.685-2.653zm-12.54-1.285A7.486 7.486 0 0112 15a7.486 7.486 0 015.855 2.812A8.224 8.224 0 0112 20.25a8.224 8.224 0 01-5.855-2.438zM15.75 9a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z"
+                        clip-rule="evenodd"></path>
+                    <title id="userIconTitle">Admin</title>
+                </svg>
             <?php else: ?>
                 <div class="w-10 h-10 rounded-full">
-                    <img src="/libgen/assets/uploads/images/<?= $userData['image'] ?>" alt="<?= $userData['name'] ?>" class="w-full h-full object-cover rounded-full">
+                    <img src="/libgen/assets/uploads/images/<?= $userData['image'] ?>" alt="<?= $userData['name'] ?>"
+                        class="w-full h-full object-cover rounded-full">
                 </div>
             <?php endif; ?>
         </header>

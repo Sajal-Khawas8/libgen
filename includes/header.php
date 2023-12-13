@@ -20,8 +20,7 @@
                     <a href="/admin">Dashboard</a>
                 </li>
             <?php elseif (isset($_COOKIE['user'])): ?>
-                <li
-                    class="text-white text-lg font-medium px-2 py-1 rounded-md hover:text-indigo-600">
+                <li class="text-white text-lg font-medium px-2 py-1 rounded-md hover:text-indigo-600">
                     <a href="/cart">
                         <svg fill="currentColor" class="w-7 h-7" version="1.1" xmlns="http://www.w3.org/2000/svg"
                             viewBox="0 0 32 32">
@@ -35,8 +34,7 @@
                         </svg>
                     </a>
                 </li>
-                <li
-                    class="text-white text-lg font-medium px-2 py-1 rounded-md hover:text-indigo-600">
+                <li class="text-white text-lg font-medium px-2 py-1 rounded-md hover:text-indigo-600">
                     <a href="/settings">
                         <svg class="w-8 h-8" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
                             <g>

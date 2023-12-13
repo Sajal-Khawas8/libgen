@@ -11,6 +11,9 @@ $joins = [
     ]
 ];
 $paymentData = $query->selectAllJoin('payment', $joins);
+if (isset($_COOKIE['data'])) {
+    $data = unserialize($_COOKIE['data']);
+}
 ?>
 
 <header class="py-2.5 px-6">
@@ -19,7 +22,7 @@ $paymentData = $query->selectAllJoin('payment', $joins);
         <div class="flex items-center gap-2">
             <form action="/formHandler" method="post" class="text-gray-800 divide-gray-500 relative w-[500px]">
                 <input type="text" name="userName" id="userName" placeholder="Search payments by user name or email"
-                    class="px-4 py-2 text-lg outline-none w-full rounded-md">
+                    value="<?= $data['userName'] ?? ''; ?>" class="px-4 py-2 text-lg outline-none w-full rounded-md">
                 <button name="searchPayment"
                     class="absolute inset-y-0 right-0 px-3 rounded-r-md bg-slate-200 hover:bg-indigo-600 hover:text-white"
                     aria-label="Search">
@@ -56,120 +59,71 @@ $paymentData = $query->selectAllJoin('payment', $joins);
                 </tr>
             </thead>
             <tbody class="max-h-48 overflow-auto">
-                <?php if ($_SERVER['QUERY_STRING']) {
-                    $config = require "./core/config.php";
-                    $userIds = openssl_decrypt($_SERVER['QUERY_STRING'], $config['openssl']['algo'], $config['openssl']['pass'], 0, $config['openssl']['iv']);
-                    if ($userIds) {
-                        $userIds = explode("&", $userIds);
-                        unset($userIds[0]);
-                        $userIds = array_map(function ($userId) {
-                            $query = new DatabaseQuery();
-                            return $query->selectColumn('uuid', 'users', $userId);
-                        }, $userIds);
-                    }
+                <?php
+                $config = require "./core/config.php";
+                $userIds = openssl_decrypt($_SERVER['QUERY_STRING'], $config['openssl']['algo'], $config['openssl']['pass'], 0, $config['openssl']['iv']);
+                if ($_SERVER['QUERY_STRING'] && $userIds) {
+                    $userIds = explode("&", $userIds);
+                    unset($userIds[0]);
+                    $paymentData = array_filter($paymentData, function ($data) {
+                        global $userIds;
+                        return in_array($data['user_id'], $userIds);
+                    });
                 }
                 ?>
+
                 <?php if ($_SERVER['QUERY_STRING'] && !$userIds): ?>
-                    <tr class="bg-indigo-200 h-72">
-                        <td colspan="7" class="text-2xl font-medium text-gray-700 border-2 border-gray-800">No Data Available...</td>
+                    <tr class="bg-indigo-200 h-80">
+                        <td colspan="7" class="text-2xl font-medium text-gray-600 border border-x-2 border-gray-800">No Data
+                            Available...</td>
                     </tr>
                 <?php else: ?>
-
                     <?php foreach ($paymentData as $key => $data): ?>
-                        <?php if ($_SERVER['QUERY_STRING'] && in_array($data['user_id'], $userIds)): ?>
+                        <?php
+                        $isCart = false;
+                        if (str_contains($data['item_id'], 'cart')) {
+                            $isCart = true;
+                            $joins = [
+                                [
+                                    'table' => 'paid_items',
+                                    'condition' => 'paid_items.item_id = books.id'
+                                ],
+                            ];
+                            $paidItems = $query->selectAllJoinSpecific('books', $joins, $data['payment_id'], 'payment_id');
+                        }
+                        ?>
+                        <tr class="<?= $key % 2 == 0 ? 'bg-indigo-200' : 'bg-indigo-300'; ?>">
+                            <td rowspan="<?= $isCart ? count($paidItems) : '1' ?>" class="border border-l-2 border-gray-800 p-2">
+                                <?= $data['payment_id'] ?></td>
+                            <td rowspan="<?= $isCart ? count($paidItems) : '1' ?>" class="border border-gray-800 p-2">
+                                <?= $data['name'] ?></td>
+                            <td rowspan="<?= $isCart ? count($paidItems) : '1' ?>"
+                                class="border border-gray-800 p-2 max-w-[11rem] truncate"><a
+                                    href="mailto:<?= $data['email'] ?>"><?= $data['email'] ?></a></td>
+                            <?php if (!$isCart): ?>
+                                <td class="border border-gray-800 p-2"><?= $data['title'] ?></td>
+                                <td class="border border-gray-800 p-2"><?= $data['author'] ?></td>
+                                <td rowspan="1" class="border border-gray-800 p-2">&#x20B9;<?= $data['amount'] ?></td>
+                                <td rowspan="1" class="border border-r-2 border-gray-800 p-2">
+                                    <?= date("d-m-Y", strtotime($data['creation_date'])); ?></td>
+                            </tr>
+                        <?php else: ?>
+                            <td class="border border-gray-800 p-2"><?= $paidItems[0]['title'] ?></td>
+                            <td class="border border-gray-800 p-2"><?= $paidItems[0]['author'] ?></td>
+                            <td rowspan="<?= count($paidItems); ?>" class="border border-gray-800 p-2">
+                                &#x20B9;<?= $data['amount'] ?></td>
+                            <td rowspan="<?= count($paidItems); ?>" class="border border-r-2 border-gray-800 p-2">
+                                <?= date("d-m-Y", strtotime($paidItems[0]['creation_date'])); ?></td>
+                            </tr>
                             <?php
-                            $isCart = false;
-                            if (str_contains($data['item_id'], 'cart')) {
-                                $isCart = true;
-                                $joins = [
-                                    [
-                                        'table' => 'paid_items',
-                                        'condition' => 'paid_items.item_id = books.id'
-                                    ],
-                                ];
-                                $paidItems = $query->selectAllJoinSpecific('books', $joins, $data['payment_id'], 'payment_id');
-                            }
-                            ?>
-                            <tr class="<?= $key % 2 == 0 ? 'bg-indigo-200' : 'bg-indigo-300'; ?>">
-                                <td rowspan="<?= $isCart ? count($paidItems) : '1' ?>" class="border border-l-2 border-gray-800 p-2">
-                                    <?= $data['payment_id'] ?></td>
-                                <td rowspan="<?= $isCart ? count($paidItems) : '1' ?>" class="border border-gray-800 p-2">
-                                    <?= $data['name'] ?></td>
-                                <td rowspan="<?= $isCart ? count($paidItems) : '1' ?>"
-                                    class="border border-gray-800 p-2 max-w-[11rem] truncate"><a
-                                        href="mailto:<?= $data['email'] ?>"><?= $data['email'] ?></a></td>
-                                <?php if (!$isCart): ?>
-                                    <td class="border border-gray-800 p-2"><?= $data['title'] ?></td>
-                                    <td class="border border-gray-800 p-2"><?= $data['author'] ?></td>
-                                    <td rowspan="1" class="border border-gray-800 p-2">&#x20B9;<?= $data['amount'] ?></td>
-                                    <td rowspan="1" class="border border-r-2 border-gray-800 p-2">
-                                        <?= date("d-m-Y", strtotime($data['creation_date'])); ?></td>
+                            unset($paidItems[0]);
+                            foreach ($paidItems as $item):
+                                ?>
+                                <tr class="<?= $key % 2 == 0 ? 'bg-indigo-200' : 'bg-indigo-300'; ?>">
+                                    <td class="border border-gray-800 p-2"><?= $item['title']; ?></td>
+                                    <td class="border border-gray-800 p-2"><?= $item['author']; ?></td>
                                 </tr>
-                            <?php else: ?>
-                                <td class="border border-gray-800 p-2"><?= $paidItems[0]['title'] ?></td>
-                                <td class="border border-gray-800 p-2"><?= $paidItems[0]['author'] ?></td>
-                                <td rowspan="<?= count($paidItems); ?>" class="border border-gray-800 p-2">
-                                    &#x20B9;<?= $data['amount'] ?></td>
-                                <td rowspan="<?= count($paidItems); ?>" class="border border-r-2 border-gray-800 p-2">
-                                    <?= date("d-m-Y", strtotime($paidItems[0]['creation_date'])); ?></td>
-                                </tr>
-                                <?php
-                                unset($paidItems[0]);
-                                foreach ($paidItems as $item):
-                                    ?>
-                                    <tr class="<?= $key % 2 == 0 ? 'bg-indigo-200' : 'bg-indigo-300'; ?>">
-                                        <td class="border border-gray-800 p-2"><?= $item['title']; ?></td>
-                                        <td class="border border-gray-800 p-2"><?= $item['author']; ?></td>
-                                    </tr>
-                                <?php endforeach; ?>
-                            <?php endif; ?>
-                        <?php elseif (empty($_SERVER['QUERY_STRING'])): ?>
-                            <?php
-                            $isCart = false;
-                            if (str_contains($data['item_id'], 'cart')) {
-                                $isCart = true;
-                                $joins = [
-                                    [
-                                        'table' => 'paid_items',
-                                        'condition' => 'paid_items.item_id = books.id'
-                                    ],
-                                ];
-                                $paidItems = $query->selectAllJoinSpecific('books', $joins, $data['payment_id'], 'payment_id');
-                            }
-                            ?>
-                            <tr class="<?= $key % 2 == 0 ? 'bg-indigo-200' : 'bg-indigo-300'; ?>">
-                                <td rowspan="<?= $isCart ? count($paidItems) : '1' ?>" class="border border-l-2 border-gray-800 p-2">
-                                    <?= $data['payment_id'] ?></td>
-                                <td rowspan="<?= $isCart ? count($paidItems) : '1' ?>" class="border border-gray-800 p-2">
-                                    <?= $data['name'] ?></td>
-                                <td rowspan="<?= $isCart ? count($paidItems) : '1' ?>"
-                                    class="border border-gray-800 p-2 max-w-[11rem] truncate"><a
-                                        href="mailto:<?= $data['email'] ?>"><?= $data['email'] ?></a></td>
-                                <?php if (!$isCart): ?>
-                                    <td class="border border-gray-800 p-2"><?= $data['title'] ?></td>
-                                    <td class="border border-gray-800 p-2"><?= $data['author'] ?></td>
-                                    <td rowspan="1" class="border border-gray-800 p-2">&#x20B9;<?= $data['amount'] ?></td>
-                                    <td rowspan="1" class="border border-gray-800 p-2">
-                                        <?= date("d-m-Y", strtotime($data['creation_date'])); ?></td>
-                                </tr>
-                            <?php else: ?>
-                                <td class="border border-gray-800 p-2"><?= $paidItems[0]['title'] ?></td>
-                                <td class="border border-gray-800 p-2"><?= $paidItems[0]['author'] ?></td>
-                                <td rowspan="<?= count($paidItems); ?>" class="border border-gray-800 p-2">
-                                    &#x20B9;<?= $data['amount'] ?></td>
-                                <td rowspan="<?= count($paidItems); ?>" class="border border-gray-800 p-2">
-                                    <?= date("d-m-Y", strtotime($paidItems[0]['creation_date'])); ?></td>
-                                </tr>
-                                <?php
-                                unset($paidItems[0]);
-                                foreach ($paidItems as $item):
-                                    ?>
-                                    <tr class="<?= $key % 2 == 0 ? 'bg-indigo-200' : 'bg-indigo-300'; ?>">
-                                        <td class="border border-gray-800 p-2"><?= $item['title']; ?></td>
-                                        <td class="border border-gray-800 p-2"><?= $item['author']; ?></td>
-                                    </tr>
-                                <?php endforeach; ?>
-                            <?php endif; ?>
+                            <?php endforeach; ?>
                         <?php endif; ?>
                     <?php endforeach; ?>
                 <?php endif; ?>

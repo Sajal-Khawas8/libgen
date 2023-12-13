@@ -1,6 +1,9 @@
 <?php
 setcookie('prevPage', $uri);
 $query = new DatabaseQuery();
+if (isset($_COOKIE['data'])) {
+    $data = unserialize($_COOKIE['data']);
+}
 ?>
 <main class="space-y-8">
     <?php if ($query->rowCount('books') === 0): ?>
@@ -25,17 +28,19 @@ $query = new DatabaseQuery();
                         $config = require "./core/config.php";
                         ?>
                         <option
-                            value="<?= openssl_encrypt('all', $config['openssl']['algo'], $config['openssl']['pass'], 0, $config['openssl']['iv']); ?>">
+                            value="<?= openssl_encrypt('all', $config['openssl']['algo'], $config['openssl']['pass'], 0, $config['openssl']['iv']); ?>"
+                            <?= (isset($data) && $data['category'] === openssl_encrypt('all', $config['openssl']['algo'], $config['openssl']['pass'], 0, $config['openssl']['iv'])) ? 'selected' : ''; ?>>
                             All Categories</option>
                         <?php foreach ($categories as $category): ?>
                             <option
-                                value="<?= openssl_encrypt($category['id'], $config['openssl']['algo'], $config['openssl']['pass'], 0, $config['openssl']['iv']); ?>">
+                                value="<?= openssl_encrypt($category['id'], $config['openssl']['algo'], $config['openssl']['pass'], 0, $config['openssl']['iv']); ?>"
+                                <?= (isset($data) && $data['category'] === openssl_encrypt($category['id'], $config['openssl']['algo'], $config['openssl']['pass'], 0, $config['openssl']['iv'])) ? 'selected' : ''; ?>>
                                 <?= $category['name']; ?></option>
                         <?php endforeach; ?>
                     </select>
                 </div>
                 <input type="text" name="bookName" id="bookName" placeholder="Search Books by Title or Author"
-                    class="pl-44 pr-4 py-2 outline-none w-full rounded-lg text-lg">
+                    value="<?= $data['bookName'] ?? ''; ?>" class="pl-44 pr-4 py-2 outline-none w-full rounded-lg text-lg">
                 <button name="searchBookHome"
                     class="absolute inset-y-0 right-0 px-3 rounded-r-lg text-lg bg-indigo-600 hover:bg-indigo-800 text-white font-medium"
                     aria-label="Search">

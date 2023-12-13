@@ -1,8 +1,14 @@
 <?php
 $config = require "./core/config.php";
 $bookId = openssl_decrypt($_SERVER['QUERY_STRING'], $config['openssl']['algo'], $config['openssl']['pass'], 0, $config['openssl']['iv']);
+if (!$bookId) {
+    setcookie('user', '', time() - 1);
+    unset($_SESSION['isAdmin']);
+    $_SESSION['refresh'] = true;
+    header("Location: /libgen");
+    exit;
+}
 $query = new DatabaseQuery();
-// $books = $query->selectAllJoin('books', 'category_id', 'quantity', 'book_id', 'category', 'id');
 $joins = [
     [
         'table' => 'category',
@@ -18,8 +24,8 @@ $bookData = $query->selectOneJoin('books', $joins, '*', $bookId, 'book_uuid');
 
 <section class="flex-1 space-y-3 px-6 py-4 bg-slate-100">
     <div class="h-96">
-        <img src="/libgen/assets/uploads/images/books/<?= $bookData['cover']; ?>"
-            alt="Book1" class="h-full object-cover object-center mx-auto">
+        <img src="/libgen/assets/uploads/images/books/<?= $bookData['cover']; ?>" alt="<?= $bookData['title']; ?>"
+            class="h-full object-cover object-center mx-auto">
     </div>
     <h1 class="font-semibold text-3xl"><?= $bookData['title']; ?></h1>
     <h2 class="font-medium text-xl"><?= $bookData['author']; ?></h2>

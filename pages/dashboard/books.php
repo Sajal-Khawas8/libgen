@@ -1,3 +1,9 @@
+<?php
+if (isset($_COOKIE['data'])) {
+    $data = unserialize($_COOKIE['data']);
+}
+?>
+
 <header class="py-2.5 px-6">
     <h1 class="my-2.5 text-2xl font-medium text-center xl:text-left">Library Books</h1>
     <div class="flex items-center gap-2">
@@ -11,17 +17,19 @@
                     $config = require "./core/config.php";
                     ?>
                     <option
-                        value="<?= openssl_encrypt('all', $config['openssl']['algo'], $config['openssl']['pass'], 0, $config['openssl']['iv']); ?>">
+                        value="<?= openssl_encrypt('all', $config['openssl']['algo'], $config['openssl']['pass'], 0, $config['openssl']['iv']); ?>"
+                        <?= (isset($data) && $data['category'] === openssl_encrypt('all', $config['openssl']['algo'], $config['openssl']['pass'], 0, $config['openssl']['iv'])) ? 'selected' : ''; ?>>
                         All Categories</option>
                     <?php foreach ($categories as $category): ?>
                         <option
-                            value="<?= openssl_encrypt($category['id'], $config['openssl']['algo'], $config['openssl']['pass'], 0, $config['openssl']['iv']); ?>">
+                            value="<?= openssl_encrypt($category['id'], $config['openssl']['algo'], $config['openssl']['pass'], 0, $config['openssl']['iv']); ?>"
+                            <?= (isset($data) && $data['category'] === openssl_encrypt($category['id'], $config['openssl']['algo'], $config['openssl']['pass'], 0, $config['openssl']['iv'])) ? 'selected' : ''; ?>>
                             <?= $category['name']; ?></option>
                     <?php endforeach; ?>
                 </select>
             </div>
             <input type="text" name="bookName" id="bookName" placeholder="Search Books by Title or Author"
-                class="pl-44 pr-4 py-2 outline-none w-full rounded-md text-lg">
+                value="<?= $data['bookName'] ?? ''; ?>" class="pl-44 pr-4 py-2 outline-none w-full rounded-md text-lg">
             <button name="searchBookAdmin"
                 class="absolute inset-y-0 right-0 px-3 rounded-r-md bg-slate-200 hover:bg-indigo-600 hover:text-white"
                 aria-label="Search">
@@ -79,7 +87,7 @@ $books = $query->selectAllJoin('books', $joins);
                     <li class="px-5 py-3 bg-white rounded-md relative">
                         <?php if (isset($_COOKIE['deleteId']) && $_COOKIE['deleteId'] === $book['book_uuid']): ?>
                             <div class="absolute top-0 inset-x-0 bg-red-500 text-white py-1 px-3 text-center text-lg">
-                                <?= $_COOKIE['err'] ?>
+                                <?= $_COOKIE['errBook'] ?>
                             </div>
                             <button type="button" class="absolute top-2.5 right-8 text-white font-medium"
                                 onclick="window.location.reload()">
@@ -183,7 +191,7 @@ $books = $query->selectAllJoin('books', $joins);
                 <li class="px-5 py-3 bg-white rounded-md relative">
                     <?php if (isset($_COOKIE['deleteId']) && $_COOKIE['deleteId'] === $book['book_uuid']): ?>
                         <div class="absolute top-0 inset-x-0 bg-red-500 text-white py-1 px-3 text-center text-lg">
-                            <?= $_COOKIE['err'] ?>
+                            <?= $_COOKIE['errBook'] ?>
                         </div>
                         <button type="button" class="absolute top-2.5 right-8 text-white font-medium"
                             onclick="window.location.reload()">

@@ -1,11 +1,14 @@
 <?php
-class Category {
+class Category
+{
     private $validation = '';
 
-    public function __construct($valiadtionObj = '') {
+    public function __construct($valiadtionObj = '')
+    {
         $this->validation = $valiadtionObj;
     }
-    public function addCategory($data) {
+    public function addCategory($data)
+    {
         $isDataValid = true;
         $err = [
             'nameErr' => $this->validation->validateUniqueName($data['name'], $isDataValid, 'Name'),
@@ -14,7 +17,7 @@ class Category {
             'fineErr' => $this->validation->validateNumber($data['fine'], $isDataValid, 'Rent'),
         ];
 
-        if($isDataValid) {
+        if ($isDataValid) {
             $query = new DatabaseQuery();
             $query->add('category', $data);
             header("Location: admin/categories");
@@ -28,7 +31,8 @@ class Category {
         }
     }
 
-    public function updateCategory($data, $id) {
+    public function updateCategory($data, $id)
+    {
         $isDataValid = true;
         $err = [
             'nameErr' => $this->validation->validateUpdatedUniqueName($data['name'], $isDataValid, 'Name', $id),
@@ -37,26 +41,32 @@ class Category {
             'fineErr' => $this->validation->validateUpdatedNumber($data['fine'], $isDataValid, 'Rent'),
         ];
 
-        if($isDataValid) {
+        if ($isDataValid) {
             $updateStr = '';
-            foreach($data as $key => $value) {
-                if(!empty($value)) {
-                    $updateStr .= $key." = '".$value."', ";
+            foreach ($data as $key => $value) {
+                if (!empty($value)) {
+                    $updateStr .= $key . " = '" . $value . "', ";
                 }
             }
             $query = new DatabaseQuery();
             $query->update('category', $updateStr, $id, 'id');
             return true;
-        } else {
-            $_SESSION['refresh'] = true;
-            setcookie('err', serialize($err), time() + 2);
-            setcookie('data', serialize($data), time() + 2);
-            return false;
         }
+        $_SESSION['refresh'] = true;
+        setcookie('err', serialize($err), time() + 2);
+        setcookie('data', serialize($data), time() + 2);
+        return false;
     }
 
-    public function removeCategory($id) {
+    public function removeCategory($id)
+    {
         $query = new DatabaseQuery();
+        $books = $query->selectAllSpecific('books', $id, 'category_id');
+        if (count($books)) {
+            setcookie('deleteId', $id, time() + 5);
+            setcookie('errCategory', "This category can't be deleted at this time because this category contains " . count($books) . " books.", time() + 5);
+            return;
+        }
         $query->delete('category', $id, 'id');
     }
 }

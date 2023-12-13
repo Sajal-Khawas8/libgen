@@ -14,7 +14,7 @@ if (isset($_COOKIE['err'])) {
                 <?php
                 $query = new DatabaseQuery();
                 $config = require "./core/config.php";
-                $isRented=$id=false;
+                $isRented = $id = false;
                 if (isset($_COOKIE['user'])) {
                     $conditions = [
                         [

@@ -1,11 +1,18 @@
 <?php
-if(!empty($_SERVER['QUERY_STRING'])) {
+if (!empty($_SERVER['QUERY_STRING'])) {
     $query = new DatabaseQuery();
     $config = require "./core/config.php";
     $id = openssl_decrypt($_SERVER['QUERY_STRING'], $config['openssl']['algo'], $config['openssl']['pass'], 0, $config['openssl']['iv']);
+    if (!$id) {
+        setcookie('user', '', time() - 1);
+        unset($_SESSION['isAdmin']);
+        $_SESSION['refresh'] = true;
+        header("Location: /libgen");
+        exit;
+    }
     $data = $query->selectOne('category', $id, 'id');
 }
-if(isset($_COOKIE['err'])) {
+if (isset($_COOKIE['err'])) {
     $err = unserialize($_COOKIE['err']);
     $data = unserialize($_COOKIE['data']);
 }
