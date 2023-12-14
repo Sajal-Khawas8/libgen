@@ -78,9 +78,9 @@ $joins = [
                     ?>
                     <li class="px-5 py-3 bg-white rounded-md">
                         <article class="flex items-center gap-10 h-32">
-                            <div class="aspect-w-16 aspect-h-9 h-full">
+                            <div class="h-full w-24">
                                 <img src="/libgen/assets/uploads/images/books/<?= $book['cover']; ?>" alt="<?= $book['title']; ?>"
-                                    class="h-full w-full object-cover object-center">
+                                    class="h-full w-full object-fill">
                             </div>
                             <div class="flex flex-col justify-between h-full">
                                 <h2 class="text-2xl font-semibold"><?= $book['title']; ?></h2>
@@ -219,9 +219,9 @@ $joins = [
                 ?>
                 <li class="px-5 py-3 bg-white rounded-md">
                     <article class="flex items-center gap-10 h-32">
-                        <div class="aspect-w-16 aspect-h-9 h-full">
+                        <div class="h-full w-24">
                             <img src="/libgen/assets/uploads/images/books/<?= $book['cover']; ?>" alt="<?= $book['title']; ?>"
-                                class="h-full w-full object-cover object-center">
+                                class="h-full w-full object-fill">
                         </div>
                         <div class="flex flex-col justify-between h-full">
                             <h2 class="text-2xl font-semibold"><?= $book['title']; ?></h2>

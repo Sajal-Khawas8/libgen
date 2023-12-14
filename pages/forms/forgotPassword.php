@@ -1,3 +1,11 @@
+<?php
+if (isset($_COOKIE['user'])) {
+    $_SESSION['refresh'] = true;
+    header("Location: /libgen");
+    exit;
+}
+?>
+
 <main class="container border-x">
     <article class="space-y-6 min-h-[calc(100vh-64px-56px)] flex flex-col justify-center">
         <h1 class="text-center text-4xl font-semibold">Forgot Password</h1>

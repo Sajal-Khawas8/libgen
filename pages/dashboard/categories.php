@@ -49,7 +49,7 @@ $categories = $query->selectAll('category');
         unset($categoryIds[0]);
         ?>
         <div>
-            <ul class="flex-1 px-6 flex flex-wrap gap-8 overflow-y-auto">
+            <ul class="flex-1 px-6 grid grid-cols-3 gap-8 overflow-y-auto">
                 <?php foreach ($categoryIds as $categoryId): ?>
                     <?php $category = $query->selectOne('category', $categoryId); ?>
                     <li class="px-5 py-3 bg-white rounded-md h-fit relative">
@@ -66,7 +66,7 @@ $categories = $query->selectAll('category');
                                 </svg>
                             </button>
                         <?php endif; ?>
-                        <article class="flex gap-10">
+                        <article class="flex justify-between">
                             <div class="space-y-4">
                                 <h2 class="text-2xl font-semibold"><?= $category['name']; ?></h2>
                                 <dl class="space-y-2">
@@ -128,7 +128,7 @@ $categories = $query->selectAll('category');
     <?php endif; ?>
 <?php else: ?>
     <div>
-        <ul class="flex-1 px-6 flex flex-wrap gap-8 overflow-y-auto">
+        <ul class="flex-1 px-6 grid grid-cols-3 gap-8 overflow-y-auto">
             <?php foreach ($categories as $category): ?>
                 <li class="px-5 py-3 bg-white rounded-md h-fit relative">
                     <?php if (isset($_COOKIE['deleteId']) && $_COOKIE['deleteId'] === $category['id']): ?>
@@ -144,7 +144,7 @@ $categories = $query->selectAll('category');
                             </svg>
                         </button>
                     <?php endif; ?>
-                    <article class="flex gap-10">
+                    <article class="flex justify-between">
                         <div class="space-y-4">
                             <h2 class="text-2xl font-semibold"><?= $category['name']; ?></h2>
                             <dl class="space-y-2">

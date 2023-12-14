@@ -1,17 +1,31 @@
 <?php
 
+/**
+ * This class contains method to work with files
+ */
 class File
 {
     private $file;
     public $fileExist;
 
+    /**
+     * This constructor checks if the user has uploaded a file or not
+     * 
+     * @param mixed $file The file uploaded by user
+     */
     public function __construct($file)
     {
         $this->fileExist = !empty($file['name']);
         $this->file = $file;
     }
 
-    public function moveFile($location)
+    /**
+     * This method renames the file and moves it to the specified directory inside the upload directory
+     * 
+     * @param string $location The name of the directory where the file needs to be moved
+     * @return string Returns the new filename
+     */
+    public function moveFile(string $location): string
     {
         $fileExtension = strtolower(pathinfo($this->file['name'])['extension']);
         $newFileName = uniqid() . "." . $fileExtension;

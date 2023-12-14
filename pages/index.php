@@ -1,11 +1,16 @@
 <?php
 setcookie('prevPage', $uri);
+if (isset($_SESSION['isAdmin'])) {
+    header("Location: /admin");
+    exit;
+}
 $query = new DatabaseQuery();
 if (isset($_COOKIE['data'])) {
     $data = unserialize($_COOKIE['data']);
 }
 ?>
 <main class="space-y-8">
+
     <?php if ($query->rowCount('books') === 0): ?>
         <section class="min-h-[calc(100vh-4rem-3.5rem)] flex items-center justify-around gap-8">
             <h1 class="font-bold text-5xl text-gray-500">Coming Soon...</h1>
@@ -63,13 +68,13 @@ if (isset($_COOKIE['data'])) {
                 <ul class="flex items-center gap-x-20 gap-y-12 flex-wrap px-16 py-8">
                     <?php foreach ($bookIds as $bookId): ?>
                         <?php $book = $query->selectOne('books', $bookId, 'id'); ?>
-                        <li class="border rounded-lg divide-y relative">
+                        <li class="border rounded-lg divide-y relative hover:shadow-lg">
                             <figure>
-                                <div class="aspect-w-16 aspect-h-9 h-80 border">
+                                <div class="h-72 w-56 border">
                                     <img src="/libgen/assets/uploads/images/books/<?= $book['cover']; ?>"
-                                        alt="<?= $book['title']; ?>" class="h-full w-full object-cover object-center">
+                                        alt="<?= $book['title']; ?>" class="h-full w-full object-fill">
                                 </div>
-                                <figcaption class="w-64 p-2 flex flex-col justify-between min-h-[110px]">
+                                <figcaption class="p-2 max-w-[14rem] space-y-4">
                                     <h3 class="font-semibold text-xl text-blue-700 line-clamp-2"><?= $book['title']; ?></h3>
                                     <h4 class="font-medium truncate"><?= $book['author']; ?></h4>
                                 </figcaption>
@@ -96,13 +101,13 @@ if (isset($_COOKIE['data'])) {
                             <?php
                             foreach ($books as $book):
                                 ?>
-                                <li class="border rounded-lg divide-y relative">
+                                <li class="border rounded-lg divide-y relative hover:shadow-lg">
                                     <figure>
-                                        <div class="aspect-w-16 aspect-h-9 h-80 border">
+                                        <div class="h-72 w-56 border">
                                             <img src="/libgen/assets/uploads/images/books/<?= $book['cover']; ?>"
-                                                alt="<?= $book['title']; ?>" class="h-full w-full object-cover object-center">
+                                                alt="<?= $book['title']; ?>" class="h-full w-full object-fill">
                                         </div>
-                                        <figcaption class="w-64 p-2 flex flex-col justify-between min-h-[110px]">
+                                        <figcaption class="p-2 max-w-[14rem] space-y-4">
                                             <h3 class="font-semibold text-xl text-blue-700 line-clamp-2"><?= $book['title']; ?></h3>
                                             <h4 class="font-medium truncate"><?= $book['author']; ?></h4>
                                         </figcaption>
@@ -120,7 +125,7 @@ if (isset($_COOKIE['data'])) {
             <?php endforeach; ?>
         <?php endif; ?>
         <!-- Reviews section -->
-        <section id="reviews" class="bg-slate-100 space-y-8 py-4">
+        <!-- <section id="reviews" class="bg-slate-100 space-y-8 py-4">
             <h2 class="font-medium text-3xl pl-16">User Reviews</h2>
             <ul class="flex flex-wrap gap-6 px-16">
                 <li class="bg-white rounded-md px-4 py-2">
@@ -142,7 +147,7 @@ if (isset($_COOKIE['data'])) {
                     </figure>
                 </li>
             </ul>
-        </section>
+        </section> -->
 
     <?php endif; ?>
 </main>

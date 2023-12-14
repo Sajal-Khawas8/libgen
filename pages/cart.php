@@ -1,5 +1,9 @@
 <?php
 setcookie('prevPage', $uri);
+if (!isset($_COOKIE['user']) || isset($_SESSION['isAdmin'])) {
+    header("Location: /login");
+    exit;
+}
 $query = new DatabaseQuery();
 $cartItems = $query->selectAllSpecific('cart', $_COOKIE['user'], 'user_id');
 $cartItems = array_map(function ($cartItem) {
@@ -30,11 +34,11 @@ if (isset($_COOKIE['err'])) {
                     ];
                     $bookData = $query->selectOneJoin('books', $joins, '*', $itemId, 'book_uuid');
                     ?>
-                    <li class="px-5 py-3 rounded-md <?= $bookData['available'] ? 'bg-white' : 'bg-slate-300/80'; ?>">
-                        <article class="flex items-center gap-10 h-32">
-                            <div class="aspect-w-16 aspect-h-9 h-full">
+                    <li class="px-3 py-3 rounded-md <?= $bookData['available'] ? 'bg-white' : 'bg-slate-300/80'; ?>">
+                        <article class="flex items-center gap-7 h-32">
+                            <div class="h-full w-24">
                                 <img src="/libgen/assets/uploads/images/books/<?= $bookData['cover']; ?>"
-                                    alt="<?= $bookData['title']; ?>" class="h-full w-full object-cover object-center">
+                                    alt="<?= $bookData['title']; ?>" class="h-full w-full object-fill">
                             </div>
                             <div class="flex-1 flex flex-col justify-between h-full">
                                 <div class="flex justify-between">
@@ -161,9 +165,7 @@ if (isset($_COOKIE['err'])) {
                 <input type="hidden" name="items"
                     value="<?= openssl_encrypt($cartItemsId, $config['openssl']['algo'], $config['openssl']['pass'], 0, $config['openssl']['iv']); ?>">
                 <button name="cartPayment"
-                    class="px-4 py-1 bg-indigo-600 text-white text-lg font-medium rounded-md w-full hover:bg-indigo-800">Read
-                    All
-                    @ 20</button>
+                    class="px-4 py-1 bg-indigo-600 text-white text-lg font-medium rounded-md w-full hover:bg-indigo-800">Get All Books</button>
             </form>
         </section>
     <?php else: ?>

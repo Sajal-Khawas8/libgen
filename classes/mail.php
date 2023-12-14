@@ -5,9 +5,20 @@ use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
 use PHPMailer\PHPMailer\Exception;
 
+/**
+ * This class contains method to send mail to user
+ */
 class MailClass
 {
-    public function sendMail($subject, $message, $email)
+    /**
+     * This method sends mail to the user
+     * 
+     * @param string $subject The subject of the Email
+     * @param string $message The message to send in html form
+     * @param string $email The email address of the user
+     * @return void
+     */
+    public function sendMail(string $subject, string $message, string $email): void
     {
         //Load Composer's autoloader
         require 'vendor/autoload.php';
@@ -40,9 +51,10 @@ class MailClass
             $mail->addAddress($email, 'User'); // Target email
 
             $mail->send();
-            // echo 'Message has been sent';
+            setcookie('message', 'Link has been sent to your Email', time() + 2);
         } catch (Exception $e) {
-            echo "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
+            setcookie('error', true, time() + 2);
+            setcookie('message', 'Message could not be sent', time() + 2);
         }
     }
 }

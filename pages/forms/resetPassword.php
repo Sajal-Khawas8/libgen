@@ -1,4 +1,9 @@
 <?php
+if (isset($_COOKIE['user'])) {
+    $_SESSION['refresh'] = true;
+    header("Location: /libgen");
+    exit;
+}
 $config = require "./core/config.php";
 $id = openssl_decrypt($_SERVER['QUERY_STRING'], $config['openssl']['algo'], $config['openssl']['pass'], 0, $config['openssl']['iv']);
 if (!$id) {

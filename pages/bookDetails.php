@@ -5,7 +5,7 @@ if (isset($_COOKIE['err'])) {
     $cardDetails = unserialize($_COOKIE['data']);
 }
 ?>
-<main class="container border-x flex gap-0">
+<main class="container border-x flex gap-0 min-h-[calc(100vh-4rem-3.5rem)]">
     <?php require "./includes/book.php"; ?>
     <div class="flex-1 space-y-6 px-6 py-8">
         <article class="space-y-4">
@@ -115,8 +115,7 @@ if (isset($_COOKIE['err'])) {
                         value="<?= openssl_encrypt(($bookData['rent'] + $bookData['base']), $config['openssl']['algo'], $config['openssl']['pass'], 0, $config['openssl']['iv']); ?>">
                     <input type="hidden" name="id" value="<?= $_SERVER['QUERY_STRING']; ?>">
                     <button name="payment"
-                        class="px-4 py-1 bg-indigo-600 text-white text-lg font-medium rounded-md w-full hover:bg-indigo-800">Read
-                        @ 20</button>
+                        class="px-4 py-1 bg-indigo-600 text-white text-lg font-medium rounded-md w-full hover:bg-indigo-800">Get this Book</button>
                 </form>
             </article>
         <?php endif; ?>

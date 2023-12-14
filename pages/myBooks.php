@@ -1,6 +1,6 @@
 <?php
 setcookie('prevPage', $uri);
-if (!isset($_COOKIE['user'])) {
+if (!isset($_COOKIE['user']) || isset($_SESSION['isAdmin'])) {
     header("Location: /login");
 }
 $query = new DatabaseQuery();
@@ -25,13 +25,13 @@ $rentedBooks = array_filter($rentedBooks, function ($rentedBook) {
         <div class="min-h-[calc(100vh-4rem-3.5rem)] ">
             <ul class="flex items-center gap-x-20 gap-y-12 flex-wrap px-16">
                 <?php foreach ($rentedBooks as $book): ?>
-                    <li class="border rounded-lg divide-y relative">
+                    <li class="border rounded-lg divide-y relative hover:shadow-lg">
                         <figure>
-                            <div class="aspect-w-16 aspect-h-9 h-80 border">
+                            <div class="h-72 w-56 border">
                                 <img src="/libgen/assets/uploads/images/books/<?= $book['cover'] ?>" alt="<?= $book['title'] ?>"
-                                    class="h-full w-full object-cover object-center">
+                                    class="h-full w-full object-fill">
                             </div>
-                            <figcaption class="w-64 p-2 flex flex-col justify-between min-h-[110px]">
+                            <figcaption class="p-2 max-w-[14rem] space-y-4">
                                 <h3 class="font-semibold text-xl text-blue-700 line-clamp-2"><?= $book['title'] ?></h3>
                                 <h4 class="font-medium truncate"><?= $book['author'] ?></h4>
                             </figcaption>

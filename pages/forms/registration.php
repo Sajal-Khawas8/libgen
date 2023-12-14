@@ -1,5 +1,5 @@
 <?php
-if (isset($_COOKIE['user']) && empty($_SERVER['QUERY_STRING']) && $uri !== 'addMember') {
+if ((isset($_COOKIE['user']) && empty($_SERVER['QUERY_STRING']) && $uri !== 'addMember') || (!isset($_COOKIE['user']) && !empty($_SERVER['QUERY_STRING']))) {
     $_SESSION['refresh'] = true;
     header("Location: /libgen");
     exit;

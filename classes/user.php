@@ -1,15 +1,34 @@
 <?php
 require "./classes/fileHandler.php";
+
+/**
+ * This class contains methods to work with users like adding users, updating user data and deleting the users
+ */
 class User
 {
     private $validation = '';
 
-    public function __construct($valiadtionObj = '')
+    /**
+     * Initializes the validation class to validate the input data. Defaults to an empty string
+     * 
+     * @param ValidateData|string $validationObj
+     * @return void
+     */
+    public function __construct(ValidateData|string $valiadtionObj = '')
     {
         $this->validation = $valiadtionObj;
     }
-    public function addUser($data)
+
+    /**
+     * Adds the data of user to the 'users' table
+     * This method verifies the input data and adds the data to the table
+     * 
+     * @param array $data The data from the form
+     * @return mixed Returns the uuid of the newly created user or void if the user is not created
+     */
+    public function addUser(array $data): mixed
     {
+        // Validate Data
         $isDataValid = true;
         $err = [
             'nameErr' => $this->validation->validateTextData($data['name'], $isDataValid, 'Name'),
@@ -20,12 +39,17 @@ class User
             'cnfrmPasswordErr' => $this->validation->validateCnfrmPassword($data['confirmPassword'], $data['password'], $isDataValid),
         ];
 
+        // If data is valid, add it to table else set and display the error messages
         if ($isDataValid) {
             unset($data['confirmPassword']);
+
+            // Upload profile picture
             $file = new File($_FILES['profilePicture']);
             if ($file->fileExist) {
                 $data['image'] = $file->moveFile('users');
             }
+
+            // Add data to table
             $query = new DatabaseQuery();
             $query->add('users', $data);
             return $query->lastEntry('users');
@@ -39,10 +63,21 @@ class User
         }
     }
 
-    public function updateUser($data, $uuid)
+    /**
+     * Updates the data of user in the 'users' table
+     * This method verifies the input data and updates the data to the table
+     * 
+     * @param array $data The data from the form
+     * @param string $uuid UUID of the user
+     * @return bool Returns true if the data is updated successfully and false otherwise
+     */
+    public function updateUser(array $data, string $uuid): bool
     {
+        // Fetch email of the user
         $query = new DatabaseQuery();
         $email = $query->selectColumn('email', 'users', $uuid, 'uuid');
+
+        // Validate Data
         $isDataValid = true;
         $err = [
             'nameErr' => $this->validation->validateUpdatedTextData($data['name'], $isDataValid, 'Name'),
@@ -53,8 +88,11 @@ class User
             'passwordErr' => $this->validation->validatePasswordFormat($data['password'], $isDataValid),
         ];
 
+        // If data is valid, update it in the table else set and display error messages
         if ($isDataValid) {
             unset($data['oldPassword']);
+
+            // Delete the old image and upload the new image
             $file = new File($_FILES['profilePicture']);
             if ($file->fileExist) {
                 $data['image'] = $file->moveFile('users');
@@ -62,6 +100,8 @@ class User
                 $oldImage = $query->selectColumn('image', 'users', $uuid, 'uuid');
                 unlink("assets/uploads/images/users/$oldImage");
             }
+
+            // update data
             $updateStr = '';
             foreach ($data as $key => $value) {
                 if (!empty($value)) {
@@ -79,7 +119,13 @@ class User
         }
     }
 
-    public function removeUser($id)
+    /**
+     * Delete (Block) user
+     * 
+     * @param string $id UUID of the user
+     * @return void
+     */
+    public function removeUser(string $id): void
     {
         $query = new DatabaseQuery();
         $query->update('users', 'active=false, ', $id, 'uuid');

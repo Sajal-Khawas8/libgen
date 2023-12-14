@@ -304,7 +304,7 @@ if (isset($_POST['updateBookData'])) {
 }
 
 if (isset($_POST['deleteBook'])) {
-    $book = new Book($validationObj);
+    $book = new Book();
     $config = require "./core/config.php";
     $id = openssl_decrypt($_POST['id'], $config['openssl']['algo'], $config['openssl']['pass'], 0, $config['openssl']['iv']);
     if (!$id) {
@@ -366,8 +366,8 @@ if (isset($_POST['payment'])) {
         $paymentData = [
             'payment_id' => uniqid("pay-"),
             'user_id' => $_COOKIE['user'],
-            'item_id' => $bookId,
-            'amount' => $amount
+            'amount' => $amount,
+            'card' => substr($_POST['cardNumber'], -1, 4)
         ];
 
         $query->add('payment', $paymentData);
@@ -380,6 +380,20 @@ if (isset($_POST['payment'])) {
         $query->add('rented_books', $rentStatus);
         $availableBooks = $bookData['available'] - 1;
         $query->update('quantity', "available=$availableBooks, ", $bookId, 'book_id');
+        $conditions = [
+            [
+                'criteria' => 'book_id',
+                'id' => $uuid
+            ],
+            [
+                'criteria' => 'user_id',
+                'id' => $_COOKIE['user']
+            ]
+        ];
+        $cartId = $query->selectColumnMultiCondition('id', 'cart', $conditions);
+        $cart = new Cart();
+        $cart->removeItem($cartId);
+        setcookie('message', 'Payment is Successful', time() + 2);
         header("Location: /mybooks");
         exit;
     } else {
@@ -418,7 +432,8 @@ if (isset($_POST['returnBook'])) {
     $availableBooks = $query->selectColumn('available', 'quantity', $bookId, 'book_id');
     $availableBooks++;
     $query->update('quantity', "available=$availableBooks, ", $bookId, 'book_id');
-    header("Location: /paymentSuccess");
+    setcookie('message', 'Book Returned Successfully', time() + 2);
+    header("Location: /mybooks");
     exit;
 }
 
@@ -462,11 +477,12 @@ if (isset($_POST['returnBookFine'])) {
         $paymentData = [
             'payment_id' => uniqid("pay-"),
             'user_id' => $_COOKIE['user'],
-            'item_id' => $bookId,
-            'amount' => $amount
+            'amount' => $amount,
+            'card' => substr($_POST['cardNumber'], -1, 4)
         ];
         $query->add('payment', $paymentData);
-        header("Location: /paymentSuccess");
+        setcookie('message', 'Payment is Successful and Book is Returned', time() + 2);
+        header("Location: /mybooks");
         exit;
     } else {
         $_SESSION['refresh'] = true;
@@ -518,10 +534,9 @@ if (isset($_POST['cartPayment'])) {
     $config = require "./core/config.php";
     $cartItems = openssl_decrypt($_POST['items'], $config['openssl']['algo'], $config['openssl']['pass'], 0, $config['openssl']['iv']);
     if (!$cartItems) {
-        setcookie('user', '', time() - 1);
-        unset($_SESSION['isAdmin']);
-        $_SESSION['refresh'] = true;
-        header("Location: /libgen");
+        setcookie('error', true, time() + 2);
+        setcookie('message', 'All Books are currently Out of Stock', time() + 2);
+        header("Location: /cart");
         exit;
     }
     $cartItems = explode('&', $cartItems);
@@ -557,8 +572,8 @@ if (isset($_POST['cartPayment'])) {
         $paymentData = [
             'payment_id' => $paymentId,
             'user_id' => $_COOKIE['user'],
-            'item_id' => uniqid("cart-"),
-            'amount' => $totalRent
+            'amount' => $totalRent,
+            'card' => substr($_POST['cardNumber'], -1, 4)
         ];
 
         $query->add('payment', $paymentData);
@@ -587,12 +602,8 @@ if (isset($_POST['cartPayment'])) {
             ];
             $cartId = $query->selectColumnMultiCondition('id', 'cart', $conditions);
             $cart->removeItem($cartId);
-            $paid_items = [
-                'payment_id' => $paymentId,
-                'item_id' => $bookData['book_id']
-            ];
-            $query->add('paid_items', $paid_items);
         }
+        setcookie('message', 'Payment is Successful', time() + 2);
         header("Location: /mybooks");
         exit;
     } else {
@@ -634,6 +645,8 @@ if (isset($_POST['resetPW'])) {
     $config = require "./core/config.php";
     $id = openssl_decrypt($_POST['id'], $config['openssl']['algo'], $config['openssl']['pass'], 0, $config['openssl']['iv']);
     if (!$id) {
+        setcookie('error', true, time() + 2);
+        setcookie('message', 'Some Error Occurred', time() + 2);
         header("Location: /libgen");
         exit;
     }
@@ -647,9 +660,12 @@ if (isset($_POST['resetPW'])) {
         $idFromDb = $query->selectColumn('uniqueID', 'users', $email, 'email');
         if ($idFromDb === $id) {
             $query->update('users', "password='{$_POST['password']}', uniqueID=null, ", $email, 'email');
+            setcookie('message', 'Password has been updated successfully', time() + 2);
             header("Location: /login");
             exit;
         } else {
+            setcookie('error', true, time() + 2);
+            setcookie('message', 'Some Error Occurred!', time() + 2);
             header("Location: /forgotPassword");
             exit;
         }

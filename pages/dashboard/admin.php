@@ -41,14 +41,14 @@ if (isset($_COOKIE['data'])) {
         unset($adminIds[0]);
         ?>
         <div class="flex-1 px-6  overflow-y-auto">
-            <ul class="flex flex-wrap gap-16">
+            <ul class="grid grid-cols-2 gap-24">
                 <?php
                 foreach ($adminIds as $adminId):
                     $admin = $query->selectOne('users', $adminId);
                     ?>
 
                     <li class="px-5 py-3 bg-white rounded-md h-fit">
-                        <article class="flex gap-10">
+                        <article class="flex justify-between">
                             <?php if (empty($admin['image'])): ?>
                                 <div class="w-40 h-40 rounded-md mx-auto bg-gray-600 flex items-center justify-center">
                                     <svg class="w-60 h-60 text-slate-100" xmlns="http://www.w3.org/2000/svg" docname="user.svg"
@@ -134,7 +134,7 @@ if (isset($_COOKIE['data'])) {
     <?php endif; ?>
 <?php else: ?>
     <div class="flex-1 px-6  overflow-y-auto">
-        <ul class="flex flex-wrap gap-16">
+        <ul class="grid grid-cols-2 gap-16">
             <?php
             $admins = $query->selectAllSpecific('users', 1, 'role');
             foreach ($admins as $admin):

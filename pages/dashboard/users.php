@@ -31,7 +31,7 @@ if (isset($_COOKIE['data'])) {
         unset($userIds[0]);
         ?>
         <div class="flex-1 overflow-y-auto px-6 ">
-            <ul class="flex gap-8 flex-wrap">
+            <ul class="grid grid-cols-3 gap-8">
                 <?php
                 foreach ($userIds as $userKey => $userId):
                     $user = $query->selectOne('users', $userId);
@@ -83,7 +83,7 @@ if (isset($_COOKIE['data'])) {
                                     <dd><?= count($rentedBooks); ?></dd>
                                 </dl>
                                 <button type="button"
-                                    class="bg-indigo-500 text-white px-4 py-1 rounded-md font-medium hover:bg-indigo-700"
+                                    class="bg-indigo-500 text-white px-2 py-1 rounded-md font-medium hover:bg-indigo-700"
                                     onclick="document.getElementById('modal-<?= $userKey ?>').style.display='flex'">View
                                     Books</button>
                             </div>
@@ -180,7 +180,7 @@ if (isset($_COOKIE['data'])) {
     <?php endif; ?>
 <?php else: ?>
     <div class="flex-1 overflow-y-auto px-6 ">
-        <ul class="flex gap-8 flex-wrap">
+        <ul class="grid grid-cols-3 gap-8">
             <?php
             $users = $query->selectAll('users');
             foreach ($users as $userKey => $user):
@@ -234,7 +234,7 @@ if (isset($_COOKIE['data'])) {
                                     <dd><?= count($rentedBooks); ?></dd>
                                 </dl>
                                 <button type="button"
-                                    class="bg-indigo-500 text-white px-4 py-1 rounded-md font-medium hover:bg-indigo-700"
+                                    class="bg-indigo-500 text-white px-2 py-1 rounded-md font-medium hover:bg-indigo-700"
                                     onclick="document.getElementById('modal-<?= $userKey ?>').style.display='flex'">View
                                     Books</button>
                             </div>

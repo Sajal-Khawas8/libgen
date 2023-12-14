@@ -99,9 +99,9 @@ $books = $query->selectAllJoin('books', $joins);
                             </button>
                         <?php endif; ?>
                         <article class="flex items-center gap-10 h-32">
-                            <div class="aspect-w-16 aspect-h-9 h-full">
-                                <img src="/libgen/assets/uploads/images/books/<?= $book['cover'] ?>" alt=""
-                                    class="h-full w-full object-cover object-center">
+                            <div class="h-full w-24">
+                                <img src="/libgen/assets/uploads/images/books/<?= $book['cover'] ?>" alt="<?= $book['title'] ?>"
+                                    class="h-full w-full object-fill">
                             </div>
                             <div class="flex flex-col justify-between h-full">
                                 <h2 class="text-2xl font-semibold"><?= $book['title'] ?></h2>
@@ -144,18 +144,18 @@ $books = $query->selectAllJoin('books', $joins);
                                         Book Info</button>
                                 </form>
                                 <form action="/formHandler" method="post">
-                                    <input type="hidden" name="id"
-                                        value="<?= openssl_encrypt($book['book_uuid'], $config['openssl']['algo'], $config['openssl']['pass'], 0, $config['openssl']['iv']); ?>">
-                                    <button type="button" onclick="document.getElementById('deleteModal').style.display='flex'"
+                                    <?php $encryptedBookId = openssl_encrypt($book['book_uuid'], $config['openssl']['algo'], $config['openssl']['pass'], 0, $config['openssl']['iv']); ?>
+                                    <input type="hidden" name="id" value="<?= $encryptedBookId; ?>">
+                                    <button type="button"
+                                        onclick="document.getElementById('deleteModal-<?= $encryptedBookId ?>').style.display='flex'"
                                         class="px-3 py-1 bg-red-600 text-white text-lg rounded-md hover:bg-red-700 min-w-full">Delete
                                         Book</button>
-                                    <div id="deleteModal"
+                                    <div id="deleteModal-<?= $encryptedBookId ?>"
                                         class="absolute inset-0 bg-gray-500/60 hidden flex-col justify-center items-center space-y-8">
                                         <div class="flex gap-16 items-center">
                                             <p class="font-semibold text-3xl">Are you sure?</p>
                                             <button type="button"
-                                                onclick="document.getElementById('deleteModal').style.display='none'" class=""
-                                                onclick="document.getElementById('modal-encryptedId').style.display='none'">
+                                                onclick="document.getElementById('deleteModal-<?= $encryptedBookId ?>').style.display='none'">
                                                 <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
                                                     fill="currentColor">
                                                     <path fill="currentColor"
@@ -168,7 +168,7 @@ $books = $query->selectAllJoin('books', $joins);
                                             <button name="deleteBook"
                                                 class="flex-1 px-4 py-1 bg-white text-red-600 font-medium text-lg rounded-md hover:bg-red-600 hover:text-white">Yes</button>
                                             <button type="button"
-                                                onclick="document.getElementById('deleteModal').style.display='none'"
+                                                onclick="document.getElementById('deleteModal-<?= $encryptedBookId ?>').style.display='none'"
                                                 class="flex-1 px-4 py-1 bg-white text-black font-medium text-lg rounded-md">Cancel</button>
                                         </div>
                                     </div>
@@ -203,9 +203,9 @@ $books = $query->selectAllJoin('books', $joins);
                         </button>
                     <?php endif; ?>
                     <article class="flex items-center gap-10 h-32">
-                        <div class="aspect-w-16 aspect-h-9 h-full">
-                            <img src="/libgen/assets/uploads/images/books/<?= $book['cover'] ?>" alt=""
-                                class="h-full w-full object-cover object-center">
+                        <div class="h-full w-24">
+                            <img src="/libgen/assets/uploads/images/books/<?= $book['cover'] ?>" alt="<?= $book['title'] ?>"
+                                class="h-full w-full object-fill">
                         </div>
                         <div class="flex flex-col justify-between h-full">
                             <h2 class="text-2xl font-semibold"><?= $book['title'] ?></h2>
@@ -248,18 +248,19 @@ $books = $query->selectAllJoin('books', $joins);
                                     Book Info</button>
                             </form>
                             <form action="/formHandler" method="post">
-                                <input type="hidden" name="id"
-                                    value="<?= openssl_encrypt($book['book_uuid'], $config['openssl']['algo'], $config['openssl']['pass'], 0, $config['openssl']['iv']); ?>">
-                                <button type="button" onclick="document.getElementById('deleteModal').style.display='flex'"
+                                <?php $encryptedBookId = openssl_encrypt($book['book_uuid'], $config['openssl']['algo'], $config['openssl']['pass'], 0, $config['openssl']['iv']); ?>
+                                <input type="hidden" name="id" value="<?= $encryptedBookId; ?>">
+                                <button type="button"
+                                    onclick="document.getElementById('deleteModal-<?= $encryptedBookId; ?>').style.display='flex'"
                                     class="px-3 py-1 bg-red-600 text-white text-lg rounded-md hover:bg-red-700 min-w-full">Delete
                                     Book</button>
-                                <div id="deleteModal"
+                                <div id="deleteModal-<?= $encryptedBookId; ?>"
                                     class="absolute inset-0 bg-gray-500/60 hidden flex-col justify-center items-center space-y-8">
                                     <div class="flex gap-16 items-center">
                                         <p class="font-semibold text-3xl">Are you sure?</p>
                                         <button type="button"
-                                            onclick="document.getElementById('deleteModal').style.display='none'" class=""
-                                            onclick="document.getElementById('modal-encryptedId').style.display='none'">
+                                            onclick="document.getElementById('deleteModal-<?= $encryptedBookId ?>').style.display='none'"
+                                            class="">
                                             <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
                                                 fill="currentColor">
                                                 <path fill="currentColor"
@@ -272,7 +273,7 @@ $books = $query->selectAllJoin('books', $joins);
                                         <button name="deleteBook"
                                             class="flex-1 px-4 py-1 bg-white text-red-600 font-medium text-lg rounded-md hover:bg-red-600 hover:text-white">Yes</button>
                                         <button type="button"
-                                            onclick="document.getElementById('deleteModal').style.display='none'"
+                                            onclick="document.getElementById('deleteModal-<?= $encryptedBookId ?>').style.display='none'"
                                             class="flex-1 px-4 py-1 bg-white text-black font-medium text-lg rounded-md">Cancel</button>
                                     </div>
                                 </div>

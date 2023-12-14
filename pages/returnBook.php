@@ -1,5 +1,9 @@
 <?php
 setcookie('prevPage', "$uri?{$_SERVER['QUERY_STRING']}");
+if (!isset($_COOKIE['user']) || isset($_SESSION['isAdmin'])) {
+    header("Location: /login");
+    exit;
+}
 $query = new DatabaseQuery();
 $joins = [
     [
