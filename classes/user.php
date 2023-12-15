@@ -53,14 +53,13 @@ class User
             $query = new DatabaseQuery();
             $query->add('users', $data);
             return $query->lastEntry('users');
-        } else {
-            $_SESSION['refresh'] = true;
-            setcookie('err', serialize($err), time() + 2);
-            setcookie('data', serialize($data), time() + 2);
-            $location = isset($data['role']) ? 'admin/addMember' : '/signUp';
-            header("Location: $location");
-            exit;
         }
+        $_SESSION['refresh'] = true;
+        setcookie('err', serialize($err), time() + 2);
+        setcookie('data', serialize($data), time() + 2);
+        $location = isset($data['role']) ? 'admin/addMember' : '/signUp';
+        header("Location: $location");
+        exit;
     }
 
     /**
@@ -111,12 +110,11 @@ class User
             $query = new DatabaseQuery();
             $query->update('users', $updateStr, $uuid, 'uuid');
             return true;
-        } else {
-            $_SESSION['refresh'] = true;
-            setcookie('err', serialize($err), time() + 2);
-            setcookie('data', serialize($data), time() + 2);
-            return false;
         }
+        $_SESSION['refresh'] = true;
+        setcookie('err', serialize($err), time() + 2);
+        setcookie('data', serialize($data), time() + 2);
+        return false;
     }
 
     /**
@@ -128,6 +126,12 @@ class User
     public function removeUser(string $id): void
     {
         $query = new DatabaseQuery();
+        $rentedBooks = count($query->selectAllSpecific('rented_books', $id, 'user_id'));
+        if (!isset($_SESSION['isAdmin']) && $rentedBooks) {
+            setcookie('error', true, time() + 2);
+            setcookie('message', "This account can't be deleted as you have taken $rentedBooks books on rent. Please login to your account.", time() + 2);
+            return;
+        }
         $query->update('users', 'active=false, ', $id, 'uuid');
     }
 }

@@ -25,6 +25,7 @@ trait Connection
 
     function __destruct()
     {
+        // Closing the connection
         $this->conn->close();
     }
 }

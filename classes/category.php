@@ -42,13 +42,12 @@ class Category
             $query->add('category', $data);
             header("Location: admin/categories");
             exit;
-        } else {
-            $_SESSION['refresh'] = true;
-            setcookie('err', serialize($err), time() + 2);
-            setcookie('data', serialize($data), time() + 2);
-            header("Location: admin/categories/addCategory");
-            exit;
         }
+        $_SESSION['refresh'] = true;
+        setcookie('err', serialize($err), time() + 2);
+        setcookie('data', serialize($data), time() + 2);
+        header("Location: admin/categories/addCategory");
+        exit;
     }
 
     /**

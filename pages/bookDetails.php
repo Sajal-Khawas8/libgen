@@ -115,7 +115,8 @@ if (isset($_COOKIE['err'])) {
                         value="<?= openssl_encrypt(($bookData['rent'] + $bookData['base']), $config['openssl']['algo'], $config['openssl']['pass'], 0, $config['openssl']['iv']); ?>">
                     <input type="hidden" name="id" value="<?= $_SERVER['QUERY_STRING']; ?>">
                     <button name="payment"
-                        class="px-4 py-1 bg-indigo-600 text-white text-lg font-medium rounded-md w-full hover:bg-indigo-800">Get this Book</button>
+                        class="px-4 py-1 bg-indigo-600 text-white text-lg font-medium rounded-md w-full hover:bg-indigo-800">Get
+                        this Book</button>
                 </form>
             </article>
         <?php endif; ?>

@@ -72,7 +72,7 @@ $categories = $query->selectAll('category');
                                 <dl class="space-y-2">
                                     <div class="flex gap-2">
                                         <dt class="font-medium">Total Books:</dt>
-                                        <dd>50</dd>
+                                        <dd><?= count($query->selectAllSpecific('books', $category['id'], 'category_id')); ?></dd>
                                     </div>
                                     <div class="flex gap-2">
                                         <dt class="font-medium">Base Price (For 30 days):</dt>
@@ -150,7 +150,7 @@ $categories = $query->selectAll('category');
                             <dl class="space-y-2">
                                 <div class="flex gap-2">
                                     <dt class="font-medium">Total Books:</dt>
-                                    <dd>50</dd>
+                                    <dd><?= count($query->selectAllSpecific('books', $category['id'], 'category_id')); ?></dd>
                                 </div>
                                 <div class="flex gap-2">
                                     <dt class="font-medium">Base Price (For 30 days):</dt>

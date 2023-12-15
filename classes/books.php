@@ -64,13 +64,12 @@ class Book
             // Redirect to dashboard
             header("Location: admin");
             exit;
-        } else {
-            $_SESSION['refresh'] = true;
-            setcookie('err', serialize($err), time() + 2);
-            setcookie('data', serialize($data), time() + 2);
-            header("Location: admin/books/addBook");
-            exit;
         }
+        $_SESSION['refresh'] = true;
+        setcookie('err', serialize($err), time() + 2);
+        setcookie('data', serialize($data), time() + 2);
+        header("Location: admin/books/addBook");
+        exit;
     }
 
     /**
@@ -130,12 +129,11 @@ class Book
             $updateStr = "copies = $copies, available = " . ($quantity['available'] + ($copies - $quantity['copies'])) . ", ";
             $query->update('quantity', $updateStr, $quantity['book_id'], 'book_id');
             return true;
-        } else {
-            $_SESSION['refresh'] = true;
-            setcookie('err', serialize($err), time() + 2);
-            setcookie('data', serialize($data), time() + 2);
-            return false;
         }
+        $_SESSION['refresh'] = true;
+        setcookie('err', serialize($err), time() + 2);
+        setcookie('data', serialize($data), time() + 2);
+        return false;
     }
 
     /**

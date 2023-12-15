@@ -77,8 +77,8 @@ $books = $query->selectAllJoin('books', $joins);
         $bookIds = explode("&", $bookIds);
         unset($bookIds[0]);
         ?>
-        <div>
-            <ul class="flex-1 px-6 space-y-4 overflow-y-auto">
+        <div class="flex-1 overflow-y-auto">
+            <ul class="px-6 space-y-4">
                 <?php foreach ($bookIds as $bookId): ?>
                     <?php
                     $uuidBook = $query->selectColumn('book_uuid', 'books', $bookId);
@@ -185,8 +185,8 @@ $books = $query->selectAllJoin('books', $joins);
         </div>
     <?php endif; ?>
 <?php else: ?>
-    <div>
-        <ul class="flex-1 px-6 space-y-4 overflow-y-auto">
+    <div class="flex-1 overflow-y-auto">
+        <ul class="px-6 space-y-4">
             <?php foreach ($books as $book): ?>
                 <li class="px-5 py-3 bg-white rounded-md relative">
                     <?php if (isset($_COOKIE['deleteId']) && $_COOKIE['deleteId'] === $book['book_uuid']): ?>

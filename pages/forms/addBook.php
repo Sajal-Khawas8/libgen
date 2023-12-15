@@ -3,8 +3,8 @@ $categories = $query->selectAll('category');
 if (empty($categories)): ?>
     <section class="flex items-center justify-center h-4/5">
         <h1 class="text-center text-4xl font-semibold text-gray-500">
-            <a href="/admin/category/addCategory">Please add atleast one Category before adding a book
-        </h1></a>
+            <a href="/admin/categories/addCategory">Please add atleast one Category before adding a book</a>
+        </h1>
     </section>
 <?php else: ?>
     <?php

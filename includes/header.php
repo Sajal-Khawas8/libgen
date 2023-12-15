@@ -2,7 +2,8 @@
 
 <header class="bg-gray-700 px-4 py-2 h-16 sticky top-0 z-50">
     <?php if (isset($_COOKIE['message'])): ?>
-        <div class="fixed top-0 z-50 inset-x-0 text-white text-xl flex items-center justify-center h-12 <?= isset($_COOKIE['error']) ? 'bg-red-500': 'bg-green-500'; ?>">
+        <div
+            class="fixed top-0 z-50 inset-x-0 text-white text-xl flex items-center justify-center h-12 <?= isset($_COOKIE['error']) ? 'bg-red-500' : 'bg-green-500'; ?>">
             <?= $_COOKIE['message']; ?>
             <button type="button" onclick="window.location.reload()"
                 class="absolute top-3 right-16 bg-gray-800 rounded-full">

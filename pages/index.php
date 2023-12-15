@@ -75,7 +75,7 @@ if (isset($_COOKIE['data'])) {
                                         alt="<?= $book['title']; ?>" class="h-full w-full object-fill">
                                 </div>
                                 <figcaption class="p-2 max-w-[14rem] space-y-4">
-                                    <h3 class="font-semibold text-xl text-blue-700 line-clamp-2"><?= $book['title']; ?></h3>
+                                    <h3 class="font-semibold text-xl text-blue-700 truncate"><?= $book['title']; ?></h3>
                                     <h4 class="font-medium truncate"><?= $book['author']; ?></h4>
                                 </figcaption>
                             </figure>
@@ -108,7 +108,7 @@ if (isset($_COOKIE['data'])) {
                                                 alt="<?= $book['title']; ?>" class="h-full w-full object-fill">
                                         </div>
                                         <figcaption class="p-2 max-w-[14rem] space-y-4">
-                                            <h3 class="font-semibold text-xl text-blue-700 line-clamp-2"><?= $book['title']; ?></h3>
+                                            <h3 class="font-semibold text-xl text-blue-700 truncate"><?= $book['title']; ?></h3>
                                             <h4 class="font-medium truncate"><?= $book['author']; ?></h4>
                                         </figcaption>
                                     </figure>

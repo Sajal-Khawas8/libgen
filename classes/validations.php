@@ -61,12 +61,12 @@ class ValidateData
      * @param string $data The input data that is to be checked
      * @param string|null $msg The variable to contain the error message if data contains more than 15 characters
      * @param string $field The type of input field which is to be checked
-     * @return bool Returns true if the data contains more than 15 characters, false otherwise
+     * @return bool Returns true if the data contains more than 50 characters, false otherwise
      */
     private function isInvalidMaxLengthText(string $data, string|null &$msg, string $field): bool
     {
-        if (strlen($data) > 30) {
-            $msg = "*{$field} must contain less than 30 characters";
+        if (strlen($data) > 50) {
+            $msg = "*{$field} must contain less than 50 characters";
             return true;
         }
         return false;
@@ -283,7 +283,7 @@ class ValidateData
     public function validateUpdatedTextArea(string &$data, bool &$isDataValid, string $field)
     {
         $this->cleanData($data);
-        if (!empty($data) && ($this->isInvalidMinLengthTextarea($data, $errMsg, $field) || $this->isInvalidMaxLengthTextarea($data, $errMsg, $field))) {
+        if (!empty($data) && ($this->isInvalidMinLengthTextarea($data, $errMsg, $field))) {
             $isDataValid = false;
             return $errMsg;
         }
@@ -371,11 +371,11 @@ class ValidateData
     /**
      * Checks if the uploaded file is correct format or not
      * 
-     * @param string $uploadedFile The uploaded file
+     * @param mixed $uploadedFile The uploaded file
      * @param bool $isDataValid The variable to track if the file is in correct format or not
      * @return string|void Returns the error message if the file is not in correct format, null otherwise
      */
-    public function validatePictureFormat(string $uploadedFile, bool &$isDataValid)
+    public function validatePictureFormat(mixed $uploadedFile, bool &$isDataValid)
     {
         if ($this->isEmpty($uploadedFile['name'], $msg, 'Image') || (!in_array(strtolower(pathinfo($uploadedFile['name'])['extension']), ['jpg', 'jpeg', 'png', 'webp']))) {
             $isDataValid = false;
@@ -386,11 +386,11 @@ class ValidateData
     /**
      * Checks if the uploaded file is correct format or not
      * 
-     * @param string $uploadedFile The uploaded file
+     * @param mixed $uploadedFile The uploaded file
      * @param bool $isDataValid The variable to track if the file is in correct format or not
      * @return string|void Returns the error message if the file is not in correct format, null otherwise
      */
-    public function validateUpdatedPictureFormat(string $uploadedFile, bool &$isDataValid)
+    public function validateUpdatedPictureFormat(mixed $uploadedFile, bool &$isDataValid)
     {
         if (!empty($uploadedFile['name']) && (!in_array(strtolower(pathinfo($uploadedFile['name'])['extension']), ['jpg', 'jpeg', 'png', 'webp']))) {
             $isDataValid = false;

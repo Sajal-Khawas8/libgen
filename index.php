@@ -1,24 +1,6 @@
 <?php
 
 require "./core/bootstrap.php";
-$router = new Router();
-$router->define([
-    '' => "./pages/index.php",
-    'mybooks' => './pages/mybooks.php',
-    'bookDetails' => './pages/bookDetails.php',
-    'returnBook' => './pages/returnBook.php',
-    'cart' => './pages/cart.php',
-    'paymentSuccess' => './pages/paymentSuccess.php',
-    'signUp' => './pages/forms/registration.php',
-    'settings/update' => './pages/forms/registration.php',
-    'login' => './pages/forms/login.php',
-    'forgotPassword' => './pages/forms/forgotPassword.php',
-    'resetPassword' => './pages/forms/resetPassword.php',
-    'masterLogin' => './pages/forms/login.php',
-    'formHandler' => './core/formHandler.php',
-    'settings' => './pages/settings.php',
-    'admin' => './pages/dashboard.php',
-]);
 
 $uri = trim(str_ireplace('libgen', '', $_SERVER['REQUEST_URI']), '/');
 $queryString = parse_url($uri, PHP_URL_QUERY);
@@ -32,7 +14,6 @@ if ($_SESSION['refresh']) {
     $_SESSION['refresh'] = false;
 }
 
-// setcookie('prevPage', $uri);
 if (strpos($uri, 'admin') === 0) {
     require $router->direct('admin');
 } else {

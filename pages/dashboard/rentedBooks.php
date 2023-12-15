@@ -60,7 +60,7 @@ $joins = [
 ?>
 <?php if (!count($rentedBookIds)): ?>
     <section class="flex items-center justify-center h-full">
-        <h2 class="text-3xl font-medium text-gray-600">No book is given on rent...</h2>
+        <h2 class="text-5xl font-medium text-gray-500">No book is given on rent...</h2>
     </section>
 <?php elseif ($_SERVER['QUERY_STRING']): ?>
     <?php
@@ -69,8 +69,8 @@ $joins = [
     unset($bookIds[0]);
     $bookIds = array_intersect($bookIds, $rentedBookIds);
     if ($bookIds): ?>
-        <div>
-            <ul class="flex-1 px-6 space-y-4 overflow-y-auto">
+        <div class="flex-1 overflow-y-auto">
+            <ul class="px-6 space-y-4">
                 <?php foreach ($bookIds as $bookKey => $bookId): ?>
                     <?php
                     $uuidBook = $query->selectColumn('book_uuid', 'books', $bookId);
@@ -210,8 +210,8 @@ $joins = [
         </div>
     <?php endif; ?>
 <?php else: ?>
-    <div>
-        <ul class="flex-1 px-6 space-y-4 overflow-y-auto">
+    <div class="flex-1 overflow-y-auto">
+        <ul class="px-6 space-y-4">
             <?php foreach ($rentedBookIds as $bookKey => $bookId): ?>
                 <?php
                 $uuidBook = $query->selectColumn('book_uuid', 'books', $bookId);

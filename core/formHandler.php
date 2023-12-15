@@ -6,6 +6,9 @@ require "./classes/books.php";
 require "./classes/cart.php";
 require "./classes/mail.php";
 
+/******* Handle Login and Logout *******/
+
+// Handle Admin Login
 if (isset($_POST['masterLogin'])) {
     $isDataValid = true;
     $validation = new ValidateData();
@@ -21,46 +24,16 @@ if (isset($_POST['masterLogin'])) {
         $_SESSION['refresh'] = true;
         header("Location: /admin");
         exit;
-    } else {
-        $_SESSION['refresh'] = true;
-        setcookie('err', serialize($err), time() + 2);
-        setcookie('data', serialize($_POST), time() + 2);
-        header("Location: /masterLogin");
-        exit;
     }
-}
-
-if (isset($_POST['logout'])) {
-    setcookie('user', '', time() - 1);
-    unset($_SESSION['isAdmin']);
     $_SESSION['refresh'] = true;
-    header("Location: /libgen");
+    setcookie('err', serialize($err), time() + 2);
+    setcookie('data', serialize($_POST), time() + 2);
+    header("Location: /masterLogin");
     exit;
 }
 
-if (isset($_POST['register'])) {
-    $validationObj = new ValidateData();
-    $user = new User($validationObj);
-    unset($_POST['register'], $_POST['id'], $_POST['role']);
-    $uuid = $user->addUser($_POST);
-    setcookie('user', $uuid, time() + 86400);
-    $_SESSION['refresh'] = true;
-    $location = $_COOKIE['prevPage'] ?? '/libgen';
-    header("Location: $location");
-    exit;
-}
 
-if (isset($_POST['registerAdmin'])) {
-    $validationObj = new ValidateData();
-    $user = new User($validationObj);
-    unset($_POST['registerAdmin'], $_POST['id']);
-    $_POST['role'] = true;
-    $user->addUser($_POST);
-    $_SESSION['refresh'] = true;
-    header("Location: /admin/team");
-    exit;
-}
-
+// Handle User Login
 if (isset($_POST['login'])) {
     $isDataValid = true;
     $validation = new ValidateData();
@@ -76,23 +49,132 @@ if (isset($_POST['login'])) {
         $location = $_COOKIE['prevPage'] ?? '/libgen';
         header("Location: $location");
         exit;
+    }
+    $_SESSION['refresh'] = true;
+    setcookie('err', serialize($err), time() + 2);
+    setcookie('data', serialize($_POST), time() + 2);
+    header("Location: /login");
+    exit;
+}
+
+
+// Handle Logout
+if (isset($_POST['logout'])) {
+    setcookie('user', '', time() - 1);
+    unset($_SESSION['isAdmin']);
+    $_SESSION['refresh'] = true;
+    header("Location: /libgen");
+    exit;
+}
+
+
+/******* Handle Forgot Password and Reset Password *******/
+
+// Handle Forgot Password
+if (isset($_POST['forgotPassword'])) {
+    $isDataValid = true;
+    $validation = new ValidateData();
+    $err = $validation->validateLoginEmail($_POST['email'], $isDataValid);
+
+    if ($isDataValid) {
+        $id = uniqid();
+        $query = new DatabaseQuery();
+        $query->update('users', "uniqueID='$id', ", $_POST['email'], 'email');
+        $config = require "./core/config.php";
+        $link = openssl_encrypt($_POST['email'] . "&" . $id, $config['openssl']['algo'], $config['openssl']['pass'], 0, $config['openssl']['iv']);
+        $mail = new MailClass();
+        $message = "<p style='display: flex; font-size: 18px; align-items: center; flex-direction: column; gap: 50px;'>Please click on the following button to reset your password:<a href='http://localhost/resetPassword?$link' style='display: inline-block; text-align: center; text-decoration: none; padding: 8px 13px; background-color: #0054ff; color: white; font-size: 20px; border-radius: 10px;'>Reset Password</a></p>";
+        $mail->sendMail('Reset Password', $message, $_POST['email']);
+        header("Location: /libgen");
+    }
+    $_SESSION['refresh'] = true;
+    setcookie('err', $err, time() + 2);
+    setcookie('data', $_POST['email'], time() + 2);
+    header("Location: /forgotPassword");
+    exit;
+}
+
+
+// Handle Reset Password
+if (isset($_POST['resetPW'])) {
+    $isDataValid = true;
+    $validation = new ValidateData();
+    $config = require "./core/config.php";
+    $id = openssl_decrypt($_POST['id'], $config['openssl']['algo'], $config['openssl']['pass'], 0, $config['openssl']['iv']);
+    if (!$id) {
+        setcookie('error', true, time() + 2);
+        setcookie('message', 'Some Error Occurred', time() + 2);
+        header("Location: /libgen");
+        exit;
+    }
+    $err = [
+        'passwordErr' => $validation->validatePasswordFormat($_POST['password'], $isDataValid),
+        'cnfrmPasswordErr' => $validation->validateCnfrmPassword($_POST['cnfrmPassword'], $_POST['password'], $isDataValid),
+    ];
+    if ($isDataValid) {
+        list($email, $id) = explode("&", $id);
+        $query = new DatabaseQuery();
+        $idFromDb = $query->selectColumn('uniqueID', 'users', $email, 'email');
+        if ($idFromDb === $id) {
+            $query->update('users', "password='{$_POST['password']}', uniqueID=null, ", $email, 'email');
+            setcookie('message', 'Password has been updated successfully', time() + 2);
+            header("Location: /login");
+            exit;
+        } else {
+            setcookie('error', true, time() + 2);
+            setcookie('message', 'Some Error Occurred!', time() + 2);
+            header("Location: /forgotPassword");
+            exit;
+        }
     } else {
         $_SESSION['refresh'] = true;
         setcookie('err', serialize($err), time() + 2);
-        setcookie('data', serialize($_POST), time() + 2);
-        header("Location: /login");
+        header("Location: /resetPassword?" . $_POST['id']);
         exit;
     }
 }
 
+/******* Handle Users *******/
+
+// Handle User Registration
+if (isset($_POST['register'])) {
+    $validationObj = new ValidateData();
+    $user = new User($validationObj);
+    unset($_POST['register'], $_POST['id'], $_POST['role']);
+    $uuid = $user->addUser($_POST);
+    setcookie('user', $uuid, time() + 86400);
+    $_SESSION['refresh'] = true;
+    $location = $_COOKIE['prevPage'] ?? '/libgen';
+    header("Location: $location");
+    exit;
+}
+
+
+// Handle Admin Registration
+if (isset($_POST['registerAdmin'])) {
+    $validationObj = new ValidateData();
+    $user = new User($validationObj);
+    unset($_POST['registerAdmin'], $_POST['id']);
+    $_POST['role'] = true;
+    $user->addUser($_POST);
+    $_SESSION['refresh'] = true;
+    header("Location: /admin/team");
+    exit;
+}
+
+// Handle Update button of Admin
 if (isset($_POST['updateAdmin'])) {
     header("Location: admin/settings/update?{$_POST['id']}");
 }
 
+
+// Handle Update button of User
 if (isset($_POST['updateUser'])) {
     header("Location: settings/update?{$_POST['id']}");
 }
 
+
+// Handle Update data
 if (isset($_POST['updateData'])) {
     $config = require "./core/config.php";
     $id = openssl_decrypt($_POST['id'], $config['openssl']['algo'], $config['openssl']['pass'], 0, $config['openssl']['iv']);
@@ -112,15 +194,16 @@ if (isset($_POST['updateData'])) {
         $location = isset($_SESSION['isAdmin']) ? '/admin/settings' : '/settings';
         header("Location: $location");
         exit;
-    } else {
-        setcookie('user', '', time() - 1);
-        unset($_SESSION['isAdmin']);
-        $_SESSION['refresh'] = true;
-        header("Location: /libgen");
-        exit;
     }
+    setcookie('user', '', time() - 1);
+    unset($_SESSION['isAdmin']);
+    $_SESSION['refresh'] = true;
+    header("Location: /libgen");
+    exit;
 }
 
+
+// Handle delete account
 if (isset($_POST['deleteAccount'])) {
     $config = require "./core/config.php";
     $id = openssl_decrypt($_POST['id'], $config['openssl']['algo'], $config['openssl']['pass'], 0, $config['openssl']['iv']);
@@ -132,15 +215,17 @@ if (isset($_POST['deleteAccount'])) {
         $_SESSION['refresh'] = true;
         header("Location: /libgen");
         exit;
-    } else {
-        setcookie('user', '', time() - 1);
-        unset($_SESSION['isAdmin']);
-        $_SESSION['refresh'] = true;
-        header("Location: /libgen");
-        exit;
     }
+    setcookie('user', '', time() - 1);
+    unset($_SESSION['isAdmin']);
+    $_SESSION['refresh'] = true;
+    header("Location: /libgen");
+    exit;
 }
 
+/******* Handle Admins *******/
+
+// Handle remove admin
 if (isset($_POST['removeAdmin'])) {
     $query = new DatabaseQuery();
     $isSuperAdmin = $query->selectColumn('isSuper', 'users', $_COOKIE['user'], 'uuid');
@@ -153,15 +238,16 @@ if (isset($_POST['removeAdmin'])) {
         $_SESSION['refresh'] = true;
         header("Location: /admin/team");
         exit;
-    } else {
-        setcookie('user', '', time() - 1);
-        unset($_SESSION['isAdmin']);
-        $_SESSION['refresh'] = true;
-        header("Location: /libgen");
-        exit;
     }
+    setcookie('user', '', time() - 1);
+    unset($_SESSION['isAdmin']);
+    $_SESSION['refresh'] = true;
+    header("Location: /libgen");
+    exit;
 }
 
+
+// Make an Admin as Super Admin
 if (isset($_POST['makeSuperAdmin'])) {
     $query = new DatabaseQuery();
     $isSuperAdmin = $query->selectColumn('isSuper', 'users', $_COOKIE['user'], 'uuid');
@@ -172,15 +258,16 @@ if (isset($_POST['makeSuperAdmin'])) {
         $_SESSION['refresh'] = true;
         header("Location: /admin/team");
         exit;
-    } else {
-        setcookie('user', '', time() - 1);
-        unset($_SESSION['isAdmin']);
-        $_SESSION['refresh'] = true;
-        header("Location: /libgen");
-        exit;
     }
+    setcookie('user', '', time() - 1);
+    unset($_SESSION['isAdmin']);
+    $_SESSION['refresh'] = true;
+    header("Location: /libgen");
+    exit;
 }
 
+
+// Handle Remove Super Admin
 if (isset($_POST['removeSuperAdmin'])) {
     $query = new DatabaseQuery();
     $isSuperAdmin = $query->selectColumn('isSuper', 'users', $_COOKIE['user'], 'uuid');
@@ -191,15 +278,16 @@ if (isset($_POST['removeSuperAdmin'])) {
         $_SESSION['refresh'] = true;
         header("Location: /admin/team");
         exit;
-    } else {
-        setcookie('user', '', time() - 1);
-        unset($_SESSION['isAdmin']);
-        $_SESSION['refresh'] = true;
-        header("Location: /libgen");
-        exit;
     }
+    setcookie('user', '', time() - 1);
+    unset($_SESSION['isAdmin']);
+    $_SESSION['refresh'] = true;
+    header("Location: /libgen");
+    exit;
 }
 
+
+// Handle block user
 if (isset($_POST['blockUser'])) {
     $config = require "./core/config.php";
     $id = openssl_decrypt($_POST['id'], $config['openssl']['algo'], $config['openssl']['pass'], 0, $config['openssl']['iv']);
@@ -217,6 +305,9 @@ if (isset($_POST['blockUser'])) {
     exit;
 }
 
+/******* Handle Categories *******/
+
+// Handle Add category
 if (isset($_POST['addCategory'])) {
     $validationObj = new ValidateData();
     $category = new Category($validationObj);
@@ -224,11 +315,15 @@ if (isset($_POST['addCategory'])) {
     $category->addCategory($_POST);
 }
 
+
+// Handle Update Category button
 if (isset($_POST['updateCategory'])) {
     header("Location: admin/categories/updateCategory?{$_POST['id']}");
     exit;
 }
 
+
+// Update Category Data
 if (isset($_POST['updateCategoryData'])) {
     $validationObj = new ValidateData();
     $category = new Category($validationObj);
@@ -252,6 +347,8 @@ if (isset($_POST['updateCategoryData'])) {
     exit;
 }
 
+
+// Delete Category
 if (isset($_POST['deleteCategory'])) {
     $category = new Category();
     $config = require "./core/config.php";
@@ -268,6 +365,9 @@ if (isset($_POST['deleteCategory'])) {
     exit;
 }
 
+/******* Handle Books *******/
+
+// Add a book
 if (isset($_POST['addBook'])) {
     $validationObj = new ValidateData();
     $book = new Book($validationObj);
@@ -275,11 +375,15 @@ if (isset($_POST['addBook'])) {
     $book->addBook($_POST);
 }
 
+
+// Handle update book button
 if (isset($_POST['updateBook'])) {
     header("Location: admin/books/updateBook?{$_POST['id']}");
     exit;
 }
 
+
+// Update Book Data
 if (isset($_POST['updateBookData'])) {
     $validationObj = new ValidateData();
     $book = new Book($validationObj);
@@ -303,6 +407,8 @@ if (isset($_POST['updateBookData'])) {
     exit;
 }
 
+
+// Delete Book
 if (isset($_POST['deleteBook'])) {
     $book = new Book();
     $config = require "./core/config.php";
@@ -319,6 +425,8 @@ if (isset($_POST['deleteBook'])) {
     exit;
 }
 
+
+// Handle Payment of Single Book
 if (isset($_POST['payment'])) {
     if (!isset($_COOKIE['user'])) {
         header("Location: /login");
@@ -367,7 +475,7 @@ if (isset($_POST['payment'])) {
             'payment_id' => uniqid("pay-"),
             'user_id' => $_COOKIE['user'],
             'amount' => $amount,
-            'card' => substr($_POST['cardNumber'], -1, 4)
+            'card' => substr($_POST['cardNumber'], -4)
         ];
 
         $query->add('payment', $paymentData);
@@ -396,15 +504,17 @@ if (isset($_POST['payment'])) {
         setcookie('message', 'Payment is Successful', time() + 2);
         header("Location: /mybooks");
         exit;
-    } else {
-        $_SESSION['refresh'] = true;
-        setcookie('err', serialize($err), time() + 2);
-        setcookie('data', serialize($_POST), time() + 2);
-        header("Location: {$_COOKIE['prevPage']}");
-        exit;
     }
+    $_SESSION['refresh'] = true;
+    setcookie('err', serialize($err), time() + 2);
+    setcookie('data', serialize($_POST), time() + 2);
+    header("Location: {$_COOKIE['prevPage']}");
+    exit;
 }
 
+/******* Handle Return Book with Fine or without Fine *******/
+
+// Handle Return Book
 if (isset($_POST['returnBook'])) {
     $config = require "./core/config.php";
     $uuid = openssl_decrypt($_POST['id'], $config['openssl']['algo'], $config['openssl']['pass'], 0, $config['openssl']['iv']);
@@ -437,6 +547,8 @@ if (isset($_POST['returnBook'])) {
     exit;
 }
 
+
+// Handle Return Book with Fine
 if (isset($_POST['returnBookFine'])) {
     $config = require "./core/config.php";
     $uuid = openssl_decrypt($_POST['id'], $config['openssl']['algo'], $config['openssl']['pass'], 0, $config['openssl']['iv']);
@@ -478,21 +590,23 @@ if (isset($_POST['returnBookFine'])) {
             'payment_id' => uniqid("pay-"),
             'user_id' => $_COOKIE['user'],
             'amount' => $amount,
-            'card' => substr($_POST['cardNumber'], -1, 4)
+            'card' => substr($_POST['cardNumber'], -4)
         ];
         $query->add('payment', $paymentData);
         setcookie('message', 'Payment is Successful and Book is Returned', time() + 2);
         header("Location: /mybooks");
         exit;
-    } else {
-        $_SESSION['refresh'] = true;
-        setcookie('err', serialize($err), time() + 2);
-        setcookie('data', serialize($_POST), time() + 2);
-        header("Location: {$_COOKIE['prevPage']}");
-        exit;
     }
+    $_SESSION['refresh'] = true;
+    setcookie('err', serialize($err), time() + 2);
+    setcookie('data', serialize($_POST), time() + 2);
+    header("Location: {$_COOKIE['prevPage']}");
+    exit;
 }
 
+/******* Handle Cart *******/
+
+// Handle Add to cart
 if (isset($_POST['addToCart'])) {
     if (!isset($_COOKIE['user'])) {
         header("Location: /login");
@@ -514,6 +628,8 @@ if (isset($_POST['addToCart'])) {
     exit;
 }
 
+
+// Handle Remove from cart
 if (isset($_POST['removeFromCart'])) {
     $config = require "./core/config.php";
     $id = openssl_decrypt($_POST['id'], $config['openssl']['algo'], $config['openssl']['pass'], 0, $config['openssl']['iv']);
@@ -530,6 +646,8 @@ if (isset($_POST['removeFromCart'])) {
     exit;
 }
 
+
+// Handle Cart Payment
 if (isset($_POST['cartPayment'])) {
     $config = require "./core/config.php";
     $cartItems = openssl_decrypt($_POST['items'], $config['openssl']['algo'], $config['openssl']['pass'], 0, $config['openssl']['iv']);
@@ -573,7 +691,7 @@ if (isset($_POST['cartPayment'])) {
             'payment_id' => $paymentId,
             'user_id' => $_COOKIE['user'],
             'amount' => $totalRent,
-            'card' => substr($_POST['cardNumber'], -1, 4)
+            'card' => substr($_POST['cardNumber'], -4)
         ];
 
         $query->add('payment', $paymentData);
@@ -606,77 +724,18 @@ if (isset($_POST['cartPayment'])) {
         setcookie('message', 'Payment is Successful', time() + 2);
         header("Location: /mybooks");
         exit;
-    } else {
-        $_SESSION['refresh'] = true;
-        setcookie('err', serialize($err), time() + 2);
-        setcookie('data', serialize($_POST), time() + 2);
-        header("Location: {$_COOKIE['prevPage']}");
-        exit;
     }
+    $_SESSION['refresh'] = true;
+    setcookie('err', serialize($err), time() + 2);
+    setcookie('data', serialize($_POST), time() + 2);
+    header("Location: {$_COOKIE['prevPage']}");
+    exit;
 }
 
-if (isset($_POST['forgotPassword'])) {
-    $isDataValid = true;
-    $validation = new ValidateData();
-    $err = $validation->validateLoginEmail($_POST['email'], $isDataValid);
 
-    if ($isDataValid) {
-        $id = uniqid();
-        $query = new DatabaseQuery();
-        $query->update('users', "uniqueID='$id', ", $_POST['email'], 'email');
-        $config = require "./core/config.php";
-        $link = openssl_encrypt($_POST['email'] . "&" . $id, $config['openssl']['algo'], $config['openssl']['pass'], 0, $config['openssl']['iv']);
-        $mail = new MailClass();
-        $message = "<p style='display: flex; flex-direction: column; align-items: center; font-size: 18px; gap: 54px;'>Please click on the following button to reset your password:<a href='http://localhost/resetPassword?$link' style='display: inline-block; text-align: center; text-decoration: none; padding: 8px 13px; background-color: #0054ff; color: white; font-size: 20px; border-radius: 10px;'>Reset Password</a></p>";
-        $mail->sendMail('Reset Password', $message, $_POST['email']);
-        header("Location: /libgen");
-    } else {
-        $_SESSION['refresh'] = true;
-        setcookie('err', $err, time() + 2);
-        setcookie('data', $_POST['email'], time() + 2);
-        header("Location: /forgotPassword");
-        exit;
-    }
-}
+/******* Handle Search Functionalities *******/
 
-if (isset($_POST['resetPW'])) {
-    $isDataValid = true;
-    $validation = new ValidateData();
-    $config = require "./core/config.php";
-    $id = openssl_decrypt($_POST['id'], $config['openssl']['algo'], $config['openssl']['pass'], 0, $config['openssl']['iv']);
-    if (!$id) {
-        setcookie('error', true, time() + 2);
-        setcookie('message', 'Some Error Occurred', time() + 2);
-        header("Location: /libgen");
-        exit;
-    }
-    $err = [
-        'passwordErr' => $validation->validatePasswordFormat($_POST['password'], $isDataValid),
-        'cnfrmPasswordErr' => $validation->validateCnfrmPassword($_POST['cnfrmPassword'], $_POST['password'], $isDataValid),
-    ];
-    if ($isDataValid) {
-        list($email, $id) = explode("&", $id);
-        $query = new DatabaseQuery();
-        $idFromDb = $query->selectColumn('uniqueID', 'users', $email, 'email');
-        if ($idFromDb === $id) {
-            $query->update('users', "password='{$_POST['password']}', uniqueID=null, ", $email, 'email');
-            setcookie('message', 'Password has been updated successfully', time() + 2);
-            header("Location: /login");
-            exit;
-        } else {
-            setcookie('error', true, time() + 2);
-            setcookie('message', 'Some Error Occurred!', time() + 2);
-            header("Location: /forgotPassword");
-            exit;
-        }
-    } else {
-        $_SESSION['refresh'] = true;
-        setcookie('err', serialize($err), time() + 2);
-        header("Location: /resetPassword?" . $_POST['id']);
-        exit;
-    }
-}
-
+// Handle Search Books in Home Page
 if (isset($_POST['searchBookHome'])) {
     $config = require "./core/config.php";
     $categoryId = openssl_decrypt($_POST['category'], $config['openssl']['algo'], $config['openssl']['pass'], 0, $config['openssl']['iv']);
@@ -706,6 +765,8 @@ if (isset($_POST['searchBookHome'])) {
     exit;
 }
 
+
+// Handle Serach Book in Admin Panel
 if (isset($_POST['searchBookAdmin'])) {
     $config = require "./core/config.php";
     $categoryId = openssl_decrypt($_POST['category'], $config['openssl']['algo'], $config['openssl']['pass'], 0, $config['openssl']['iv']);
@@ -736,6 +797,8 @@ if (isset($_POST['searchBookAdmin'])) {
     exit;
 }
 
+
+// Handle Search Books Given on Rent
 if (isset($_POST['searchRentedBook'])) {
     $config = require "./core/config.php";
     $categoryId = openssl_decrypt($_POST['category'], $config['openssl']['algo'], $config['openssl']['pass'], 0, $config['openssl']['iv']);
@@ -766,6 +829,8 @@ if (isset($_POST['searchRentedBook'])) {
     exit;
 }
 
+
+// Handle Search Category
 if (isset($_POST['searchCategory'])) {
     $config = require "./core/config.php";
     $query = new DatabaseQuery();
@@ -780,6 +845,8 @@ if (isset($_POST['searchCategory'])) {
     exit;
 }
 
+
+// Handle Search User
 if (isset($_POST['searchUser'])) {
     $config = require "./core/config.php";
     $query = new DatabaseQuery();
@@ -800,6 +867,8 @@ if (isset($_POST['searchUser'])) {
     exit;
 }
 
+
+// Handle Search Admin
 if (isset($_POST['searchAdmin'])) {
     $config = require "./core/config.php";
     $query = new DatabaseQuery();
@@ -825,6 +894,8 @@ if (isset($_POST['searchAdmin'])) {
     exit;
 }
 
+
+// Handle Search Payment
 if (isset($_POST['searchPayment'])) {
     $config = require "./core/config.php";
     $query = new DatabaseQuery();

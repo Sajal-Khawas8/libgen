@@ -1,4 +1,5 @@
 <?php
+unset($userData);
 if ((isset($_COOKIE['user']) && empty($_SERVER['QUERY_STRING']) && $uri !== 'addMember') || (!isset($_COOKIE['user']) && !empty($_SERVER['QUERY_STRING']))) {
     $_SESSION['refresh'] = true;
     header("Location: /libgen");
@@ -19,12 +20,10 @@ if (!empty($_SERVER['QUERY_STRING'])) {
 }
 if (isset($_COOKIE['err'])) {
     $err = unserialize($_COOKIE['err']);
-}
-if (isset($_COOKIE['data'])) {
     $userData = unserialize($_COOKIE['data']);
 }
 ?>
-<main class="container border-x space-y-6 py-8 min-h-[calc(100vh-4rem-3.5rem)]">
+<main class="container border-x space-y-6 py-8 min-h-[calc(100vh-4rem-3.5rem)] overflow-auto">
     <h1 class="text-center text-4xl font-semibold">
         <?= empty($_SERVER['QUERY_STRING']) ? ($uri !== 'addMember' ? 'New User Registration' : 'New Admin Registration') : 'Update Your Info'; ?>
     </h1>
@@ -35,7 +34,7 @@ if (isset($_COOKIE['data'])) {
             <span class="text-red-600 text-sm font-medium"><?= $err['nameErr'] ?? ''; ?></span>
         </div>
         <div>
-            <input type="text" name="email" id="email" placeholder="Email Address"
+            <input type="email" name="email" id="email" placeholder="Email Address"
                 value="<?= $userData['email'] ?? ''; ?>"
                 class="w-full px-4 py-2 border border-gray-600 rounded outline-indigo-600 placeholder:text-gray-500">
             <span class="text-red-600 text-sm font-medium"><?= $err['emailErr'] ?? ''; ?></span>

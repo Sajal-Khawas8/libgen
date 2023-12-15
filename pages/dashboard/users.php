@@ -39,8 +39,8 @@ if (isset($_COOKIE['data'])) {
                     <?php
                     $rentedBooks = $query->selectAllSpecific('rented_books', $user['uuid'], 'user_id');
                     ?>
-                    <li class="bg-white rounded-md p-2 h-fit">
-                        <article class="space-y-3">
+                    <li class="bg-white rounded-md p-2">
+                        <article class="flex flex-col justify-between h-full space-y-3">
                             <div class="flex items-center justify-between">
                                 <h2 class="font-semibold text-2xl"><?= $user['name']; ?></h2>
                                 <?php if (!$user['role']): ?>
@@ -190,8 +190,8 @@ if (isset($_COOKIE['data'])) {
                     $query = new DatabaseQuery();
                     $rentedBooks = $query->selectAllSpecific('rented_books', $user['uuid'], 'user_id');
                     ?>
-                    <li class="bg-white rounded-md p-2 h-fit">
-                        <article class="space-y-3">
+                    <li class="bg-white rounded-md p-2">
+                        <article class="flex flex-col justify-between h-full space-y-3">
                             <div class="flex items-center justify-between">
                                 <h2 class="font-semibold text-2xl"><?= $user['name']; ?></h2>
                                 <?php if (!$user['role']): ?>

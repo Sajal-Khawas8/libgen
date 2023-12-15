@@ -17,7 +17,7 @@ if (isset($_COOKIE['data'])) {
         <form action="/formHandler" method="post" enctype="multipart/form-data"
             class="space-y-8 py-5 max-w-md mx-auto w-full">
             <div>
-                <input type="text" name="email" id="email" placeholder="Email Address"
+                <input type="email" name="email" id="email" placeholder="Email Address"
                     value="<?= $userData['email'] ?? '' ?>"
                     class="w-full px-4 py-2 border border-gray-600 rounded outline-indigo-600 placeholder:text-gray-500">
                 <span class="text-red-600 text-sm font-medium"><?= $err['emailErr'] ?? ''; ?></span>

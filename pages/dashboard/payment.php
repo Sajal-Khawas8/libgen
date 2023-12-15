@@ -33,9 +33,9 @@ if (isset($_COOKIE['data'])) {
         </div>
     <?php endif; ?>
 </header>
-<div class="flex-1 overflow-auto">
+<div class="flex-1 overflow-auto pb-6">
     <?php if (!count($paymentData)): ?>
-        <h2 class="text-3xl font-medium text-gray-600">No Payment Data Available...
+        <h2 class="text-5xl font-medium text-gray-500 flex justify-center items-center h-full">No Payment Data Available...
         </h2>
     <?php else: ?>
         <table class="border-separate border-spacing-0 text-center border border-b-2 border-gray-800 mx-auto">

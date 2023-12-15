@@ -165,7 +165,8 @@ if (isset($_COOKIE['err'])) {
                 <input type="hidden" name="items"
                     value="<?= openssl_encrypt($cartItemsId, $config['openssl']['algo'], $config['openssl']['pass'], 0, $config['openssl']['iv']); ?>">
                 <button name="cartPayment"
-                    class="px-4 py-1 bg-indigo-600 text-white text-lg font-medium rounded-md w-full hover:bg-indigo-800">Get All Books</button>
+                    class="px-4 py-1 bg-indigo-600 text-white text-lg font-medium rounded-md w-full hover:bg-indigo-800">Get
+                    All Books</button>
             </form>
         </section>
     <?php else: ?>
