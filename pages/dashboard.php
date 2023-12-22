@@ -144,7 +144,7 @@ require "./templates/header.php"; ?>
                 </svg>
             <?php else: ?>
                 <div class="w-10 h-10 rounded-full">
-                    <img src="/libgen/assets/uploads/images/users/<?= $userData['image'] ?>" alt="<?= $userData['name'] ?>"
+                    <img src="<?= $userData['image'] ?>" alt="<?= $userData['name'] ?>"
                         class="w-full h-full object-cover rounded-full">
                 </div>
             <?php endif; ?>

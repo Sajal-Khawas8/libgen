@@ -62,8 +62,8 @@ if (isset($_COOKIE['data'])) {
                                     </div>
                                 <?php else: ?>
                                     <div class="h-40 w-40 rounded-md">
-                                        <img src="/libgen/assets/uploads/images/users/<?= $admin['image'] ?>"
-                                            alt="<?= $admin['name'] ?>" class="h-full w-full object-cover rounded-md">
+                                        <img src="<?= $admin['image']; ?>"
+                                            alt="<?= $admin['name']; ?>" class="h-full w-full object-cover rounded-md">
                                     </div>
                                 <?php endif; ?>
                                 <div class="space-y-3">
@@ -158,8 +158,8 @@ if (isset($_COOKIE['data'])) {
                                     </div>
                                 <?php else: ?>
                                     <div class="h-40 w-40 rounded-md">
-                                        <img src="/libgen/assets/uploads/images/users/<?= $admin['image'] ?>"
-                                            alt="<?= $admin['name'] ?>" class="h-full w-full object-cover rounded-md">
+                                        <img src="<?= $admin['image']; ?>"
+                                            alt="<?= $admin['name']; ?>" class="h-full w-full object-cover rounded-md">
                                     </div>
                                 <?php endif; ?>
                                 <div class="space-y-3">

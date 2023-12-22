@@ -47,6 +47,7 @@ class User
             $file = new File($_FILES['profilePicture']);
             if ($file->fileExist) {
                 $data['image'] = $file->moveFile('users');
+                $data['image']="http://localhost/libgen/assets/uploads/images/users/" . $data['image'];
             }
 
             // Add data to table
@@ -95,9 +96,11 @@ class User
             $file = new File($_FILES['profilePicture']);
             if ($file->fileExist) {
                 $data['image'] = $file->moveFile('users');
+                $data['image'] = "http://localhost/libgen/assets/uploads/images/users/" . $data['image'];
                 $query = new DatabaseQuery();
                 $oldImage = $query->selectColumn('image', 'users', $uuid, 'uuid');
-                unlink("assets/uploads/images/users/$oldImage");
+                $oldImage= str_replace('http://localhost/libgen/', '', $oldImage);
+                unlink($oldImage);
             }
 
             // update data

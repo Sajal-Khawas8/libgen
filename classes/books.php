@@ -45,6 +45,7 @@ class Book
             // Upload the book cover image
             $file = new File($_FILES['cover']);
             $data['cover'] = $file->moveFile('books');
+            $data['cover']="http://localhost/libgen/assets/uploads/images/books/" . $data['cover'];
 
             $copies = $data['copies'];
             unset($data['copies']);
@@ -106,11 +107,13 @@ class Book
             $file = new File($_FILES['cover']);
             if ($file->fileExist) {
                 $data['cover'] = $file->moveFile('books');
+                $data['cover']="http://localhost/libgen/assets/uploads/images/books/" . $data['cover'];
 
                 // Search and delete the old picture
                 $query = new DatabaseQuery();
                 $oldImage = $query->selectColumn('cover', 'books', $id, 'book_uuid');
-                unlink("assets/uploads/images/books/$oldImage");
+                $oldImage=str_replace('http://localhost/libgen/', '', $oldImage);
+                unlink($oldImage);
             }
 
             // Update the data
@@ -151,7 +154,7 @@ class Book
         $joins = [
             [
                 'table' => 'books',
-                'condition' => 'books.id = quantity.book_id'
+                'condition' => 'books.book_uuid = quantity.book_id'
             ]
         ];
         $bookData = $query->selectOneJoin('quantity', $joins, '*', $id, 'book_uuid');
@@ -166,10 +169,8 @@ class Book
         // Delete the book from the books table
         $query->delete('books', $id, 'book_uuid');
 
-        // Delete the related entry in the quantity table
-        // $query->delete('quantity', $id, 'book_id');
-
         // Delete the cover image from the file system
-        unlink("assets/uploads/images/books/{$bookData['cover']}");
+        $image=str_replace('http://localhost/libgen/', '', $bookData['cover']);
+        unlink($image);
     }
 }

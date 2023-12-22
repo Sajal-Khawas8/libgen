@@ -83,7 +83,7 @@ if (isset($_COOKIE['err'])) {
                                 </div>
                             <?php else: ?>
                                 <div class="py-4">
-                                    <img src="http://localhost/libgen/assets/uploads/images/<?= $userData['image']; ?>" alt=""
+                                    <img src="<?= $userData['image']; ?>" alt="<?= $userData['name']; ?>"
                                         class="w-52 h-52 mx-auto">
                                 </div>
                             <?php endif; ?>

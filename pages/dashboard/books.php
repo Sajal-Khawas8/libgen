@@ -100,7 +100,7 @@ $books = $query->selectAllJoin('books', $joins);
                         <?php endif; ?>
                         <article class="flex items-center gap-10 h-32">
                             <div class="h-full w-24">
-                                <img src="/libgen/assets/uploads/images/books/<?= $book['cover'] ?>" alt="<?= $book['title'] ?>"
+                                <img src="<?= $book['cover']; ?>" alt="<?= $book['title']; ?>"
                                     class="h-full w-full object-fill">
                             </div>
                             <div class="flex flex-col justify-between h-full">
@@ -200,24 +200,24 @@ $books = $query->selectAllJoin('books', $joins);
                     <?php endif; ?>
                     <article class="flex items-center gap-10 h-32">
                         <div class="h-full w-24">
-                            <img src="/libgen/assets/uploads/images/books/<?= $book['cover'] ?>" alt="<?= $book['title'] ?>"
+                            <img src="<?= $book['cover']; ?>" alt="<?= $book['title']; ?>"
                                 class="h-full w-full object-fill">
                         </div>
                         <div class="flex flex-col justify-between h-full">
-                            <h2 class="text-2xl font-semibold"><?= $book['title'] ?></h2>
-                            <h3 class="text-lg font-semibold"><?= $book['author'] ?></h3>
+                            <h2 class="text-2xl font-semibold"><?= $book['title']; ?></h2>
+                            <h3 class="text-lg font-semibold"><?= $book['author']; ?></h3>
                             <dl class="grid grid-cols-3 gap-8">
                                 <div class="flex gap-2">
                                     <dt class="font-medium">Category:</dt>
-                                    <dd><?= $book['name'] ?></dd>
+                                    <dd><?= $book['name']; ?></dd>
                                 </div>
                                 <div class="flex gap-2">
                                     <dt class="font-medium">Total Quantity:</dt>
-                                    <dd><?= $book['copies'] ?></dd>
+                                    <dd><?= $book['copies']; ?></dd>
                                 </div>
                                 <div class="flex gap-2">
                                     <dt class="font-medium">Available:</dt>
-                                    <dd><?= $book['available'] ?></dd>
+                                    <dd><?= $book['available']; ?></dd>
                                 </div>
                             </dl>
                             <dl class="grid grid-cols-3 gap-8">

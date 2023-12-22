@@ -111,7 +111,7 @@ if (empty($categories)): ?>
                                     </svg>
                                 </button>
                                 <div class="py-4">
-                                    <img src="/libgen/assets/uploads/images/books/<?= $bookData['cover']; ?>"
+                                    <img src="<?= $bookData['cover']; ?>"
                                         alt="<?= $bookData['title']; ?>" class="w-60 h-72 mx-auto">
                                 </div>
                             </div>

@@ -28,7 +28,7 @@ $rentedBooks = array_filter($rentedBooks, function ($rentedBook) {
                     <li class="border rounded-lg divide-y relative hover:shadow-lg">
                         <figure>
                             <div class="h-72 w-56 border">
-                                <img src="/libgen/assets/uploads/images/books/<?= $book['cover']; ?>"
+                                <img src="<?= $book['cover']; ?>"
                                     alt="<?= $book['title']; ?>" class="h-full w-full object-fill">
                             </div>
                             <figcaption class="p-2 max-w-[14rem] space-y-4">

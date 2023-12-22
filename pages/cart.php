@@ -37,7 +37,7 @@ if (isset($_COOKIE['err'])) {
                     <li class="px-3 py-3 rounded-md <?= $bookData['available'] ? 'bg-white' : 'bg-slate-300/80'; ?>">
                         <article class="flex items-center gap-7 h-32">
                             <div class="h-full w-24">
-                                <img src="/libgen/assets/uploads/images/books/<?= $bookData['cover']; ?>"
+                                <img src="<?= $bookData['cover']; ?>"
                                     alt="<?= $bookData['title']; ?>" class="h-full w-full object-fill">
                             </div>
                             <div class="flex-1 flex flex-col justify-between h-full">

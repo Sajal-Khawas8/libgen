@@ -16,7 +16,7 @@ $user = $query->selectOne('users', $_SESSION['user'][0], 'uuid');
         </div>
     <?php else: ?>
         <div class="w-64 h-64 rounded-md mx-auto border border-gray-400">
-            <img src="/libgen/assets/uploads/images/users/<?= $user['image'] ?>" alt="<?= $user['name']; ?>"
+            <img src="<?= $user['image'] ?>" alt="<?= $user['name']; ?>"
                 class="w-full h-full object-cover rounded-md">
         </div>
     <?php endif; ?>

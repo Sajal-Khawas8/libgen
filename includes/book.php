@@ -24,7 +24,7 @@ $bookData = $query->selectOneJoin('books', $joins, '*', $bookId, 'book_uuid');
 
 <section class="flex-1 space-y-3 px-6 py-4 bg-slate-100">
     <div class="h-80 w-60 mx-auto border">
-        <img src="/libgen/assets/uploads/images/books/<?= $bookData['cover']; ?>" alt="<?= $bookData['title']; ?>"
+        <img src="<?= $bookData['cover']; ?>" alt="<?= $bookData['title']; ?>"
             class="h-full w-full object-fill">
     </div>
     <h1 class="font-semibold text-3xl"><?= $bookData['title']; ?></h1>
