@@ -1,5 +1,11 @@
 <?php
 session_start();
+if (isset($_COOKIE['user'])) {
+    $config = require "./core/config.php";
+    $user= openssl_decrypt($_COOKIE['user'], $config['openssl']['algo'], $config['openssl']['pass'], 0, $config['openssl']['iv']);
+    $user=unserialize($user);
+    $_SESSION['user']=$user;
+}
 require "./classes/router.php";
 require "./classes/database.php";
 $router = new Router();

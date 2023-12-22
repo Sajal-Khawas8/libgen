@@ -1,11 +1,11 @@
 <?php
 setcookie('prevPage', $uri);
-if (!isset($_COOKIE['user']) || isset($_SESSION['isAdmin'])) {
+if (!isset($_SESSION['user']) || $_SESSION['user'][1] !== '1') {
     header("Location: /login");
     exit;
 }
 $query = new DatabaseQuery();
-$cartItems = $query->selectAllSpecific('cart', $_COOKIE['user'], 'user_id');
+$cartItems = $query->selectAllSpecific('cart', $_SESSION['user'][0], 'user_id');
 $cartItems = array_map(function ($cartItem) {
     return $cartItem['book_id'];
 }, $cartItems);
@@ -29,7 +29,7 @@ if (isset($_COOKIE['err'])) {
                         ],
                         [
                             'table' => 'quantity',
-                            'condition' => 'quantity.book_id = books.id'
+                            'condition' => 'quantity.book_id = books.book_uuid'
                         ],
                     ];
                     $bookData = $query->selectOneJoin('books', $joins, '*', $itemId, 'book_uuid');
@@ -49,7 +49,7 @@ if (isset($_COOKIE['err'])) {
                                         $conditions = [
                                             [
                                                 'criteria' => 'user_id',
-                                                'id' => $_COOKIE['user']
+                                                'id' => $_SESSION['user'][0]
                                             ],
                                             [
                                                 'criteria' => 'book_id',
@@ -88,12 +88,8 @@ if (isset($_COOKIE['err'])) {
                                 </dl>
                                 <dl class="grid grid-cols-2 gap-8">
                                     <div class="flex gap-2">
-                                        <dt class="font-medium">Base Price (For 30 days):</dt>
-                                        <dd>&#x20B9;<?= $bookData['rent'] + $bookData['base'] ?></dd>
-                                    </div>
-                                    <div class="flex gap-2">
-                                        <dt class="font-medium">Rent after 30 days:</dt>
-                                        <dd>&#x20B9;<?= $bookData['additional'] ?>/15 days</dd>
+                                        <dt class="font-medium">Rent:</dt>
+                                        <dd>&#x20B9;<?= $bookData['rent']; ?>/day</dd>
                                     </div>
                                 </dl>
                             </div>
@@ -140,7 +136,7 @@ if (isset($_COOKIE['err'])) {
                         ],
                         [
                             'table' => 'quantity',
-                            'condition' => 'quantity.book_id = books.id'
+                            'condition' => 'quantity.book_id = books.book_uuid'
                         ],
                     ];
                     $bookData = $query->selectOneJoin('books', $joins, '*', $itemId, 'book_uuid');

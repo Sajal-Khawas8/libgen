@@ -517,7 +517,7 @@ class ValidateData
      * @param bool $isDataValid The variable to track if the email is valid or not
      * @return string|void Returns the error message if the email is not valid, or null otherwise
      */
-    public function validateAdminLoginEmail(string $email, bool &$isDataValid)
+    public function validateAdminLoginEmail(string &$email, bool &$isDataValid)
     {
         $this->cleanData($email);
         if ($this->isEmpty($email, $errMsg, 'Email') || $this->isInvalidFormat($email, $errMsg, 'Email')) {
@@ -527,7 +527,7 @@ class ValidateData
 
         $query = new DatabaseQuery();
         $data = $query->selectOne('users', $email, 'email');
-        if (!$data['active'] || !$data['role']) {
+        if (!$data['active'] || $data['role'] === '1') {
             $isDataValid = false;
             return "*Invalid Email Address";
         }
@@ -540,7 +540,7 @@ class ValidateData
      * @param bool $isDataValid The variable to track if the email is valid or not
      * @return string|void Returns the error message if the email is not valid, or null otherwise
      */
-    public function validateLoginEmail(string $email, bool &$isDataValid)
+    public function validateLoginEmail(string &$email, bool &$isDataValid)
     {
         $this->cleanData($email);
         if ($this->isEmpty($email, $errMsg, 'Email') || $this->isInvalidFormat($email, $errMsg, 'Email')) {
@@ -549,7 +549,8 @@ class ValidateData
         }
 
         $query = new DatabaseQuery();
-        if (!$query->selectColumn('active', 'users', $email, 'email')) {
+        $data=$query->selectOne('users', $email, 'email');
+        if (!$data['active'] || $data['role'] !== '1') {
             $isDataValid = false;
             return "*No account with this email";
         }

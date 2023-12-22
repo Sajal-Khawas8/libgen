@@ -54,7 +54,7 @@ $joins = [
     ],
     [
         'table' => 'quantity',
-        'condition' => 'books.id = quantity.book_id'
+        'condition' => 'books.book_uuid = quantity.book_id'
     ]
 ];
 ?>
@@ -73,8 +73,7 @@ $joins = [
             <ul class="px-6 space-y-4">
                 <?php foreach ($bookIds as $bookKey => $bookId): ?>
                     <?php
-                    $uuidBook = $query->selectColumn('book_uuid', 'books', $bookId);
-                    $book = $query->selectOneJoin('books', $joins, "*", $uuidBook, 'book_uuid');
+                    $book = $query->selectOneJoin('books', $joins, "*", $bookId, 'book_uuid');
                     ?>
                     <li class="px-5 py-3 bg-white rounded-md">
                         <article class="flex items-center gap-10 h-32">
@@ -101,15 +100,11 @@ $joins = [
                                 </dl>
                                 <dl class="grid grid-cols-3 gap-8">
                                     <div class="flex gap-2 font-medium">
-                                        <dt>Base Price (For 30 days):</dt>
-                                        <dd>&#x20B9;<?= $book['base'] + $book['rent']; ?></dd>
+                                        <dt>Rent:</dt>
+                                        <dd>&#x20B9;<?= $book['rent']; ?>/day</dd>
                                     </div>
                                     <div class="flex gap-2 font-medium">
-                                        <dt>Rent after 30 days:</dt>
-                                        <dd>&#x20B9;<?= $book['additional']; ?>/15 days</dd>
-                                    </div>
-                                    <div class="flex gap-2 font-medium">
-                                        <dt>Fine charge:</dt>
+                                        <dt>Fine:</dt>
                                         <dd>&#x20B9;<?= $book['fine']; ?>/day</dd>
                                     </div>
                                 </dl>
@@ -124,7 +119,7 @@ $joins = [
                                 <h2 class="font-semibold text-2xl text-center">Readers of <?= $book['title']; ?></h2>
                                 <div class="flex-1 overflow-auto">
                                     <?php
-                                    $users = $query->selectAllSpecific('rented_books', $book['book_uuid'], 'book_id');
+                                    $users = $query->selectAllSpecific('orders', $book['book_uuid'], 'book_id');
                                     ?>
                                     <table class="text-center border border-b-2 border-gray-800 border-separate border-spacing-0">
                                         <thead class="sticky top-0 bg-indigo-500 text-white">
@@ -135,12 +130,11 @@ $joins = [
                                                 <th rowspan="2" class="border-x border-y-2 border-gray-800 px-1 w-52">Address</th>
                                                 <th rowspan="2" class="border-x border-y-2 border-gray-800 px-2">Issue Date</th>
                                                 <th rowspan="2" class="border-x border-y-2 border-gray-800 px-2">Due Date</th>
-                                                <th colspan="4" class="border-2 border-l border-gray-800 px-1">Rent</th>
+                                                <th colspan="3" class="border-2 border-l border-gray-800 px-1">Rent</th>
                                             </tr>
                                             <tr>
-                                                <th class="border-x border-b-2 border-gray-800 px-1 w-28">Base Price</th>
-                                                <th class="border-x border-b-2 border-gray-800 px-1 w-28">Rent after 30 days</th>
-                                                <th class="border-x border-b-2 border-gray-800 px-1 w-28">Fine after due date</th>
+                                                <th class="border-x border-b-2 border-gray-800 px-1 w-28">Rent</th>
+                                                <th class="border-x border-b-2 border-gray-800 px-1 w-28">Fine</th>
                                                 <th class="border-x border-b-2 border-r-2 border-gray-800 px-1 w-28">Total Rent</th>
                                             </tr>
                                         </thead>
@@ -160,31 +154,29 @@ $joins = [
                                                     </td>
                                                     <td class="border border-gray-800 p-2"><?= $user['date']; ?></td>
                                                     <td class="border border-gray-800 p-2"><?= $user['due_date']; ?></td>
-                                                    <td class="border border-gray-800 p-2">
-                                                        &#x20B9;<?= $base = $book['base'] + $book['rent']; ?>
-                                                    </td>
                                                     <?php
                                                     $dueDate = new DateTime($user['due_date']);
-                                                    $date = new DateTime($user['date']);
-                                                    $interval = $dueDate->diff($date);
-                                                    $days = $interval->days;
-                                                    ?>
-                                                    <td class="border border-gray-800 p-2">
-                                                        &#x20B9;<?= $additional = $days > 30 ? (ceil(($days - 30) / 15) * $book['additional']) : 0; ?>
-                                                    </td>
-                                                    <?php
-                                                    $dueDate = new DateTime($user['due_date']);
+                                                    $rentDate = new DateTime($user['date']);
+                                                    $interval = $dueDate->diff($rentDate);
+                                                    $rentDays = $interval->days;
                                                     $currentDate = new DateTime();
-                                                    $interval = $dueDate->diff($currentDate);
-                                                    $days = $interval->days;
-                                                    $dueDate = $dueDate->format("Y-m-d");
-                                                    $currentDate = $currentDate->format("Y-m-d");
+                                                    $dueDateStr = $dueDate->format("Y-m-d");
+                                                    $currentDateStr = $currentDate->format("Y-m-d");
+                                                    $overdueDays = 0;
+                                                    if ($dueDateStr < $currentDateStr) {
+                                                        $interval = $dueDate->diff($currentDate);
+                                                        $overdueDays = $interval->days;
+                                                    }
                                                     ?>
                                                     <td class="border border-gray-800 p-2">
-                                                        &#x20B9;<?= $fine = $dueDate < $currentDate ? ($days * $book['fine']) : 0 ?>
+                                                        &#x20B9;<?= $rent = $book['rent'] * $rentDays; ?>
+                                                    </td>
+                                                    <td class="border border-gray-800 p-2">
+                                                        &#x20B9;<?= $fine = $book['fine'] * $overdueDays; ?>
                                                     </td>
                                                     <td class="border border-r-2 border-gray-800 p-2">
-                                                        &#x20B9;<?= $base + $additional + $fine; ?></td>
+                                                        &#x20B9;<?= $rent + $fine; ?>
+                                                    </td>
                                                 </tr>
                                             <?php endforeach; ?>
                                         </tbody>
@@ -214,8 +206,7 @@ $joins = [
         <ul class="px-6 space-y-4">
             <?php foreach ($rentedBookIds as $bookKey => $bookId): ?>
                 <?php
-                $uuidBook = $query->selectColumn('book_uuid', 'books', $bookId);
-                $book = $query->selectOneJoin('books', $joins, "*", $uuidBook, 'book_uuid');
+                $book = $query->selectOneJoin('books', $joins, "*", $bookId, 'book_uuid');
                 ?>
                 <li class="px-5 py-3 bg-white rounded-md">
                     <article class="flex items-center gap-10 h-32">
@@ -242,15 +233,11 @@ $joins = [
                             </dl>
                             <dl class="grid grid-cols-3 gap-8">
                                 <div class="flex gap-2 font-medium">
-                                    <dt>Base Price (For 30 days):</dt>
-                                    <dd>&#x20B9;<?= $book['base'] + $book['rent']; ?></dd>
+                                    <dt>Rent:</dt>
+                                    <dd>&#x20B9;<?= $book['rent']; ?>/day</dd>
                                 </div>
                                 <div class="flex gap-2 font-medium">
-                                    <dt>Rent after 30 days:</dt>
-                                    <dd>&#x20B9;<?= $book['additional']; ?>/15 days</dd>
-                                </div>
-                                <div class="flex gap-2 font-medium">
-                                    <dt>Fine charge:</dt>
+                                    <dt>Fine:</dt>
                                     <dd>&#x20B9;<?= $book['fine']; ?>/day</dd>
                                 </div>
                             </dl>
@@ -265,7 +252,7 @@ $joins = [
                             <h2 class="font-semibold text-2xl text-center">Readers of <?= $book['title']; ?></h2>
                             <div class="flex-1 overflow-auto">
                                 <?php
-                                $users = $query->selectAllSpecific('rented_books', $book['book_uuid'], 'book_id');
+                                $users = $query->selectAllSpecific('orders', $book['book_uuid'], 'book_id');
                                 ?>
                                 <table class="text-center border border-b-2 border-gray-800 border-separate border-spacing-0">
                                     <thead class="sticky top-0 bg-indigo-500 text-white">
@@ -279,9 +266,8 @@ $joins = [
                                             <th colspan="4" class="border-2 border-l border-gray-800 px-1">Rent</th>
                                         </tr>
                                         <tr>
-                                            <th class="border-x border-b-2 border-gray-800 px-1 w-28">Base Price</th>
-                                            <th class="border-x border-b-2 border-gray-800 px-1 w-28">Rent after 30 days</th>
-                                            <th class="border-x border-b-2 border-gray-800 px-1 w-28">Fine after due date</th>
+                                            <th class="border-x border-b-2 border-gray-800 px-1 w-28">Rent</th>
+                                            <th class="border-x border-b-2 border-gray-800 px-1 w-28">Fine</th>
                                             <th class="border-x border-b-2 border-r-2 border-gray-800 px-1 w-28">Total Rent</th>
                                         </tr>
                                     </thead>
@@ -301,31 +287,28 @@ $joins = [
                                                 </td>
                                                 <td class="border border-gray-800 p-2"><?= $user['date']; ?></td>
                                                 <td class="border border-gray-800 p-2"><?= $user['due_date']; ?></td>
-                                                <td class="border border-gray-800 p-2">
-                                                    &#x20B9;<?= $base = $book['base'] + $book['rent']; ?>
-                                                </td>
                                                 <?php
                                                 $dueDate = new DateTime($user['due_date']);
-                                                $date = new DateTime($user['date']);
-                                                $interval = $dueDate->diff($date);
-                                                $days = $interval->days;
-                                                ?>
-                                                <td class="border border-gray-800 p-2">
-                                                    &#x20B9;<?= $additional = $days > 30 ? (ceil(($days - 30) / 15) * $book['additional']) : 0; ?>
-                                                </td>
-                                                <?php
-                                                $dueDate = new DateTime($user['due_date']);
+                                                $rentDate = new DateTime($user['date']);
+                                                $interval = $dueDate->diff($rentDate);
+                                                $rentDays = $interval->days;
                                                 $currentDate = new DateTime();
-                                                $interval = $dueDate->diff($currentDate);
-                                                $days = $interval->days;
-                                                $dueDate = $dueDate->format("Y-m-d");
-                                                $currentDate = $currentDate->format("Y-m-d");
+                                                $dueDateStr = $dueDate->format("Y-m-d");
+                                                $currentDateStr = $currentDate->format("Y-m-d");
+                                                $overdueDays = 0;
+                                                if ($dueDateStr < $currentDateStr) {
+                                                    $interval = $dueDate->diff($currentDate);
+                                                    $overdueDays = $interval->days;
+                                                }
                                                 ?>
                                                 <td class="border border-gray-800 p-2">
-                                                    &#x20B9;<?= $fine = $dueDate < $currentDate ? ($days * $book['fine']) : 0 ?>
+                                                    &#x20B9;<?= $rent = $book['rent'] * $rentDays; ?>
+                                                </td>
+                                                <td class="border border-gray-800 p-2">
+                                                    &#x20B9;<?= $fine = $book['fine'] * $overdueDays; ?>
                                                 </td>
                                                 <td class="border border-r-2 border-gray-800 p-2">
-                                                    &#x20B9;<?= $base + $additional + $fine; ?></td>
+                                                    &#x20B9;<?= $rent + $fine; ?></td>
                                             </tr>
                                         <?php endforeach; ?>
                                     </tbody>

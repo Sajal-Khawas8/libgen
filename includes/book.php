@@ -16,7 +16,7 @@ $joins = [
     ],
     [
         'table' => 'quantity',
-        'condition' => 'quantity.book_id = books.id'
+        'condition' => 'quantity.book_id = books.book_uuid'
     ],
 ];
 $bookData = $query->selectOneJoin('books', $joins, '*', $bookId, 'book_uuid');

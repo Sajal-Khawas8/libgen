@@ -34,6 +34,7 @@ class Book
             'authorErr' => $this->validation->validateTextData($data['author'], $isDataValid, 'Name'),
             'categoryErr' => $this->validation->validateSelectBox($data['category_id'], $isDataValid, 'Category'),
             'rentErr' => $this->validation->validateNumber($data['rent'], $isDataValid, 'Rent'),
+            'fineErr' => $this->validation->validateNumber($data['fine'], $isDataValid, 'Fine'),
             'copiesErr' => $this->validation->validateNumber($data['copies'], $isDataValid, 'Copies'),
             'coverErr' => $this->validation->validatePictureFormat($_FILES['cover'], $isDataValid),
             'descriptionErr' => $this->validation->validateTextArea($data['description'], $isDataValid, 'Description')
@@ -51,7 +52,7 @@ class Book
 
             // Add the book data to the table
             $query->add('books', $data);
-            $bookId = $query->lastEntry('books', 'id');
+            $bookId = $query->lastEntry('books', 'book_uuid');
             $quantity = [
                 'book_id' => $bookId,
                 'copies' => $copies,
@@ -89,6 +90,7 @@ class Book
             'authorErr' => $this->validation->validateUpdatedTextData($data['author'], $isDataValid, 'Name'),
             'categoryErr' => $this->validation->validateSelectBox($data['category_id'], $isDataValid, 'Category'),
             'rentErr' => $this->validation->validateUpdatedNumber($data['rent'], $isDataValid, 'Rent'),
+            'fineErr' => $this->validation->validateUpdatedNumber($data['fine'], $isDataValid, 'Fine'),
             'copiesErr' => $this->validation->validateUpdatedNumber($data['copies'], $isDataValid, 'Copies'),
             'coverErr' => $this->validation->validateUpdatedPictureFormat($_FILES['cover'], $isDataValid),
             'descriptionErr' => $this->validation->validateUpdatedTextArea($data['description'], $isDataValid, 'Description')
@@ -127,7 +129,7 @@ class Book
             ];
             $quantity = $query->selectOneJoin('quantity', $joins, '*', $id, 'book_uuid');
             $updateStr = "copies = $copies, available = " . ($quantity['available'] + ($copies - $quantity['copies'])) . ", ";
-            $query->update('quantity', $updateStr, $quantity['book_id'], 'book_id');
+            $query->update('quantity', $updateStr, $id, 'book_id');
             return true;
         }
         $_SESSION['refresh'] = true;
@@ -165,7 +167,7 @@ class Book
         $query->delete('books', $id, 'book_uuid');
 
         // Delete the related entry in the quantity table
-        $query->delete('quantity', $bookData['book_id'], 'book_id');
+        // $query->delete('quantity', $id, 'book_id');
 
         // Delete the cover image from the file system
         unlink("assets/uploads/images/books/{$bookData['cover']}");

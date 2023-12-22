@@ -1,9 +1,9 @@
 <?php
 $query = new DatabaseQuery();
-$user = $query->selectOne('users', $_COOKIE['user'], 'uuid');
+$user = $query->selectOne('users', $_SESSION['user'][0], 'uuid');
 ?>
 <article
-    class="mx-auto <?= isset($_SESSION['isAdmin']) ? 'bg-white' : 'bg-slate-200' ?> rounded-md px-4 py-6 w-4/5 max-w-md space-y-4">
+    class="mx-auto <?= ($_SESSION['user'][1] !== '1') ? 'bg-white' : 'bg-slate-200' ?> rounded-md px-4 py-6 w-4/5 max-w-md space-y-4">
     <?php if (empty($user['image'])): ?>
         <div class="w-64 h-64 rounded-md mx-auto bg-gray-600 flex items-center justify-center">
             <svg class="w-60 h-60 text-white" xmlns="http://www.w3.org/2000/svg" docname="user.svg" version="0.48.4 r9939"

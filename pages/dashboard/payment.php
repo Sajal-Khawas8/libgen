@@ -73,7 +73,7 @@ if (isset($_COOKIE['data'])) {
                     </tr>
                 <?php else: ?>
                     <?php foreach ($paymentData as $key => $data): ?>
-                        <tr class="<?= $key % 2 == 0 ? 'bg-indigo-200' : 'bg-indigo-300'; ?>">
+                        <tr class="<?= $key % 2 === 0 ? 'bg-indigo-200' : 'bg-indigo-300'; ?>">
                             <td class="border border-l-2 border-gray-800 p-2">
                                 <?= $data['payment_id'] ?></td>
                             <td class="border border-gray-800 p-2">

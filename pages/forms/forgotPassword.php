@@ -1,5 +1,5 @@
 <?php
-if (isset($_COOKIE['user'])) {
+if (isset($_SESSION['user'])) {
     $_SESSION['refresh'] = true;
     header("Location: /libgen");
     exit;

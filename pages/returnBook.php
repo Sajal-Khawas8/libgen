@@ -1,23 +1,34 @@
 <?php
 setcookie('prevPage', "$uri?{$_SERVER['QUERY_STRING']}");
-if (!isset($_COOKIE['user']) || isset($_SESSION['isAdmin'])) {
+if (!isset($_SESSION['user']) || $_SESSION['user'][1] !== '1') {
     header("Location: /login");
     exit;
 }
 $query = new DatabaseQuery();
+$config = require "./core/config.php";
+$bookId = openssl_decrypt($_SERVER['QUERY_STRING'], $config['openssl']['algo'], $config['openssl']['pass'], 0, $config['openssl']['iv']);
+$conditions = [
+    [
+        'criteria' => 'book_id',
+        'id' => $bookId
+    ],
+    [
+        'criteria' => 'user_id',
+        'id' => $_SESSION['user'][0]
+    ]
+];
+$rentedBookId = $query->selectColumnMultiCondition('id', 'orders', $conditions);
 $joins = [
     [
         'table' => 'books',
-        'condition' => 'books.book_uuid = rented_books.book_id'
+        'condition' => 'books.book_uuid = orders.book_id'
     ],
     [
         'table' => 'category',
         'condition' => 'books.category_id = category.id'
     ]
 ];
-$config = require "./core/config.php";
-$bookId = openssl_decrypt($_SERVER['QUERY_STRING'], $config['openssl']['algo'], $config['openssl']['pass'], 0, $config['openssl']['iv']);
-$rentData = $query->selectOneJoin('rented_books', $joins, "*", $bookId, 'book_id');
+$rentData = $query->selectOneJoin('orders', $joins, "*", $rentedBookId, "orders.id");
 if (!$rentData) {
     header("Location: /mybooks");
 }
@@ -46,42 +57,45 @@ if (isset($_COOKIE['err'])) {
                     </div>
                 </dl>
                 <dl class="space-y-4 py-4">
-                    <div class="flex justify-between text-lg">
-                        <dt class="font-medium">Base Price</dt>
-                        <dd>&#x20B9;<?= $rentData['base'] + $rentData['rent']; ?></dd>
-                    </div>
-                    <div class="flex justify-between text-lg">
-                        <dt class="font-medium">Rent after 30 days (&#x20B9;<?= $rentData['additional']; ?>/15days)</dt>
-                        <?php
-                        $dueDate = new DateTime($rentData['due_date']);
-                        $date = new DateTime($rentData['date']);
-                        $interval = $dueDate->diff($date);
-                        $days = $interval->days;
-                        ?>
-                        <dd>&#x20B9;<?= $additional = $days > 30 ? (ceil(($days - 30) / 15) * $rentData['additional']) : 0 ?>
-                        </dd>
-                    </div>
-                    <div class="flex justify-between text-lg">
-                        <dt class="font-medium">Fine charge (&#x20B9;<?= $rentData['fine']; ?>/day)</dt>
-                        <?php
-                        $dueDate = new DateTime($rentData['due_date']);
-                        $currentDate = new DateTime();
+                    <?php
+                    $dueDate = new DateTime($rentData['due_date']);
+                    $rentDate = new DateTime($rentData['date']);
+                    $interval = $dueDate->diff($rentDate);
+                    $rentDays = $interval->days;
+                    $currentDate = new DateTime();
+                    $dueDateStr = $dueDate->format("Y-m-d");
+                    $currentDateStr = $currentDate->format("Y-m-d");
+                    $overdueDays = 0;
+                    if ($dueDateStr < $currentDateStr) {
                         $interval = $dueDate->diff($currentDate);
-                        $days = $interval->days;
-                        $dueDate = $dueDate->format("Y-m-d");
-                        $currentDate = $currentDate->format("Y-m-d");
-                        ?>
-                        <dd>&#x20B9;<?= $fine = $dueDate < $currentDate ? ($days * $rentData['fine']) : 0 ?></dd>
+                        $overdueDays = $interval->days;
+                    }
+                    ?>
+                    <div class="flex justify-between text-lg">
+                        <dt class="font-medium">Rent Period</dt>
+                        <dd><?= $rentDays; ?> days</dd>
+                    </div>
+                    <div class="flex justify-between text-lg">
+                        <dt class="font-medium">Rent (&#x20B9;<?= $rentData['rent']; ?>/day)</dt>
+                        <dd>&#x20B9;<?= $rent = $rentData['rent'] * $rentDays; ?></dd>
+                    </div>
+                    <div class="flex justify-between text-lg">
+                        <dt class="font-medium">Overdue Days</dt>
+                        <dd><?= $overdueDays; ?> days</dd>
+                    </div>
+                    <div class="flex justify-between text-lg">
+                        <dt class="font-medium">Fine (&#x20B9;<?= $rentData['fine']; ?>/day)</dt>
+                        <dd>&#x20B9;<?= $fine = $rentData['fine'] * $overdueDays; ?></dd>
                     </div>
                 </dl>
                 <dl class="space-y-4 py-4">
                     <div class="flex justify-between text-lg">
                         <dt class="font-medium">Total Rent</dt>
-                        <dd>&#x20B9;<?= $rentData['base'] + $rentData['rent'] + $additional + $fine; ?></dd>
+                        <dd>&#x20B9;<?= $rent + $fine; ?></dd>
                     </div>
                     <div class="flex justify-between text-lg">
                         <dt class="font-medium">Amount Paid</dt>
-                        <dd>&#x20B9;<?= $rentData['base'] + $rentData['rent'] + $additional; ?></dd>
+                        <dd>&#x20B9;<?= $rent; ?></dd>
                     </div>
                 </dl>
                 <dl class="flex justify-between text-xl font-medium py-4">

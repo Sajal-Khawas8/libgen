@@ -69,23 +69,9 @@ $categories = $query->selectAll('category');
                         <article class="flex justify-between">
                             <div class="space-y-4">
                                 <h2 class="text-2xl font-semibold"><?= $category['name']; ?></h2>
-                                <dl class="space-y-2">
-                                    <div class="flex gap-2">
-                                        <dt class="font-medium">Total Books:</dt>
-                                        <dd><?= count($query->selectAllSpecific('books', $category['id'], 'category_id')); ?></dd>
-                                    </div>
-                                    <div class="flex gap-2">
-                                        <dt class="font-medium">Base Price (For 30 days):</dt>
-                                        <dd>&#x20B9;<?= $category['base']; ?></dd>
-                                    </div>
-                                    <div class="flex gap-2">
-                                        <dt class="font-medium">Rent after 30 days:</dt>
-                                        <dd>&#x20B9;<?= $category['additional']; ?>/15 days</dd>
-                                    </div>
-                                    <div class="flex gap-2">
-                                        <dt class="font-medium">Fine charge:</dt>
-                                        <dd>&#x20B9;<?= $category['fine']; ?>/day</dd>
-                                    </div>
+                                <dl class="flex gap-2">
+                                    <dt class="font-medium">Total Books:</dt>
+                                    <dd><?= count($query->selectAllSpecific('books', $category['id'], 'category_id')); ?></dd>
                                 </dl>
                             </div>
                             <div class="space-y-4">
@@ -147,23 +133,9 @@ $categories = $query->selectAll('category');
                     <article class="flex justify-between">
                         <div class="space-y-4">
                             <h2 class="text-2xl font-semibold"><?= $category['name']; ?></h2>
-                            <dl class="space-y-2">
-                                <div class="flex gap-2">
-                                    <dt class="font-medium">Total Books:</dt>
-                                    <dd><?= count($query->selectAllSpecific('books', $category['id'], 'category_id')); ?></dd>
-                                </div>
-                                <div class="flex gap-2">
-                                    <dt class="font-medium">Base Price (For 30 days):</dt>
-                                    <dd>&#x20B9;<?= $category['base']; ?></dd>
-                                </div>
-                                <div class="flex gap-2">
-                                    <dt class="font-medium">Rent after 30 days:</dt>
-                                    <dd>&#x20B9;<?= $category['additional']; ?>/15 days</dd>
-                                </div>
-                                <div class="flex gap-2">
-                                    <dt class="font-medium">Fine charge:</dt>
-                                    <dd>&#x20B9;<?= $category['fine']; ?>/day</dd>
-                                </div>
+                            <dl class="flex gap-2">
+                                <dt class="font-medium">Total Books:</dt>
+                                <dd><?= count($query->selectAllSpecific('books', $category['id'], 'category_id')); ?></dd>
                             </dl>
                         </div>
                         <div class="space-y-4">

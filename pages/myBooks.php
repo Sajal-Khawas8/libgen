@@ -1,18 +1,18 @@
 <?php
 setcookie('prevPage', $uri);
-if (!isset($_COOKIE['user']) || isset($_SESSION['isAdmin'])) {
+if (!isset($_SESSION['user']) || $_SESSION['user'][1] !== '1') {
     header("Location: /login");
 }
 $query = new DatabaseQuery();
 $joins = [
     [
         'table' => 'books',
-        'condition' => 'books.book_uuid = rented_books.book_id'
+        'condition' => 'books.book_uuid = orders.book_id'
     ]
 ];
-$rentedBooks = $query->selectAllJoin('rented_books', $joins);
+$rentedBooks = $query->selectAllJoin('orders', $joins);
 $rentedBooks = array_filter($rentedBooks, function ($rentedBook) {
-    return $rentedBook['user_id'] === $_COOKIE['user'];
+    return $rentedBook['user_id'] === $_SESSION['user'][0];
 });
 ?>
 <main class="container border-x space-y-8">
@@ -28,12 +28,12 @@ $rentedBooks = array_filter($rentedBooks, function ($rentedBook) {
                     <li class="border rounded-lg divide-y relative hover:shadow-lg">
                         <figure>
                             <div class="h-72 w-56 border">
-                                <img src="/libgen/assets/uploads/images/books/<?= $book['cover'] ?>" alt="<?= $book['title'] ?>"
-                                    class="h-full w-full object-fill">
+                                <img src="/libgen/assets/uploads/images/books/<?= $book['cover']; ?>"
+                                    alt="<?= $book['title']; ?>" class="h-full w-full object-fill">
                             </div>
                             <figcaption class="p-2 max-w-[14rem] space-y-4">
-                                <h3 class="font-semibold text-xl text-blue-700 line-clamp-2"><?= $book['title'] ?></h3>
-                                <h4 class="font-medium truncate"><?= $book['author'] ?></h4>
+                                <h3 class="font-semibold text-xl text-blue-700 truncate"><?= $book['title']; ?></h3>
+                                <h4 class="font-medium truncate"><?= $book['author']; ?></h4>
                             </figcaption>
                         </figure>
                         <?php $config = require "./core/config.php"; ?>

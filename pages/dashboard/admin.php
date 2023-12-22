@@ -79,7 +79,7 @@ if (isset($_COOKIE['data'])) {
                                     </dl>
                                 </div>
                             </div>
-                            <?php if ($admin['uuid'] !== $_COOKIE['user']): ?>
+                            <?php if ($admin['uuid'] !== $_SESSION['user'][0]): ?>
                                 <div class="space-y-4">
                                     <?php
                                     $config = require "./core/config.php";
@@ -87,9 +87,9 @@ if (isset($_COOKIE['data'])) {
                                         ?>
                                     <form action="/formHandler" method="post">
                                         <input type="hidden" name="id" value="<?= $uuid; ?>">
-                                        <button name="<?= $admin['isSuper'] ? 'removeSuperAdmin' : 'makeSuperAdmin' ?>"
-                                            <?= $userData['isSuper'] ? '' : 'disabled' ?>
-                                            class="p-1 <?= $admin['isSuper'] ? 'bg-orange-500' : 'bg-indigo-500' ?> text-white rounded-md disabled:bg-indigo-300">
+                                        <button name="<?= $admin['role']==='3' ? 'removeSuperAdmin' : 'makeSuperAdmin' ?>"
+                                            <?= $userData['role']==='3' ? '' : 'disabled' ?>
+                                            class="p-1 <?= $admin['role']==='3' ? 'bg-orange-500' : 'bg-indigo-500' ?> text-white rounded-md disabled:bg-indigo-300">
                                             <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24"
                                                 viewBox="0 0 24 24" fill="currentColor">
                                                 <g>
@@ -106,13 +106,13 @@ if (isset($_COOKIE['data'])) {
                                                         </path>
                                                     </g>
                                                 </g>
-                                                <title><?= $admin['isSuper'] ? 'Remove as Super Admin' : 'Make Super Admin' ?></title>
+                                                <title><?= $admin['role']==='3' ? 'Remove as Super Admin' : 'Make Super Admin' ?></title>
                                             </svg>
                                         </button>
                                     </form>
                                     <form action="/formHandler" method="post">
                                         <input type="hidden" name="id" value="<?= $uuid; ?>">
-                                        <button name="removeAdmin" <?= $userData['isSuper'] ? '' : 'disabled' ?>
+                                        <button name="removeAdmin" <?= $userData['role']==='3' ? '' : 'disabled' ?>
                                             class="p-1 bg-red-500 text-white rounded-md disabled:bg-red-300">
                                             <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
                                                 fill="currentColor">
@@ -139,7 +139,7 @@ if (isset($_COOKIE['data'])) {
     <div class="flex-1 px-6  overflow-y-auto">
         <ul class="grid grid-cols-2 gap-16">
             <?php
-            $admins = $query->selectAllSpecific('users', 1, 'role');
+            $admins = $query->selectNegate('users', 1, 'role');
             foreach ($admins as $admin):
                 ?>
                 <?php if ($admin['active']): ?>
@@ -175,7 +175,7 @@ if (isset($_COOKIE['data'])) {
                                     </dl>
                                 </div>
                             </div>
-                            <?php if ($admin['uuid'] !== $_COOKIE['user']): ?>
+                            <?php if ($admin['uuid'] !== $_SESSION['user'][0]): ?>
                                 <div class="space-y-4">
                                     <?php
                                     $config = require "./core/config.php";
@@ -183,9 +183,9 @@ if (isset($_COOKIE['data'])) {
                                         ?>
                                     <form action="/formHandler" method="post">
                                         <input type="hidden" name="id" value="<?= $uuid; ?>">
-                                        <button name="<?= $admin['isSuper'] ? 'removeSuperAdmin' : 'makeSuperAdmin' ?>"
-                                            <?= $userData['isSuper'] ? '' : 'disabled' ?>
-                                            class="p-1 <?= $admin['isSuper'] ? 'bg-orange-500' : 'bg-indigo-500' ?> text-white rounded-md disabled:bg-indigo-300">
+                                        <button name="<?= $admin['role']=== '3' ? 'removeSuperAdmin' : 'makeSuperAdmin' ?>"
+                                            <?= $userData['role'] === '3' ? '' : 'disabled' ?>
+                                            class="p-1 <?= $admin['role'] === '3' ? 'bg-orange-500' : 'bg-indigo-500' ?> text-white rounded-md disabled:bg-indigo-300">
                                             <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24"
                                                 viewBox="0 0 24 24" fill="currentColor">
                                                 <g>
@@ -202,13 +202,13 @@ if (isset($_COOKIE['data'])) {
                                                         </path>
                                                     </g>
                                                 </g>
-                                                <title><?= $admin['isSuper'] ? 'Remove as Super Admin' : 'Make Super Admin' ?></title>
+                                                <title><?= $admin['role'] === '3' ? 'Remove as Super Admin' : 'Make Super Admin' ?></title>
                                             </svg>
                                         </button>
                                     </form>
                                     <form action="/formHandler" method="post">
                                         <input type="hidden" name="id" value="<?= $uuid; ?>">
-                                        <button name="removeAdmin" <?= $userData['isSuper'] ? '' : 'disabled' ?>
+                                        <button name="removeAdmin" <?= $userData['role'] === '3' ? '' : 'disabled' ?>
                                             class="p-1 bg-red-500 text-white rounded-md disabled:bg-red-300">
                                             <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
                                                 fill="currentColor">

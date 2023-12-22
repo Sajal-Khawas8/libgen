@@ -15,11 +15,11 @@ if (isset($_COOKIE['err'])) {
                 $query = new DatabaseQuery();
                 $config = require "./core/config.php";
                 $isRented = $id = false;
-                if (isset($_COOKIE['user'])) {
+                if (isset($_SESSION['user'])) {
                     $conditions = [
                         [
                             'criteria' => 'user_id',
-                            'id' => $_COOKIE['user']
+                            'id' => $_SESSION['user'][0]
                         ],
                         [
                             'criteria' => 'book_id',
@@ -27,7 +27,7 @@ if (isset($_COOKIE['err'])) {
                         ]
                     ];
                     $id = $query->selectColumnMultiCondition('id', 'cart', $conditions);
-                    $isRented = $query->selectColumnMultiCondition('id', 'rented_books', $conditions);
+                    $isRented = $query->selectColumnMultiCondition('id', 'orders', $conditions);
                 }
                 ?>
                 <?php if (!$isRented): ?>
@@ -59,12 +59,8 @@ if (isset($_COOKIE['err'])) {
                     <?php endif; ?>
                 </div>
                 <div class="flex gap-2 text-lg">
-                    <dt class="font-medium">Base Price:</dt>
-                    <dd>&#x20B9;<?= $bookData['rent'] + $bookData['base'] ?></dd>
-                </div>
-                <div class="flex gap-2 text-lg">
-                    <dt class="font-medium">Rent after 30 days:</dt>
-                    <dd>&#x20B9;<?= $bookData['additional'] ?>/15 days</dd>
+                    <dt class="font-medium">Rent:</dt>
+                    <dd>&#x20B9;<?= $bookData['rent']; ?>/day</dd>
                 </div>
                 <div class="flex gap-2 text-lg">
                     <dt class="font-medium">Fine charge:</dt>
@@ -111,8 +107,6 @@ if (isset($_COOKIE['err'])) {
                             <span class="text-red-600 text-sm font-medium"><?= $err['returnDateErr'] ?? ''; ?></span>
                         </div>
                     </div>
-                    <input type="hidden" name="amount"
-                        value="<?= openssl_encrypt(($bookData['rent'] + $bookData['base']), $config['openssl']['algo'], $config['openssl']['pass'], 0, $config['openssl']['iv']); ?>">
                     <input type="hidden" name="id" value="<?= $_SERVER['QUERY_STRING']; ?>">
                     <button name="payment"
                         class="px-4 py-1 bg-indigo-600 text-white text-lg font-medium rounded-md w-full hover:bg-indigo-800">Get

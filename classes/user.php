@@ -126,7 +126,7 @@ class User
     public function removeUser(string $id): void
     {
         $query = new DatabaseQuery();
-        $rentedBooks = count($query->selectAllSpecific('rented_books', $id, 'user_id'));
+        $rentedBooks = count($query->selectAllSpecific('orders', $id, 'user_id'));
         if (!isset($_SESSION['isAdmin']) && $rentedBooks) {
             setcookie('error', true, time() + 2);
             setcookie('message', "This account can't be deleted as you have taken $rentedBooks books on rent. Please login to your account.", time() + 2);

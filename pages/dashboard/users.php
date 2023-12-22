@@ -37,7 +37,7 @@ if (isset($_COOKIE['data'])) {
                     $user = $query->selectOne('users', $userId);
                     ?>
                     <?php
-                    $rentedBooks = $query->selectAllSpecific('rented_books', $user['uuid'], 'user_id');
+                    $rentedBooks = $query->selectAllSpecific('orders', $user['uuid'], 'user_id');
                     ?>
                     <li class="bg-white rounded-md p-2">
                         <article class="flex flex-col justify-between h-full space-y-3">
@@ -97,16 +97,18 @@ if (isset($_COOKIE['data'])) {
                                             <thead class="sticky top-0 bg-indigo-500 text-white">
                                                 <tr>
                                                     <th rowspan="2" class="border-2 border-r border-gray-800 px-1">S. No.</th>
-                                                    <th rowspan="2" class="border-x border-y-2 border-gray-800 px-1 w-64">Books</th>
-                                                    <th rowspan="2" class="border-x border-y-2 border-gray-800 px-2">Issue Date</th>
-                                                    <th rowspan="2" class="border-x border-y-2 border-gray-800 px-2">Due Date</th>
-                                                    <th colspan="4" class="border-2 border-l border-gray-800 px-1">Rent</th>
+                                                    <th rowspan="2" class="border-x border-y-2 border-gray-800 px-1 w-60">Books</th>
+                                                    <th rowspan="2" class="border-x border-y-2 border-gray-800 px-2 w-40">Issue Date
+                                                    </th>
+                                                    <th rowspan="2" class="border-x border-y-2 border-gray-800 px-2 w-40">Due Date</th>
+                                                    <th rowspan="2" class="border-x border-y-2 border-gray-800 px-2 w-28">Rent Period</th>
+                                                    <th rowspan="2" class="border-x border-y-2 border-gray-800 px-2 w-28">Overdue Days</th>
+                                                    <th colspan="3" class="border-2 border-l border-gray-800 px-1">Rent</th>
                                                 </tr>
                                                 <tr>
-                                                    <th class="border-x border-b-2 border-gray-800 px-1">Base Price</th>
-                                                    <th class="border-x border-b-2 border-gray-800 px-1">Rent after 30 days</th>
-                                                    <th class="border-x border-b-2 border-gray-800 px-1">Fine after due date</th>
-                                                    <th class="border-x border-b-2 border-r-2 border-gray-800 px-1">Total Rent</th>
+                                                    <th class="border-x border-b-2 border-gray-800 px-1 w-28">Rent</th>
+                                                    <th class="border-x border-b-2 border-gray-800 px-1 w-28">Fine</th>
+                                                    <th class="border-x border-b-2 border-r-2 border-gray-800 px-1 w-28">Total Rent</th>
                                                 </tr>
                                             </thead>
                                             <?php foreach ($rentedBooks as $key => $rentStatus): ?>
@@ -124,31 +126,30 @@ if (isset($_COOKIE['data'])) {
                                                     <td class="text-left border border-gray-800 p-2"><?= $bookData['title']; ?></td>
                                                     <td class="border border-gray-800 p-2"><?= $rentStatus['date']; ?></td>
                                                     <td class="border border-gray-800 p-2"><?= $rentStatus['due_date']; ?></td>
-                                                    <td class="border border-gray-800 p-2">
-                                                        &#x20B9;<?= $base = $bookData['rent'] + $bookData['base']; ?>
-                                                    </td>
                                                     <?php
                                                     $dueDate = new DateTime($rentStatus['due_date']);
-                                                    $date = new DateTime($rentStatus['date']);
-                                                    $interval = $dueDate->diff($date);
-                                                    $days = $interval->days;
-                                                    ?>
-                                                    <td class="border border-gray-800 p-2">
-                                                        &#x20B9;<?= $additional = $days > 30 ? (ceil(($days - 30) / 15) * $bookData['additional']) : 0; ?>
-                                                    </td>
-                                                    <?php
-                                                    $dueDate = new DateTime($rentStatus['due_date']);
+                                                    $rentDate = new DateTime($rentStatus['date']);
+                                                    $interval = $dueDate->diff($rentDate);
+                                                    $rentDays = $interval->days;
                                                     $currentDate = new DateTime();
-                                                    $interval = $dueDate->diff($currentDate);
-                                                    $days = $interval->days;
-                                                    $dueDate = $dueDate->format("Y-m-d");
-                                                    $currentDate = $currentDate->format("Y-m-d");
+                                                    $dueDateStr = $dueDate->format("Y-m-d");
+                                                    $currentDateStr = $currentDate->format("Y-m-d");
+                                                    $overdueDays = 0;
+                                                    if ($dueDateStr < $currentDateStr) {
+                                                        $interval = $dueDate->diff($currentDate);
+                                                        $overdueDays = $interval->days;
+                                                    }
                                                     ?>
+                                                    <td class="border border-gray-800 p-2"><?= $rentDays; ?></td>
+                                                    <td class="border border-gray-800 p-2"><?= $overdueDays; ?></td>
                                                     <td class="border border-gray-800 p-2">
-                                                        &#x20B9;<?= $fine = $dueDate < $currentDate ? ($days * $bookData['fine']) : 0 ?>
+                                                        &#x20B9;<?= $rent = $bookData['rent'] * $rentDays; ?>
+                                                    </td>
+                                                    <td class="border border-gray-800 p-2">
+                                                        &#x20B9;<?= $fine = $bookData['fine'] * $overdueDays; ?>
                                                     </td>
                                                     <td class="border border-r-2 border-gray-800 p-2">
-                                                        &#x20B9;<?= $base + $additional + $fine ?>
+                                                        &#x20B9;<?= $rent + $fine; ?>
                                                     </td>
                                                 </tr>
                                             <?php endforeach; ?>
@@ -188,7 +189,7 @@ if (isset($_COOKIE['data'])) {
                     ?>
                     <?php
                     $query = new DatabaseQuery();
-                    $rentedBooks = $query->selectAllSpecific('rented_books', $user['uuid'], 'user_id');
+                    $rentedBooks = $query->selectAllSpecific('orders', $user['uuid'], 'user_id');
                     ?>
                     <li class="bg-white rounded-md p-2">
                         <article class="flex flex-col justify-between h-full space-y-3">
@@ -248,16 +249,18 @@ if (isset($_COOKIE['data'])) {
                                             <thead class="sticky top-0 bg-indigo-500 text-white">
                                                 <tr>
                                                     <th rowspan="2" class="border-2 border-r border-gray-800 px-1">S. No.</th>
-                                                    <th rowspan="2" class="border-x border-y-2 border-gray-800 px-1 w-64">Books</th>
-                                                    <th rowspan="2" class="border-x border-y-2 border-gray-800 px-2">Issue Date</th>
-                                                    <th rowspan="2" class="border-x border-y-2 border-gray-800 px-2">Due Date</th>
-                                                    <th colspan="4" class="border-2 border-l border-gray-800 px-1">Rent</th>
+                                                    <th rowspan="2" class="border-x border-y-2 border-gray-800 px-1 w-60">Books</th>
+                                                    <th rowspan="2" class="border-x border-y-2 border-gray-800 px-2 w-40">Issue Date
+                                                    </th>
+                                                    <th rowspan="2" class="border-x border-y-2 border-gray-800 px-2 w-40">Due Date</th>
+                                                    <th rowspan="2" class="border-x border-y-2 border-gray-800 px-2 w-28">Rent Period</th>
+                                                    <th rowspan="2" class="border-x border-y-2 border-gray-800 px-2 w-28">Overdue Days</th>
+                                                    <th colspan="3" class="border-2 border-l border-gray-800 px-1">Rent</th>
                                                 </tr>
                                                 <tr>
-                                                    <th class="border-x border-b-2 border-gray-800 px-1">Base Price</th>
-                                                    <th class="border-x border-b-2 border-gray-800 px-1">Rent after 30 days</th>
-                                                    <th class="border-x border-b-2 border-gray-800 px-1">Fine after due date</th>
-                                                    <th class="border-x border-b-2 border-r-2 border-gray-800 px-1">Total Rent</th>
+                                                    <th class="border-x border-b-2 border-gray-800 px-1 w-28">Rent</th>
+                                                    <th class="border-x border-b-2 border-gray-800 px-1 w-28">Fine</th>
+                                                    <th class="border-x border-b-2 border-r-2 border-gray-800 px-1 w-28">Total Rent</th>
                                                 </tr>
                                             </thead>
                                             <?php foreach ($rentedBooks as $key => $rentStatus): ?>
@@ -275,31 +278,30 @@ if (isset($_COOKIE['data'])) {
                                                     <td class="text-left border border-gray-800 p-2"><?= $bookData['title']; ?></td>
                                                     <td class="border border-gray-800 p-2"><?= $rentStatus['date']; ?></td>
                                                     <td class="border border-gray-800 p-2"><?= $rentStatus['due_date']; ?></td>
-                                                    <td class="border border-gray-800 p-2">
-                                                        &#x20B9;<?= $base = $bookData['rent'] + $bookData['base']; ?>
-                                                    </td>
                                                     <?php
                                                     $dueDate = new DateTime($rentStatus['due_date']);
-                                                    $date = new DateTime($rentStatus['date']);
-                                                    $interval = $dueDate->diff($date);
-                                                    $days = $interval->days;
-                                                    ?>
-                                                    <td class="border border-gray-800 p-2">
-                                                        &#x20B9;<?= $additional = $days > 30 ? (ceil(($days - 30) / 15) * $bookData['additional']) : 0; ?>
-                                                    </td>
-                                                    <?php
-                                                    $dueDate = new DateTime($rentStatus['due_date']);
+                                                    $rentDate = new DateTime($rentStatus['date']);
+                                                    $interval = $dueDate->diff($rentDate);
+                                                    $rentDays = $interval->days;
                                                     $currentDate = new DateTime();
-                                                    $interval = $dueDate->diff($currentDate);
-                                                    $days = $interval->days;
-                                                    $dueDate = $dueDate->format("Y-m-d");
-                                                    $currentDate = $currentDate->format("Y-m-d");
+                                                    $dueDateStr = $dueDate->format("Y-m-d");
+                                                    $currentDateStr = $currentDate->format("Y-m-d");
+                                                    $overdueDays = 0;
+                                                    if ($dueDateStr < $currentDateStr) {
+                                                        $interval = $dueDate->diff($currentDate);
+                                                        $overdueDays = $interval->days;
+                                                    }
                                                     ?>
+                                                    <td class="border border-gray-800 p-2"><?= $rentDays; ?></td>
+                                                    <td class="border border-gray-800 p-2"><?= $overdueDays; ?></td>
                                                     <td class="border border-gray-800 p-2">
-                                                        &#x20B9;<?= $fine = $dueDate < $currentDate ? ($days * $bookData['fine']) : 0 ?>
+                                                        &#x20B9;<?= $rent = $bookData['rent'] * $rentDays; ?>
+                                                    </td>
+                                                    <td class="border border-gray-800 p-2">
+                                                        &#x20B9;<?= $fine = $bookData['fine'] * $overdueDays; ?>
                                                     </td>
                                                     <td class="border border-r-2 border-gray-800 p-2">
-                                                        &#x20B9;<?= $base + $additional + $fine ?>
+                                                        &#x20B9;<?= $rent + $fine; ?>
                                                     </td>
                                                 </tr>
                                             <?php endforeach; ?>

@@ -1,4 +1,12 @@
 <?php
+
+// Redirect user to homepage if formHandler is opened directly
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    header("Location: /libgen");
+    exit;
+}
+
+
 require "./classes/validations.php";
 require "./classes/user.php";
 require "./classes/category.php";
@@ -18,9 +26,9 @@ if (isset($_POST['masterLogin'])) {
     ];
     if ($isDataValid) {
         $query = new DatabaseQuery();
-        $uuid = $query->selectColumn('uuid', 'users', $_POST['email'], 'email');
-        setcookie('user', $uuid);
-        $_SESSION['isAdmin'] = true;
+        $user = $query->selectOne('users', $_POST['email'], 'email');
+        $user = [$user['uuid'], $user['role']];
+        $_SESSION['user'] = $user;
         $_SESSION['refresh'] = true;
         header("Location: /admin");
         exit;
@@ -43,8 +51,13 @@ if (isset($_POST['login'])) {
     ];
     if ($isDataValid) {
         $query = new DatabaseQuery();
-        $uuid = $query->selectColumn('uuid', 'users', $_POST['email'], 'email');
-        setcookie('user', $uuid, time() + 86400);
+        $user = $query->selectOne('users', $_POST['email'], 'email');
+        $user = [$user['uuid'], $user['role']];
+        $_SESSION['user'] = $user;
+        $user = serialize($user);
+        $config = require "./core/config.php";
+        $user = openssl_encrypt($user, $config['openssl']['algo'], $config['openssl']['pass'], 0, $config['openssl']['iv']);
+        setcookie('user', $user, time() + 86400);
         $_SESSION['refresh'] = true;
         $location = $_COOKIE['prevPage'] ?? '/libgen';
         header("Location: $location");
@@ -61,7 +74,7 @@ if (isset($_POST['login'])) {
 // Handle Logout
 if (isset($_POST['logout'])) {
     setcookie('user', '', time() - 1);
-    unset($_SESSION['isAdmin']);
+    unset($_SESSION['user']);
     $_SESSION['refresh'] = true;
     header("Location: /libgen");
     exit;
@@ -142,7 +155,12 @@ if (isset($_POST['register'])) {
     $user = new User($validationObj);
     unset($_POST['register'], $_POST['id'], $_POST['role']);
     $uuid = $user->addUser($_POST);
-    setcookie('user', $uuid, time() + 86400);
+    $user = [$uuid, 1];
+    $_SESSION['user'] = $user;
+    $user = serialize($user);
+    $config = require "./core/config.php";
+    $user = openssl_encrypt($user, $config['openssl']['algo'], $config['openssl']['pass'], 0, $config['openssl']['iv']);
+    setcookie('user', $user, time() + 86400);
     $_SESSION['refresh'] = true;
     $location = $_COOKIE['prevPage'] ?? '/libgen';
     header("Location: $location");
@@ -155,7 +173,7 @@ if (isset($_POST['registerAdmin'])) {
     $validationObj = new ValidateData();
     $user = new User($validationObj);
     unset($_POST['registerAdmin'], $_POST['id']);
-    $_POST['role'] = true;
+    $_POST['role'] = 2;
     $user->addUser($_POST);
     $_SESSION['refresh'] = true;
     header("Location: /admin/team");
@@ -179,24 +197,24 @@ if (isset($_POST['updateData'])) {
     $config = require "./core/config.php";
     $id = openssl_decrypt($_POST['id'], $config['openssl']['algo'], $config['openssl']['pass'], 0, $config['openssl']['iv']);
     unset($_POST['updateData'], $_POST['id']);
-    if ($id === $_COOKIE['user']) {
+    if ($id === $_SESSION['user'][0]) {
         $validationObj = new ValidateData();
         $user = new User($validationObj);
-        $updateSuccess = $user->updateUser($_POST, $_COOKIE['user']);
+        $updateSuccess = $user->updateUser($_POST, $_SESSION['user'][0]);
         if (!$updateSuccess) {
             $_SESSION['refresh'] = true;
             $id = openssl_encrypt($id, $config['openssl']['algo'], $config['openssl']['pass'], 0, $config['openssl']['iv']);
-            $location = isset($_SESSION['isAdmin']) ? '/admin/settings/update' : '/settings/update';
+            $location = ($_SESSION['user'][1] !== '1') ? '/admin/settings/update' : '/settings/update';
             header("Location: $location?$id");
             exit;
         }
         $_SESSION['refresh'] = true;
-        $location = isset($_SESSION['isAdmin']) ? '/admin/settings' : '/settings';
+        $location = ($_SESSION['user'][1] !== '1') ? '/admin/settings' : '/settings';
         header("Location: $location");
         exit;
     }
     setcookie('user', '', time() - 1);
-    unset($_SESSION['isAdmin']);
+    unset($_SESSION['user']);
     $_SESSION['refresh'] = true;
     header("Location: /libgen");
     exit;
@@ -207,17 +225,17 @@ if (isset($_POST['updateData'])) {
 if (isset($_POST['deleteAccount'])) {
     $config = require "./core/config.php";
     $id = openssl_decrypt($_POST['id'], $config['openssl']['algo'], $config['openssl']['pass'], 0, $config['openssl']['iv']);
-    if ($id === $_COOKIE['user']) {
+    if ($id === $_SESSION['user'][0]) {
         $user = new User();
         $user->removeUser($id);
         setcookie('user', '', time() - 1);
-        unset($_SESSION['isAdmin']);
+        unset($_SESSION['user']);
         $_SESSION['refresh'] = true;
         header("Location: /libgen");
         exit;
     }
     setcookie('user', '', time() - 1);
-    unset($_SESSION['isAdmin']);
+    unset($_SESSION['user']);
     $_SESSION['refresh'] = true;
     header("Location: /libgen");
     exit;
@@ -228,19 +246,19 @@ if (isset($_POST['deleteAccount'])) {
 // Handle remove admin
 if (isset($_POST['removeAdmin'])) {
     $query = new DatabaseQuery();
-    $isSuperAdmin = $query->selectColumn('isSuper', 'users', $_COOKIE['user'], 'uuid');
+    $isSuperAdmin = ($query->selectColumn('role', 'users', $_SESSION['user'][0], 'uuid') === '3');
     $config = require "./core/config.php";
     $id = openssl_decrypt($_POST['id'], $config['openssl']['algo'], $config['openssl']['pass'], 0, $config['openssl']['iv']);
     if ($id && $isSuperAdmin) {
         $user = new User();
         $user->removeUser($id);
-        $query->update('users', 'role=false, isSuper=false, ', $id, 'uuid');
+        // $query->update('users', 'role=1, ', $id, 'uuid');
         $_SESSION['refresh'] = true;
         header("Location: /admin/team");
         exit;
     }
     setcookie('user', '', time() - 1);
-    unset($_SESSION['isAdmin']);
+    unset($_SESSION['user']);
     $_SESSION['refresh'] = true;
     header("Location: /libgen");
     exit;
@@ -250,17 +268,17 @@ if (isset($_POST['removeAdmin'])) {
 // Make an Admin as Super Admin
 if (isset($_POST['makeSuperAdmin'])) {
     $query = new DatabaseQuery();
-    $isSuperAdmin = $query->selectColumn('isSuper', 'users', $_COOKIE['user'], 'uuid');
+    $isSuperAdmin = ($query->selectColumn('role', 'users', $_SESSION['user'][0], 'uuid') === '3');
     $config = require "./core/config.php";
     $id = openssl_decrypt($_POST['id'], $config['openssl']['algo'], $config['openssl']['pass'], 0, $config['openssl']['iv']);
     if ($id && $isSuperAdmin) {
-        $query->update('users', 'isSuper=true, ', $id, 'uuid');
+        $query->update('users', 'role=3, ', $id, 'uuid');
         $_SESSION['refresh'] = true;
         header("Location: /admin/team");
         exit;
     }
     setcookie('user', '', time() - 1);
-    unset($_SESSION['isAdmin']);
+    unset($_SESSION['user']);
     $_SESSION['refresh'] = true;
     header("Location: /libgen");
     exit;
@@ -270,17 +288,17 @@ if (isset($_POST['makeSuperAdmin'])) {
 // Handle Remove Super Admin
 if (isset($_POST['removeSuperAdmin'])) {
     $query = new DatabaseQuery();
-    $isSuperAdmin = $query->selectColumn('isSuper', 'users', $_COOKIE['user'], 'uuid');
+    $isSuperAdmin = ($query->selectColumn('role', 'users', $_SESSION['user'][0], 'uuid') === '3');
     $config = require "./core/config.php";
     $id = openssl_decrypt($_POST['id'], $config['openssl']['algo'], $config['openssl']['pass'], 0, $config['openssl']['iv']);
     if ($id && $isSuperAdmin) {
-        $query->update('users', 'isSuper=false, ', $id, 'uuid');
+        $query->update('users', 'role=2, ', $id, 'uuid');
         $_SESSION['refresh'] = true;
         header("Location: /admin/team");
         exit;
     }
     setcookie('user', '', time() - 1);
-    unset($_SESSION['isAdmin']);
+    unset($_SESSION['user']);
     $_SESSION['refresh'] = true;
     header("Location: /libgen");
     exit;
@@ -293,7 +311,7 @@ if (isset($_POST['blockUser'])) {
     $id = openssl_decrypt($_POST['id'], $config['openssl']['algo'], $config['openssl']['pass'], 0, $config['openssl']['iv']);
     if (!$id) {
         setcookie('user', '', time() - 1);
-        unset($_SESSION['isAdmin']);
+        unset($_SESSION['user']);
         $_SESSION['refresh'] = true;
         header("Location: /libgen");
         exit;
@@ -331,7 +349,7 @@ if (isset($_POST['updateCategoryData'])) {
     $id = openssl_decrypt($_POST['id'], $config['openssl']['algo'], $config['openssl']['pass'], 0, $config['openssl']['iv']);
     if (!$id) {
         setcookie('user', '', time() - 1);
-        unset($_SESSION['isAdmin']);
+        unset($_SESSION['user']);
         $_SESSION['refresh'] = true;
         header("Location: /libgen");
         exit;
@@ -355,7 +373,7 @@ if (isset($_POST['deleteCategory'])) {
     $id = openssl_decrypt($_POST['id'], $config['openssl']['algo'], $config['openssl']['pass'], 0, $config['openssl']['iv']);
     if (!$id) {
         setcookie('user', '', time() - 1);
-        unset($_SESSION['isAdmin']);
+        unset($_SESSION['user']);
         $_SESSION['refresh'] = true;
         header("Location: /libgen");
         exit;
@@ -391,7 +409,7 @@ if (isset($_POST['updateBookData'])) {
     $id = openssl_decrypt($_POST['id'], $config['openssl']['algo'], $config['openssl']['pass'], 0, $config['openssl']['iv']);
     if (!$id) {
         setcookie('user', '', time() - 1);
-        unset($_SESSION['isAdmin']);
+        unset($_SESSION['user']);
         $_SESSION['refresh'] = true;
         header("Location: /libgen");
         exit;
@@ -415,7 +433,7 @@ if (isset($_POST['deleteBook'])) {
     $id = openssl_decrypt($_POST['id'], $config['openssl']['algo'], $config['openssl']['pass'], 0, $config['openssl']['iv']);
     if (!$id) {
         setcookie('user', '', time() - 1);
-        unset($_SESSION['isAdmin']);
+        unset($_SESSION['user']);
         $_SESSION['refresh'] = true;
         header("Location: /libgen");
         exit;
@@ -428,7 +446,7 @@ if (isset($_POST['deleteBook'])) {
 
 // Handle Payment of Single Book
 if (isset($_POST['payment'])) {
-    if (!isset($_COOKIE['user'])) {
+    if (!isset($_SESSION['user'])) {
         header("Location: /login");
         exit;
     }
@@ -436,7 +454,7 @@ if (isset($_POST['payment'])) {
     $uuid = openssl_decrypt($_POST['id'], $config['openssl']['algo'], $config['openssl']['pass'], 0, $config['openssl']['iv']);
     if (!$uuid) {
         setcookie('user', '', time() - 1);
-        unset($_SESSION['isAdmin']);
+        unset($_SESSION['user']);
         $_SESSION['refresh'] = true;
         header("Location: /libgen");
         exit;
@@ -460,34 +478,32 @@ if (isset($_POST['payment'])) {
             ],
             [
                 'table' => 'quantity',
-                'condition' => 'quantity.book_id = books.id'
+                'condition' => 'quantity.book_id = books.book_uuid'
             ],
         ];
         $bookData = $query->selectOneJoin('books', $joins, '*', $uuid, 'book_uuid');
-        $bookId = $query->selectColumn('id', 'books', $uuid, 'book_uuid');
+        // $bookId = $query->selectColumn('id', 'books', $uuid, 'book_uuid');
         $dueDate = new DateTime($_POST['returnDate']);
         $date = new DateTime();
         $interval = $dueDate->diff($date);
         $days = $interval->days;
-        $additional = $days > 30 ? (ceil(($days - 30) / 15) * $bookData['additional']) : 0;
-        $amount = $bookData['base'] + $bookData['rent'] + $additional;
         $paymentData = [
             'payment_id' => uniqid("pay-"),
-            'user_id' => $_COOKIE['user'],
-            'amount' => $amount,
+            'user_id' => $_SESSION['user'][0],
+            'amount' => ($bookData['rent'] * $days),
             'card' => substr($_POST['cardNumber'], -4)
         ];
 
         $query->add('payment', $paymentData);
         $rentStatus = [
             'book_id' => $uuid,
-            'user_id' => $_COOKIE['user'],
+            'user_id' => $_SESSION['user'][0],
             'date' => date("Y-m-d"),
             'due_date' => $_POST['returnDate']
         ];
-        $query->add('rented_books', $rentStatus);
+        $query->add('orders', $rentStatus);
         $availableBooks = $bookData['available'] - 1;
-        $query->update('quantity', "available=$availableBooks, ", $bookId, 'book_id');
+        $query->update('quantity', "available=$availableBooks, ", $uuid, 'book_id');
         $conditions = [
             [
                 'criteria' => 'book_id',
@@ -495,7 +511,7 @@ if (isset($_POST['payment'])) {
             ],
             [
                 'criteria' => 'user_id',
-                'id' => $_COOKIE['user']
+                'id' => $_SESSION['user'][0]
             ]
         ];
         $cartId = $query->selectColumnMultiCondition('id', 'cart', $conditions);
@@ -520,7 +536,7 @@ if (isset($_POST['returnBook'])) {
     $uuid = openssl_decrypt($_POST['id'], $config['openssl']['algo'], $config['openssl']['pass'], 0, $config['openssl']['iv']);
     if (!$uuid) {
         setcookie('user', '', time() - 1);
-        unset($_SESSION['isAdmin']);
+        unset($_SESSION['user']);
         $_SESSION['refresh'] = true;
         header("Location: /libgen");
         exit;
@@ -533,15 +549,14 @@ if (isset($_POST['returnBook'])) {
         ],
         [
             'criteria' => 'user_id',
-            'id' => $_COOKIE['user']
+            'id' => $_SESSION['user'][0]
         ]
     ];
-    $rentedBookId = $query->selectColumnMultiCondition('id', 'rented_books', $conditions);
-    $query->delete('rented_books', $rentedBookId);
-    $bookId = $query->selectColumn('id', 'books', $uuid, 'book_uuid');
-    $availableBooks = $query->selectColumn('available', 'quantity', $bookId, 'book_id');
+    $rentedBookId = $query->selectColumnMultiCondition('id', 'orders', $conditions);
+    $query->delete('orders', $rentedBookId);
+    $availableBooks = $query->selectColumn('available', 'quantity', $uuid, 'book_id');
     $availableBooks++;
-    $query->update('quantity', "available=$availableBooks, ", $bookId, 'book_id');
+    $query->update('quantity', "available=$availableBooks, ", $uuid, 'book_id');
     setcookie('message', 'Book Returned Successfully', time() + 2);
     header("Location: /mybooks");
     exit;
@@ -555,7 +570,7 @@ if (isset($_POST['returnBookFine'])) {
     $amount = openssl_decrypt($_POST['amount'], $config['openssl']['algo'], $config['openssl']['pass'], 0, $config['openssl']['iv']);
     if (!$uuid || !$amount) {
         setcookie('user', '', time() - 1);
-        unset($_SESSION['isAdmin']);
+        unset($_SESSION['user']);
         $_SESSION['refresh'] = true;
         header("Location: /libgen");
         exit;
@@ -577,18 +592,17 @@ if (isset($_POST['returnBookFine'])) {
             ],
             [
                 'criteria' => 'user_id',
-                'id' => $_COOKIE['user']
+                'id' => $_SESSION['user'][0]
             ]
         ];
-        $rentedBookId = $query->selectColumnMultiCondition('id', 'rented_books', $conditions);
-        $query->delete('rented_books', $rentedBookId);
-        $bookId = $query->selectColumn('id', 'books', $uuid, 'book_uuid');
-        $availableBooks = $query->selectColumn('available', 'quantity', $bookId, 'book_id');
+        $rentedBookId = $query->selectColumnMultiCondition('id', 'orders', $conditions);
+        $query->delete('orders', $rentedBookId);
+        $availableBooks = $query->selectColumn('available', 'quantity', $uuid, 'book_id');
         $availableBooks++;
-        $query->update('quantity', "available=$availableBooks, ", $bookId, 'book_id');
+        $query->update('quantity', "available=$availableBooks, ", $uuid, 'book_id');
         $paymentData = [
             'payment_id' => uniqid("pay-"),
-            'user_id' => $_COOKIE['user'],
+            'user_id' => $_SESSION['user'][0],
             'amount' => $amount,
             'card' => substr($_POST['cardNumber'], -4)
         ];
@@ -608,22 +622,22 @@ if (isset($_POST['returnBookFine'])) {
 
 // Handle Add to cart
 if (isset($_POST['addToCart'])) {
-    if (!isset($_COOKIE['user'])) {
+    if (!isset($_SESSION['user'])) {
         header("Location: /login");
         exit;
     }
     $config = require "./core/config.php";
-    $uuid = openssl_decrypt($_POST['id'], $config['openssl']['algo'], $config['openssl']['pass'], 0, $config['openssl']['iv']);
-    if (!$uuid) {
+    $uuidBook = openssl_decrypt($_POST['id'], $config['openssl']['algo'], $config['openssl']['pass'], 0, $config['openssl']['iv']);
+    if (!$uuidBook) {
         setcookie('user', '', time() - 1);
-        unset($_SESSION['isAdmin']);
+        unset($_SESSION['user']);
         $_SESSION['refresh'] = true;
         header("Location: /libgen");
         exit;
     }
     $query = new DatabaseQuery();
     $cart = new Cart();
-    $cart->addItem($uuid);
+    $cart->addItem($uuidBook);
     header("Location: {$_COOKIE['prevPage']}");
     exit;
 }
@@ -635,7 +649,7 @@ if (isset($_POST['removeFromCart'])) {
     $id = openssl_decrypt($_POST['id'], $config['openssl']['algo'], $config['openssl']['pass'], 0, $config['openssl']['iv']);
     if (!$id) {
         setcookie('user', '', time() - 1);
-        unset($_SESSION['isAdmin']);
+        unset($_SESSION['user']);
         $_SESSION['refresh'] = true;
         header("Location: /libgen");
         exit;
@@ -671,56 +685,56 @@ if (isset($_POST['cartPayment'])) {
     $bookData = [];
     $joins = [
         [
-            'table' => 'category',
-            'condition' => 'books.category_id = category.id'
-        ],
-        [
             'table' => 'quantity',
-            'condition' => 'quantity.book_id = books.id'
-        ],
+            'condition' => 'quantity.book_id = books.book_uuid'
+        ]
     ];
-    $totalRent = 0;
     foreach ($cartItems as $itemId) {
         $bookData = $query->selectOneJoin('books', $joins, '*', $itemId, 'book_uuid');
         $err[$bookData['title'] . 'returnDateErr'] = $validation->validateReturnDate($_POST["returnDate-" . str_replace(" ", "_", $bookData['title'])], $isDataValid);
-        $totalRent += $bookData['base'] + $bookData['rent'];
     }
     if ($isDataValid) {
-        $paymentId = uniqid("pay-");
-        $paymentData = [
-            'payment_id' => $paymentId,
-            'user_id' => $_COOKIE['user'],
-            'amount' => $totalRent,
-            'card' => substr($_POST['cardNumber'], -4)
-        ];
-
-        $query->add('payment', $paymentData);
-        $cart = new Cart();
+        $totalRent = 0;
         foreach ($cartItems as $itemId) {
             $bookData = $query->selectOneJoin('books', $joins, '*', $itemId, 'book_uuid');
+            $dueDate = new DateTime($_POST['returnDate-' . str_replace(" ", "_", $bookData['title'])]);
+            $currentDate = new DateTime();
+            $interval = $dueDate->diff($currentDate);
+            $days = $interval->days;
+            $totalRent += ($bookData['rent'] * $days);
             $rentStatus = [
                 'book_id' => $itemId,
-                'user_id' => $_COOKIE['user'],
+                'user_id' => $_SESSION['user'][0],
                 'date' => date("Y-m-d"),
                 'due_date' => $_POST['returnDate-' . str_replace(" ", "_", $bookData['title'])]
             ];
-            $query->add('rented_books', $rentStatus);
+            $query->add('orders', $rentStatus);
             $availableBooks = $bookData['available'];
             $availableBooks--;
             $query->update('quantity', "available=$availableBooks, ", $bookData['book_id'], 'book_id');
             $conditions = [
                 [
                     'criteria' => 'user_id',
-                    'id' => $_COOKIE['user']
+                    'id' => $_SESSION['user'][0]
                 ],
                 [
                     'criteria' => 'book_id',
                     'id' => $itemId
                 ]
             ];
+            $cart = new Cart();
             $cartId = $query->selectColumnMultiCondition('id', 'cart', $conditions);
             $cart->removeItem($cartId);
         }
+        $paymentId = uniqid("pay-");
+        $paymentData = [
+            'payment_id' => $paymentId,
+            'user_id' => $_SESSION['user'][0],
+            'amount' => $totalRent,
+            'card' => substr($_POST['cardNumber'], -4)
+        ];
+
+        $query->add('payment', $paymentData);
         setcookie('message', 'Payment is Successful', time() + 2);
         header("Location: /mybooks");
         exit;
@@ -821,7 +835,7 @@ if (isset($_POST['searchRentedBook'])) {
     $books = $query->selectPartial('books', ['title', 'author'], $_POST['bookName'], $condition);
     $bookIds = '';
     foreach ($books as $book) {
-        $bookIds .= "&" . $book['id'];
+        $bookIds .= "&" . $book['book_uuid'];
     }
     $bookIds = openssl_encrypt($bookIds, $config['openssl']['algo'], $config['openssl']['pass'], 0, $config['openssl']['iv']);
     setcookie('data', serialize($_POST), time() + 2);
@@ -876,17 +890,14 @@ if (isset($_POST['searchAdmin'])) {
         [
             'criteria' => 'active',
             'id' => true
-        ],
-        [
-            'criteria' => 'role',
-            'id' => true
         ]
     ];
     $admins = $query->selectPartial('users', ['name', 'email'], $_POST['adminName'], $condition);
-    print_r($admins);
     $adminIds = '';
     foreach ($admins as $admin) {
-        $adminIds .= "&" . $admin['id'];
+        if ($admin['role'] !== '1') {
+            $adminIds .= "&" . $admin['id'];
+        }
     }
     $adminIds = openssl_encrypt($adminIds, $config['openssl']['algo'], $config['openssl']['pass'], 0, $config['openssl']['iv']);
     setcookie('data', serialize($_POST), time() + 2);

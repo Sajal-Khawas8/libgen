@@ -17,7 +17,7 @@ if (isset($_COOKIE['data'])) {
         </section>
     <?php else: ?>
         <!-- Books -->
-        <section class="bg-[url(/libgen/assets/images/banner.jpeg)] h-[calc(100vh-4rem)] flex flex-col items-center gap-28">
+        <section class="bg-[url(/libgen/assets/images/banner.jpeg)] h-[calc(100vh-4rem)] bg-no-repeat bg-cover flex flex-col items-center gap-28">
             <header class="text-center text-2xl font-semibold text-white space-y-8 mt-40">
                 <h1 class="text-4xl">Welcome to <a href="/libgen" class="text-red-600 text-5xl">LibGen</a>
                 </h1>

@@ -10,8 +10,8 @@ $uri = explode('?', $uri)[0];
 // To refresh the page when user presses the back button
 $_SESSION['refresh'] = false;
 if ($_SESSION['refresh']) {
-    header("Refresh: 0");
     $_SESSION['refresh'] = false;
+    header("Refresh: 0");
 }
 
 if (strpos($uri, 'admin') === 0) {

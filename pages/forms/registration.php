@@ -1,6 +1,6 @@
 <?php
 unset($userData);
-if ((isset($_COOKIE['user']) && empty($_SERVER['QUERY_STRING']) && $uri !== 'addMember') || (!isset($_COOKIE['user']) && !empty($_SERVER['QUERY_STRING']))) {
+if ((isset($_SESSION['user']) && empty($_SERVER['QUERY_STRING']) && $uri !== 'addMember') || (!isset($_SESSION['user']) && !empty($_SERVER['QUERY_STRING']))) {
     $_SESSION['refresh'] = true;
     header("Location: /libgen");
     exit;

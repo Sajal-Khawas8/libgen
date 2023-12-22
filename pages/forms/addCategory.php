@@ -21,30 +21,11 @@ if (isset($_COOKIE['err'])) {
 <div class="flex flex-col h-4/5 justify-center space-y-10">
     <h1 class="text-center text-4xl font-semibold">
         <?= empty($_SERVER['QUERY_STRING']) ? 'Add New Category' : 'Update Category' ?></h1>
-    <form action="/formHandler" method="post" enctype="multipart/form-data" class="space-y-8 max-w-lg mx-auto">
+    <form action="/formHandler" method="post" enctype="multipart/form-data" class="space-y-8 w-96 mx-auto">
         <div>
             <input type="text" name="name" id="name" placeholder="Category Name" value="<?= $data['name'] ?? ''; ?>"
                 class="w-full px-4 py-2 border border-gray-600 rounded outline-indigo-600 placeholder:text-gray-500">
             <span class="text-red-600 text-sm font-medium"><?= $err['nameErr'] ?? ''; ?></span>
-        </div>
-        <div class="grid grid-cols-3 gap-6">
-            <div>
-                <input type="text" name="base" id="basePrice" placeholder="Base Price in Rs"
-                    value="<?= $data['base'] ?? '' ?>"
-                    class="w-full px-3 py-2 border border-gray-600 rounded outline-indigo-600 placeholder:text-gray-500">
-                <span class="text-red-600 text-sm font-medium"><?= $err['priceErr'] ?? ''; ?></span>
-            </div>
-            <div>
-                <input type="text" name="additional" id="rent" placeholder="Rent after 30 days"
-                    value="<?= $data['additional'] ?? '' ?>"
-                    class="w-full px-3 py-2 border border-gray-600 rounded outline-indigo-600 placeholder:text-gray-500">
-                <span class="text-red-600 text-sm font-medium"><?= $err['rentErr'] ?? ''; ?></span>
-            </div>
-            <div>
-                <input type="text" name="fine" id="fine" placeholder="Fine Charge" value="<?= $data['fine'] ?? '' ?>"
-                    class="w-full px-3 py-2 border border-gray-600 rounded outline-indigo-600 placeholder:text-gray-500">
-                <span class="text-red-600 text-sm font-medium"><?= $err['fineErr'] ?? ''; ?></span>
-            </div>
         </div>
         <input type="hidden" name="id" value="<?= $_SERVER['QUERY_STRING']; ?>">
         <button name="<?= empty($_SERVER['QUERY_STRING']) ? 'addCategory' : 'updateCategoryData' ?>" id="addCategory"

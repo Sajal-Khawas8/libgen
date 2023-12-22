@@ -1,5 +1,5 @@
 <?php
-if (!isset($_COOKIE['user']) || isset($_SESSION['isAdmin'])) {
+if (!isset($_SESSION['user']) || $_SESSION['user'][1] !== '1') {
     header("Location: /login");
     exit;
 }

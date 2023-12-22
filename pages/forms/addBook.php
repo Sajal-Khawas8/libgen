@@ -22,7 +22,7 @@ if (empty($categories)): ?>
         $joins = [
             [
                 'table' => 'quantity',
-                'condition' => 'books.id = quantity.book_id'
+                'condition' => 'books.book_uuid = quantity.book_id'
             ],
         ];
         $bookData = $query->selectOneJoin('books', $joins, '*', $id, 'book_uuid');
@@ -63,17 +63,22 @@ if (empty($categories)): ?>
                     <span class="text-red-600 text-sm font-medium"><?= $err['categoryErr'] ?? ''; ?></span>
                 </div>
             </div>
-            <div class="grid grid-cols-2 gap-6">
+            <div class="grid grid-cols-3 gap-6">
+                <div>
+                    <input type="text" name="copies" id="copies" placeholder="Copies"
+                        value="<?= $bookData['copies'] ?? ''; ?>"
+                        class="w-full px-4 py-2 border border-gray-600 rounded outline-indigo-600 placeholder:text-gray-500">
+                    <span class="text-red-600 text-sm font-medium"><?= $err['copiesErr'] ?? ''; ?></span>
+                </div>
                 <div>
                     <input type="text" name="rent" id="rent" placeholder="Rent" value="<?= $bookData['rent'] ?? ''; ?>"
                         class="w-full px-4 py-2 border border-gray-600 rounded outline-indigo-600 placeholder:text-gray-500">
                     <span class="text-red-600 text-sm font-medium"><?= $err['rentErr'] ?? ''; ?></span>
                 </div>
                 <div>
-                    <input type="text" name="copies" id="copies" placeholder="Copies"
-                        value="<?= $bookData['copies'] ?? ''; ?>"
+                    <input type="text" name="fine" id="fine" placeholder="Fine" value="<?= $bookData['fine'] ?? ''; ?>"
                         class="w-full px-4 py-2 border border-gray-600 rounded outline-indigo-600 placeholder:text-gray-500">
-                    <span class="text-red-600 text-sm font-medium"><?= $err['copiesErr'] ?? ''; ?></span>
+                    <span class="text-red-600 text-sm font-medium"><?= $err['fineErr'] ?? ''; ?></span>
                 </div>
             </div>
             <div>

@@ -28,7 +28,7 @@
             <!-- <li class="hover:text-indigo-500"><a href="/libgen#reviews">Reviews</a></li> -->
         </ul>
         <ul class="flex items-center gap-9 pr-20">
-            <?php if (isset($_COOKIE['user'])): ?>
+            <?php if (isset($_SESSION['user'])): ?>
                 <li class="text-white text-lg font-medium px-2 py-1 rounded-md hover:text-indigo-600">
                     <a href="/cart">
                         <svg fill="currentColor" class="w-7 h-7" version="1.1" xmlns="http://www.w3.org/2000/svg"

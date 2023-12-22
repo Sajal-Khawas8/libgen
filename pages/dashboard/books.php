@@ -61,7 +61,7 @@ $joins = [
     ],
     [
         'table' => 'quantity',
-        'condition' => 'quantity.book_id = books.id'
+        'condition' => 'quantity.book_id = books.book_uuid'
     ],
 ];
 $books = $query->selectAllJoin('books', $joins);
@@ -122,16 +122,12 @@ $books = $query->selectAllJoin('books', $joins);
                                 </dl>
                                 <dl class="grid grid-cols-3 gap-8">
                                     <div class="flex gap-2 font-medium">
-                                        <dt>Base Price (For 30 days):</dt>
-                                        <dd>&#x20B9;<?= $book['rent'] + $book['base'] ?></dd>
+                                        <dt>Rent:</dt>
+                                        <dd>&#x20B9;<?= $book['rent']; ?>/day</dd>
                                     </div>
                                     <div class="flex gap-2 font-medium">
-                                        <dt>Rent after 30 days:</dt>
-                                        <dd>&#x20B9;<?= $book['additional'] ?>/15 days</dd>
-                                    </div>
-                                    <div class="flex gap-2 font-medium">
-                                        <dt>Fine charge:</dt>
-                                        <dd>&#x20B9;<?= $book['fine'] ?>/day</dd>
+                                        <dt>Fine:</dt>
+                                        <dd>&#x20B9;<?= $book['fine']; ?>/day</dd>
                                     </div>
                                 </dl>
                             </div>
@@ -226,16 +222,12 @@ $books = $query->selectAllJoin('books', $joins);
                             </dl>
                             <dl class="grid grid-cols-3 gap-8">
                                 <div class="flex gap-2 font-medium">
-                                    <dt>Base Price (For 30 days):</dt>
-                                    <dd>&#x20B9;<?= $book['rent'] + $book['base'] ?></dd>
+                                    <dt>Rent:</dt>
+                                    <dd>&#x20B9;<?= $book['rent']; ?>/day</dd>
                                 </div>
                                 <div class="flex gap-2 font-medium">
-                                    <dt>Rent after 30 days:</dt>
-                                    <dd>&#x20B9;<?= $book['additional'] ?>/15 days</dd>
-                                </div>
-                                <div class="flex gap-2 font-medium">
-                                    <dt>Fine charge:</dt>
-                                    <dd>&#x20B9;<?= $book['fine'] ?>/day</dd>
+                                    <dt>Fine:</dt>
+                                    <dd>&#x20B9;<?= $book['fine']; ?>/day</dd>
                                 </div>
                             </dl>
                         </div>

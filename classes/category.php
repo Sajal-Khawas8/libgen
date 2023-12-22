@@ -31,9 +31,6 @@ class Category
         $isDataValid = true;
         $err = [
             'nameErr' => $this->validation->validateUniqueName($data['name'], $isDataValid, 'Name'),
-            'priceErr' => $this->validation->validateNumber($data['base'], $isDataValid, 'Rent'),
-            'rentErr' => $this->validation->validateNumber($data['additional'], $isDataValid, 'Rent'),
-            'fineErr' => $this->validation->validateNumber($data['fine'], $isDataValid, 'Rent'),
         ];
 
         // If data is valid, add it to table else set and display the error messages
@@ -64,9 +61,6 @@ class Category
         $isDataValid = true;
         $err = [
             'nameErr' => $this->validation->validateUpdatedUniqueName($data['name'], $isDataValid, 'Name', $id),
-            'priceErr' => $this->validation->validateUpdatedNumber($data['base'], $isDataValid, 'Rent'),
-            'rentErr' => $this->validation->validateUpdatedNumber($data['additional'], $isDataValid, 'Rent'),
-            'fineErr' => $this->validation->validateUpdatedNumber($data['fine'], $isDataValid, 'Rent'),
         ];
 
         // If data is valid, update it in the table else set and display error messages
