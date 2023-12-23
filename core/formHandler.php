@@ -482,19 +482,25 @@ if (isset($_POST['payment'])) {
             ],
         ];
         $bookData = $query->selectOneJoin('books', $joins, '*', $uuid, 'book_uuid');
-        // $bookId = $query->selectColumn('id', 'books', $uuid, 'book_uuid');
         $dueDate = new DateTime($_POST['returnDate']);
         $date = new DateTime();
         $interval = $dueDate->diff($date);
         $days = $interval->days;
+        $paymentId = uniqid("pay-");
         $paymentData = [
-            'payment_id' => uniqid("pay-"),
+            'payment_id' => $paymentId,
             'user_id' => $_SESSION['user'][0],
             'amount' => ($bookData['rent'] * $days),
             'card' => substr($_POST['cardNumber'], -4)
         ];
-
         $query->add('payment', $paymentData);
+
+        $paidItems = [
+            'payment_id' => $paymentId,
+            'book_id' => $bookData['book_uuid'],
+        ];
+        $query->add('paid_items', $paidItems);
+
         $rentStatus = [
             'book_id' => $uuid,
             'user_id' => $_SESSION['user'][0],
@@ -628,13 +634,22 @@ if (isset($_POST['returnBookFine'])) {
         $availableBooks = $query->selectColumn('available', 'quantity', $uuid, 'book_id');
         $availableBooks++;
         $query->update('quantity', "available=$availableBooks, ", $uuid, 'book_id');
+        $paymentId = uniqid("pay-");
         $paymentData = [
-            'payment_id' => uniqid("pay-"),
+            'payment_id' => $paymentId,
             'user_id' => $_SESSION['user'][0],
             'amount' => $amount,
-            'card' => substr($_POST['cardNumber'], -4)
+            'card' => substr($_POST['cardNumber'], -4),
+            'type' => 2
         ];
         $query->add('payment', $paymentData);
+
+        $paidItems = [
+            'payment_id' => $paymentId,
+            'book_id' => $uuid,
+        ];
+        $query->add('paid_items', $paidItems);
+
         setcookie('message', 'Payment is Successful and Book is Returned', time() + 2);
         header("Location: /mybooks");
         exit;
@@ -722,6 +737,14 @@ if (isset($_POST['cartPayment'])) {
         $err[$bookData['title'] . 'returnDateErr'] = $validation->validateReturnDate($_POST["returnDate-" . str_replace(" ", "_", $bookData['title'])], $isDataValid);
     }
     if ($isDataValid) {
+        $paymentId = uniqid("pay-");
+        $paymentData = [
+            'payment_id' => $paymentId,
+            'user_id' => $_SESSION['user'][0],
+            'amount' => 0,
+            'card' => substr($_POST['cardNumber'], -4)
+        ];
+        $query->add('payment', $paymentData);
         $totalRent = 0;
         foreach ($cartItems as $itemId) {
             $bookData = $query->selectOneJoin('books', $joins, '*', $itemId, 'book_uuid');
@@ -753,16 +776,16 @@ if (isset($_POST['cartPayment'])) {
             $cart = new Cart();
             $cartId = $query->selectColumnMultiCondition('id', 'cart', $conditions);
             $cart->removeItem($cartId);
-        }
-        $paymentId = uniqid("pay-");
-        $paymentData = [
-            'payment_id' => $paymentId,
-            'user_id' => $_SESSION['user'][0],
-            'amount' => $totalRent,
-            'card' => substr($_POST['cardNumber'], -4)
-        ];
 
-        $query->add('payment', $paymentData);
+            $paidItems = [
+                'payment_id' => $paymentId,
+                'book_id' => $bookData['book_uuid'],
+            ];
+            $query->add('paid_items', $paidItems);
+        }
+
+        $query->update("payment", "amount = $totalRent, ", $paymentId, "payment_id");
+
         setcookie('message', 'Payment is Successful', time() + 2);
         header("Location: /mybooks");
         exit;
