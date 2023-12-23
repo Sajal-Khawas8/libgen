@@ -167,10 +167,9 @@ class Book
         }
 
         // Delete the book from the books table
-        $query->delete('books', $id, 'book_uuid');
+        $query->update('books', 'active=0, ', $id, 'book_uuid');
 
-        // Delete the cover image from the file system
-        $image=str_replace('http://localhost/libgen/', '', $bookData['cover']);
-        unlink($image);
+        // Delete the book from the carts
+        $query->delete('cart', $id, 'book_id');
     }
 }

@@ -3,7 +3,7 @@ $config = require "./core/config.php";
 $bookId = openssl_decrypt($_SERVER['QUERY_STRING'], $config['openssl']['algo'], $config['openssl']['pass'], 0, $config['openssl']['iv']);
 if (!$bookId) {
     setcookie('user', '', time() - 1);
-    unset($_SESSION['isAdmin']);
+    unset($_SESSION['user']);
     $_SESSION['refresh'] = true;
     header("Location: /libgen");
     exit;

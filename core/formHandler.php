@@ -552,8 +552,22 @@ if (isset($_POST['returnBook'])) {
             'id' => $_SESSION['user'][0]
         ]
     ];
-    $rentedBookId = $query->selectColumnMultiCondition('id', 'orders', $conditions);
-    $query->delete('orders', $rentedBookId);
+    $rentedBookData = $query->selectAllMultiCondition('orders', $conditions);
+    $query->delete('orders', $rentedBookData[0]['id']);
+    $issueDate = new DateTime($rentedBookData[0]['date']);
+    $dueDate = new DateTime($rentedBookData[0]['due_date']);
+    $interval = $dueDate->diff($issueDate);
+    $days = $interval->days;
+    $rentHistory = [
+        'user_id' => $_SESSION['user'][0],
+        'book_id' => $uuid,
+        'issue_date' => $rentedBookData[0]['date'],
+        'due_date' => $rentedBookData[0]['due_date'],
+        'return_date' => date("Y-m-d"),
+        'rent_paid' => ($query->selectColumn('rent', 'books', $uuid, 'book_uuid') * $days),
+        'fine_paid' => 0
+    ];
+    $query->add('rent_history', $rentHistory);
     $availableBooks = $query->selectColumn('available', 'quantity', $uuid, 'book_id');
     $availableBooks++;
     $query->update('quantity', "available=$availableBooks, ", $uuid, 'book_id');
@@ -595,8 +609,22 @@ if (isset($_POST['returnBookFine'])) {
                 'id' => $_SESSION['user'][0]
             ]
         ];
-        $rentedBookId = $query->selectColumnMultiCondition('id', 'orders', $conditions);
-        $query->delete('orders', $rentedBookId);
+        $rentedBookData = $query->selectAllMultiCondition('orders', $conditions);
+        $query->delete('orders', $rentedBookData[0]['id']);
+        $issueDate = new DateTime($rentedBookData[0]['date']);
+        $dueDate = new DateTime($rentedBookData[0]['due_date']);
+        $interval = $dueDate->diff($issueDate);
+        $days = $interval->days;
+        $rentHistory = [
+            'user_id' => $_SESSION['user'][0],
+            'book_id' => $uuid,
+            'issue_date' => $rentedBookData[0]['date'],
+            'due_date' => $rentedBookData[0]['due_date'],
+            'return_date' => date("Y-m-d"),
+            'rent_paid' => ($query->selectColumn('rent', 'books', $uuid, 'book_uuid') * $days),
+            'fine_paid' => $amount
+        ];
+        $query->add('rent_history', $rentHistory);
         $availableBooks = $query->selectColumn('available', 'quantity', $uuid, 'book_id');
         $availableBooks++;
         $query->update('quantity', "available=$availableBooks, ", $uuid, 'book_id');
@@ -759,14 +787,17 @@ if (isset($_POST['searchBookHome'])) {
         exit;
     }
     $query = new DatabaseQuery();
-    $condition = [];
+    $condition = [
+        [
+            'criteria' => 'active',
+            'id' => true
+        ]
+    ];
     if ($categoryId !== 'all') {
-        $condition = [
-            [
-                'criteria' => 'category_id',
-                'id' => $categoryId
-            ]
-        ];
+        array_push($condition, [
+            'criteria' => 'category_id',
+            'id' => $categoryId
+        ]);
     }
     $books = $query->selectPartial('books', ['title', 'author'], $_POST['bookName'], $condition);
     $bookIds = '';
@@ -791,14 +822,17 @@ if (isset($_POST['searchBookAdmin'])) {
         exit;
     }
     $query = new DatabaseQuery();
-    $condition = [];
+    $condition = [
+        [
+            'criteria' => 'active',
+            'id' => true
+        ]
+    ];
     if ($categoryId !== 'all') {
-        $condition = [
-            [
-                'criteria' => 'category_id',
-                'id' => $categoryId
-            ]
-        ];
+        array_push($condition, [
+            'criteria' => 'category_id',
+            'id' => $categoryId
+        ]);
     }
     $books = $query->selectPartial('books', ['title', 'author'], $_POST['bookName'], $condition);
     $bookIds = '';

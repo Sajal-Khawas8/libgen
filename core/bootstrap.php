@@ -14,6 +14,7 @@ $router->define([
     'mybooks' => './pages/mybooks.php',
     'bookDetails' => './pages/bookDetails.php',
     'returnBook' => './pages/returnBook.php',
+    'rentHistory' => './pages/rentHistory.php',
     'cart' => './pages/cart.php',
     'paymentSuccess' => './pages/paymentSuccess.php',
     'signUp' => './pages/forms/registration.php',

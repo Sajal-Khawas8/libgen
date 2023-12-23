@@ -1,5 +1,12 @@
 <?php
 setcookie('prevPage', "$uri?{$_SERVER['QUERY_STRING']}");
+$query = new DatabaseQuery();
+$config = require "./core/config.php";
+$bookId = openssl_decrypt($_SERVER['QUERY_STRING'], $config['openssl']['algo'], $config['openssl']['pass'], 0, $config['openssl']['iv']);
+if (!$query->selectColumn('active', 'books', $bookId, 'book_uuid')) {
+    header("Location: /libgen");
+    exit;
+}
 if (isset($_COOKIE['err'])) {
     $err = unserialize($_COOKIE['err']);
     $cardDetails = unserialize($_COOKIE['data']);
@@ -12,8 +19,6 @@ if (isset($_COOKIE['err'])) {
             <div class="flex justify-between">
                 <h2 class="font-semibold text-3xl">Summary</h2>
                 <?php
-                $query = new DatabaseQuery();
-                $config = require "./core/config.php";
                 $isRented = $id = false;
                 if (isset($_SESSION['user'])) {
                     $conditions = [

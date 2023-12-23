@@ -92,7 +92,17 @@ if (isset($_COOKIE['data'])) {
             <?php
             $categories = $query->selectAll('Category');
             foreach ($categories as $category):
-                $books = $query->selectAllSpecific('books', $category['id'], 'category_id');
+                $conditions=[
+                    [
+                        'criteria'=>'category_id',
+                        'id'=>$category['id']
+                    ],
+                    [
+                        'criteria'=>'active',
+                        'id'=>true
+                    ]
+                ];
+                $books = $query->selectAllMultiCondition('books', $conditions);
                 if ($books):
                     ?>
                     <Section>

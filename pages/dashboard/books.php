@@ -65,6 +65,9 @@ $joins = [
     ],
 ];
 $books = $query->selectAllJoin('books', $joins);
+$books=array_filter($books, function ($book){
+    return $book['active'];
+})
 ?>
 <?php if (!count($books)): ?>
     <section class="flex-1 flex items-center justify-center">

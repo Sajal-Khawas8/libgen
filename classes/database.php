@@ -204,6 +204,28 @@ class DatabaseQuery implements CRUD
     }
 
     /**
+     * This method selects and returns all rows from the table which matches the conditions using AND operator
+     * 
+     * @param string $table The name of the table
+     * @param array $conditions The conditions in key value pair where key 'criteria' will be the column name
+     * and value 'id' will be the value of the column
+     * @return mixed Returns the value of the searched column from the table
+     */
+    public function selectAllMultiCondition(string $table, array $conditions): mixed
+    {
+        $sql = "SELECT * FROM $table WHERE {$conditions[0]['criteria']} = '{$conditions[0]['id']}'";
+        unset($conditions[0]);
+        foreach ($conditions as $condition) {
+            $sql .= " AND {$condition['criteria']} = '{$condition['id']}'";
+        }
+        $result = $this->conn->query($sql);
+        if (!$result) {
+            die("Some Error Occured: " . $this->conn->error);
+        }
+        return $result->fetch_all(MYSQLI_ASSOC);
+    }
+
+    /**
      * This method selects and returns one value from the table which matches the conditions using AND operator
      * 
      * @param string $column The column to find
@@ -357,7 +379,6 @@ class DatabaseQuery implements CRUD
         foreach ($conditions as $condition) {
             $sql .= " AND {$condition['criteria']} = {$condition['id']}";
         }
-        echo $sql;
         $result = $this->conn->query($sql);
         if (!$result) {
             die("Error searching: " . $this->conn->error);
