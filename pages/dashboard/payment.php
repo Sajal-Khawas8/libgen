@@ -76,7 +76,7 @@ if (isset($_COOKIE['data'])) {
 
                 <?php if ($_SERVER['QUERY_STRING'] && !$userIds): ?>
                     <tr class="bg-indigo-200 h-80">
-                        <td colspan="6" class="text-2xl font-medium text-gray-600 border border-x-2 border-gray-800">No Data
+                        <td colspan="9" class="text-2xl font-medium text-gray-600 border border-x-2 border-gray-800">No Data
                             Available...</td>
                     </tr>
                 <?php else: ?>
@@ -103,7 +103,7 @@ if (isset($_COOKIE['data'])) {
                             <td class="border border-gray-800 p-2">
                                 <?= $paidItems[0]['author']; ?></td>
                             <td rowspan="<?= $numPaidItems; ?>" class="border border-gray-800 p-2"><?= $data['card']; ?></td>
-                            <td rowspan="<?= $numPaidItems; ?>" class="border border-gray-800 p-2"><?= $data['amount']; ?></td>
+                            <td rowspan="<?= $numPaidItems; ?>" class="border border-gray-800 p-2">&#x20B9;<?= $data['amount']; ?></td>
                             <td rowspan="<?= $numPaidItems; ?>" class="border border-gray-800 p-2"><?= $data['payment_type']; ?>
                             </td>
                             <td rowspan="<?= $numPaidItems; ?>" class="border border-r-2 border-gray-800 p-2">
