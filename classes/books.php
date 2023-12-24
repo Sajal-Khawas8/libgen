@@ -64,7 +64,7 @@ class Book
             $query->add('quantity', $quantity);
 
             // Redirect to dashboard
-            header("Location: admin");
+            header("Location: admin/books");
             exit;
         }
         $_SESSION['refresh'] = true;

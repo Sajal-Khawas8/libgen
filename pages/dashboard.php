@@ -37,7 +37,7 @@ require "./templates/header.php"; ?>
                         </path>
                     </svg>
                     <span>Books</span>
-                    <a href="/admin" class="absolute inset-0"></a>
+                    <a href="/admin/books" class="absolute inset-0"></a>
                 </li>
                 <li class="flex items-center relative">
                     <svg class="w-7 h-7 mx-4" height="24" width="24" xmlns="http://www.w3.org/2000/svg"

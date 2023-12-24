@@ -421,7 +421,7 @@ if (isset($_POST['updateBookData'])) {
         header("Location: admin/books/updateBook?$id");
         exit;
     }
-    header("Location: admin");
+    header("Location: /admin/books");
     exit;
 }
 
@@ -439,7 +439,7 @@ if (isset($_POST['deleteBook'])) {
         exit;
     }
     $book->removeBook($id);
-    header("Location: admin");
+    header("Location: /admin/books");
     exit;
 }
 
@@ -841,7 +841,7 @@ if (isset($_POST['searchBookAdmin'])) {
     if (!$categoryId) {
         setcookie('data', serialize($_POST), time() + 2);
         setcookie("err", "*Something went wrong!", time() + 2);
-        header("Location: /admin");
+        header("Location: /admin/books");
         exit;
     }
     $query = new DatabaseQuery();
@@ -864,7 +864,7 @@ if (isset($_POST['searchBookAdmin'])) {
     }
     $bookIds = openssl_encrypt($bookIds, $config['openssl']['algo'], $config['openssl']['pass'], 0, $config['openssl']['iv']);
     setcookie('data', serialize($_POST), time() + 2);
-    header("Location: /admin?" . $bookIds);
+    header("Location: /admin/books?" . $bookIds);
     exit;
 }
 

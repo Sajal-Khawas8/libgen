@@ -1,7 +1,8 @@
 <?php
 $dashboardRouter = new Router();
 $dashboardRouter->define([
-    '' => './pages/dashboard/books.php',
+    '' => './pages/dashboard/index.php',
+    'books' => './pages/dashboard/books.php',
     'readers' => './pages/dashboard/users.php',
     'rentedBooks' => './pages/dashboard/rentedBooks.php',
     'categories' => './pages/dashboard/categories.php',

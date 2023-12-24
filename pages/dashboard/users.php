@@ -24,16 +24,6 @@ if (isset($_COOKIE['data'])) {
 </header>
 
 <?php
-// $joins = [
-//     [
-//         'table' => 'category',
-//         'condition' => 'books.category_id = category.id'
-//     ],
-//     [
-//         'table' => 'quantity',
-//         'condition' => 'quantity.book_id = books.book_uuid'
-//     ],
-// ];
 $conditions = [
     [
         'criteria' => 'active',
