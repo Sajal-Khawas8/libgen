@@ -49,21 +49,21 @@ if (isset($_COOKIE['err'])) {
                 <?php endif; ?>
             </div>
             <dl class="space-y-4 mx-8">
-                <div class="flex gap-2 text-lg">
+                <div class="grid grid-cols-3 text-lg">
                     <dt class="font-medium">Availability:</dt>
                     <?php if ($bookData['available']): ?>
-                        <dd class="px-4 rounded-full font-medium bg-green-400 text-green-700">In stock</dd>
+                        <dd class="col-span-2 px-4 rounded-full font-medium bg-green-400 text-green-700 w-fit">In stock</dd>
                     <?php else: ?>
-                        <dd class="px-4 rounded-full font-medium bg-red-400 text-red-700">Out of stock</dd>
+                        <dd class="col-span-2 px-4 rounded-full font-medium bg-red-400 text-red-700 w-fit">Out of stock</dd>
                     <?php endif; ?>
                 </div>
-                <div class="flex gap-2 text-lg">
+                <div class="grid grid-cols-3 text-lg">
                     <dt class="font-medium">Rent:</dt>
-                    <dd>&#x20B9;<?= $bookData['rent']; ?>/day</dd>
+                    <dd class="col-span-2 px-4">&#x20B9;<?= $bookData['rent']; ?>/day</dd>
                 </div>
-                <div class="flex gap-2 text-lg">
+                <div class="grid grid-cols-3 text-lg">
                     <dt class="font-medium">Fine charge:</dt>
-                    <dd>&#x20B9;<?= $bookData['fine'] ?>/day</dd>
+                    <dd class="col-span-2 px-4">&#x20B9;<?= $bookData['fine'] ?>/day</dd>
                 </div>
             </dl>
         </article>
