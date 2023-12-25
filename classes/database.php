@@ -207,8 +207,8 @@ class DatabaseQuery implements CRUD
      * This method selects and returns all rows from the table which matches the conditions using AND operator
      * 
      * @param string $table The name of the table
-     * @param array $conditions The conditions in key value pair where key 'criteria' will be the column name
-     * and value 'id' will be the value of the column
+     * @param array $conditions The conditions in key value pairs where key is the column name
+     * and value is the value of the column
      * @return mixed Returns the value of the searched column from the table
      */
     public function selectAllMultiCondition(string $table, array $conditions): mixed
@@ -230,8 +230,8 @@ class DatabaseQuery implements CRUD
      * 
      * @param string $column The column to find
      * @param string $table The name of the table
-     * @param array $conditions The conditions in key value pair where key 'criteria' will be the column name
-     * and value 'id' will be the value of the column
+     * @param array $conditions The conditions in key value pairs where key is the column name
+     * and value is the value of the column
      * @return mixed Returns the value of the searched column from the table
      */
     public function selectColumnMultiCondition(string $column, string $table, array $conditions): mixed
@@ -364,8 +364,8 @@ class DatabaseQuery implements CRUD
      * @param string $table The name of the table
      * @param array $columns The columns to select
      * @param mixed $search The value to search
-     * @param array $conditions The conditions in key value pair where key 'criteria' will be the column name
-     * and value 'id' will be the value of the column
+     * @param array $conditions The conditions in key value pairs where key is the column name
+     * and value is the value of the column
      * @return array Returns selected rows from the table
      */
     public function selectPartial(string $table, array $columns, string $search, array $conditions = []): array

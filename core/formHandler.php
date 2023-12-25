@@ -27,12 +27,15 @@ function logout()
 
 // Handle Admin Login
 if (isset($_POST['masterLogin'])) {
+    // Validate login data
     $isDataValid = true;
     $validation = new ValidateData();
     $err = [
         'emailErr' => $validation->validateAdminLoginEmail($_POST['email'], $isDataValid),
         'passwordErr' => $validation->validatePassword($_POST['password'], $_POST['email'], $isDataValid)
     ];
+
+    // If data is not valid, show error message
     if (!$isDataValid) {
         $_SESSION['refresh'] = true;
         setcookie('err', serialize($err), time() + 2);
@@ -41,6 +44,7 @@ if (isset($_POST['masterLogin'])) {
         exit;
     }
 
+    // Add user data to session
     $query = new DatabaseQuery();
     $user = $query->selectOne('users', $_POST['email'], 'email');
     $user = [$user['uuid'], $user['role']];
@@ -53,12 +57,15 @@ if (isset($_POST['masterLogin'])) {
 
 // Handle User Login
 if (isset($_POST['login'])) {
+    // Validate login data
     $isDataValid = true;
     $validation = new ValidateData();
     $err = [
         'emailErr' => $validation->validateLoginEmail($_POST['email'], $isDataValid),
         'passwordErr' => $validation->validatePassword($_POST['password'], $_POST['email'], $isDataValid)
     ];
+
+    // If data is not valid, show error message
     if (!$isDataValid) {
         $_SESSION['refresh'] = true;
         setcookie('err', serialize($err), time() + 2);
@@ -67,6 +74,7 @@ if (isset($_POST['login'])) {
         exit;
     }
 
+    // Add user data to session and in encypted form in cookie
     $query = new DatabaseQuery();
     $user = $query->selectOne('users', $_POST['email'], 'email');
     $user = [$user['uuid'], $user['role']];
@@ -92,10 +100,12 @@ if (isset($_POST['logout'])) {
 
 // Handle Forgot Password
 if (isset($_POST['forgotPassword'])) {
+    // Validate email
     $isDataValid = true;
     $validation = new ValidateData();
     $err = $validation->validateLoginEmail($_POST['email'], $isDataValid);
 
+    // If email is not valid, show error message
     if (!$isDataValid) {
         $_SESSION['refresh'] = true;
         setcookie('err', $err, time() + 2);
@@ -104,6 +114,7 @@ if (isset($_POST['forgotPassword'])) {
         exit;
     }
 
+    // Generate unique id, insert it to db and send it to user in encrypted form
     $id = uniqid();
     $query = new DatabaseQuery();
     $query->update('users', "uniqueID='$id'", $_POST['email'], 'email');
@@ -131,6 +142,7 @@ if (isset($_POST['forgotPassword'])) {
 
 // Handle Reset Password
 if (isset($_POST['resetPW'])) {
+    // Get unique id from the url and decrypt it
     $isDataValid = true;
     $validation = new ValidateData();
     $config = require "./core/config.php";
@@ -141,6 +153,8 @@ if (isset($_POST['resetPW'])) {
         header("Location: /libgen");
         exit;
     }
+
+    // Validate password formats
     $err = [
         'passwordErr' => $validation->validatePasswordFormat($_POST['password'], $isDataValid),
         'cnfrmPasswordErr' => $validation->validateCnfrmPassword($_POST['cnfrmPassword'], $_POST['password'], $isDataValid),
@@ -152,6 +166,7 @@ if (isset($_POST['resetPW'])) {
         exit;
     }
 
+    // Check if the id from the url and db is same or not
     list($email, $id) = explode("&", $id);
     $query = new DatabaseQuery();
     $idFromDb = $query->selectColumn('uniqueID', 'users', $email, 'email');
@@ -423,16 +438,22 @@ if (isset($_POST['deleteBook'])) {
 
 // Handle Payment of Single Book
 if (isset($_POST['payment'])) {
+
+    // Check if the user is logged in or not
     if (!isset($_SESSION['user'])) {
         header("Location: /login");
         exit;
     }
+
+    // Get the uuid of the book
     $config = require "./core/config.php";
     $uuid = openssl_decrypt($_POST['id'], $config['openssl']['algo'], $config['openssl']['pass'], 0, $config['openssl']['iv']);
     if (!$uuid) {
         logout();
     }
     unset($_POST['payment'], $_POST['amount'], $_POST['id']);
+
+    // Validate the card details
     $validation = new ValidateData();
     $isDataValid = true;
     $err = [
@@ -442,6 +463,8 @@ if (isset($_POST['payment'])) {
         'cvvErr' => $validation->validateCVV($_POST['cvv'], $isDataValid),
         'returnDateErr' => $validation->validateNumber($_POST['returnDate'], $isDataValid, 'Period'),
     ];
+
+    // If data is not valid, then show error messages
     if (!$isDataValid) {
         $_SESSION['refresh'] = true;
         setcookie('err', serialize($err), time() + 2);
@@ -465,6 +488,8 @@ if (isset($_POST['payment'])) {
     $currentDate = new DateTime();
     $dueDate = $currentDate->add(new DateInterval("P" . $_POST['returnDate'] . "D"));
     $dueDate = $dueDate->format("Y-m-d");
+
+    // Add payment data to payment table
     $paymentId = uniqid("pay-");
     $paymentData = [
         'payment_id' => $paymentId,
@@ -474,12 +499,15 @@ if (isset($_POST['payment'])) {
     ];
     $query->add('payment', $paymentData);
 
+    // Add list of books taken on rent to paid_items table
     $paidItems = [
         'payment_id' => $paymentId,
         'book_id' => $bookData['book_uuid'],
     ];
     $query->add('paid_items', $paidItems);
 
+
+    // Add order details to orders table
     $rentStatus = [
         'book_id' => $uuid,
         'user_id' => $_SESSION['user'][0],
@@ -487,8 +515,12 @@ if (isset($_POST['payment'])) {
         'due_date' => $dueDate
     ];
     $query->add('orders', $rentStatus);
+
+    // Update the quantity of book
     $availableBooks = $bookData['available'] - 1;
     $query->update('quantity', "available=$availableBooks", $uuid, 'book_id');
+
+    // Remove the book from the cart
     $conditions = [
         'book_id' => $uuid,
         'user_id' => $_SESSION['user'][0],
@@ -496,6 +528,8 @@ if (isset($_POST['payment'])) {
     $cartId = $query->selectColumnMultiCondition('id', 'cart', $conditions);
     $cart = new Cart();
     $cart->removeItem($cartId);
+
+    // Redirect and show message
     setcookie('message', 'Payment is Successful', time() + 2);
     header("Location: /mybooks");
     exit;
@@ -505,18 +539,23 @@ if (isset($_POST['payment'])) {
 
 // Handle Return Book
 if (isset($_POST['returnBook'])) {
+    // Get uuid of the book
     $config = require "./core/config.php";
     $uuid = openssl_decrypt($_POST['id'], $config['openssl']['algo'], $config['openssl']['pass'], 0, $config['openssl']['iv']);
     if (!$uuid) {
         logout();
     }
     $query = new DatabaseQuery();
+
+    // Delete this book from the orders table
     $conditions = [
         'book_id' => $uuid,
         'user_id' => $_SESSION['user'][0],
     ];
     $rentedBookData = $query->selectAllMultiCondition('orders', $conditions);
     $query->delete('orders', $rentedBookData[0]['id']);
+
+    // Add history of book in rent_history table
     $issueDate = new DateTime($rentedBookData[0]['date']);
     $dueDate = new DateTime($rentedBookData[0]['due_date']);
     $interval = $dueDate->diff($issueDate);
@@ -531,9 +570,13 @@ if (isset($_POST['returnBook'])) {
         'fine_paid' => 0
     ];
     $query->add('rent_history', $rentHistory);
+
+    // Increase the quantity of the book
     $availableBooks = $query->selectColumn('available', 'quantity', $uuid, 'book_id');
     $availableBooks++;
     $query->update('quantity', "available=$availableBooks", $uuid, 'book_id');
+
+    // Redirect and show message
     setcookie('message', 'Book Returned Successfully', time() + 2);
     header("Location: /mybooks");
     exit;
@@ -542,12 +585,15 @@ if (isset($_POST['returnBook'])) {
 
 // Handle Return Book with Fine
 if (isset($_POST['returnBookFine'])) {
+    // get uuid and fine amount of book
     $config = require "./core/config.php";
     $uuid = openssl_decrypt($_POST['id'], $config['openssl']['algo'], $config['openssl']['pass'], 0, $config['openssl']['iv']);
     $amount = openssl_decrypt($_POST['amount'], $config['openssl']['algo'], $config['openssl']['pass'], 0, $config['openssl']['iv']);
     if (!$uuid || !$amount) {
         logout();
     }
+
+    // Validate card details
     $validation = new ValidateData();
     $isDataValid = true;
     $err = [
@@ -556,6 +602,8 @@ if (isset($_POST['returnBookFine'])) {
         'expiryErr' => $validation->validateExpiryDate($_POST['expiryDate'], $isDataValid, 'Category'),
         'cvvErr' => $validation->validateCVV($_POST['cvv'], $isDataValid),
     ];
+
+    // If data is not valid, show error message
     if (!$isDataValid) {
         $_SESSION['refresh'] = true;
         setcookie('err', serialize($err), time() + 2);
@@ -565,12 +613,16 @@ if (isset($_POST['returnBookFine'])) {
     }
 
     $query = new DatabaseQuery();
+
+    // Delete book data from orders table
     $conditions = [
         'book_id' => $uuid,
         'user_id' => $_SESSION['user'][0],
     ];
     $rentedBookData = $query->selectAllMultiCondition('orders', $conditions);
     $query->delete('orders', $rentedBookData[0]['id']);
+
+    // Add history of book to rent_history table
     $issueDate = new DateTime($rentedBookData[0]['date']);
     $dueDate = new DateTime($rentedBookData[0]['due_date']);
     $interval = $dueDate->diff($issueDate);
@@ -585,9 +637,13 @@ if (isset($_POST['returnBookFine'])) {
         'fine_paid' => $amount
     ];
     $query->add('rent_history', $rentHistory);
+
+    // Increase quantity of book
     $availableBooks = $query->selectColumn('available', 'quantity', $uuid, 'book_id');
     $availableBooks++;
     $query->update('quantity', "available=$availableBooks", $uuid, 'book_id');
+
+    // Add payment data to payment table
     $paymentId = uniqid("pay-");
     $paymentData = [
         'payment_id' => $paymentId,
@@ -598,12 +654,14 @@ if (isset($_POST['returnBookFine'])) {
     ];
     $query->add('payment', $paymentData);
 
+    // Add data of book returned to paid_items table
     $paidItems = [
         'payment_id' => $paymentId,
         'book_id' => $uuid,
     ];
     $query->add('paid_items', $paidItems);
 
+    // Redirect and show message
     setcookie('message', 'Payment is Successful and Book is Returned', time() + 2);
     header("Location: /mybooks");
     exit;
@@ -646,6 +704,7 @@ if (isset($_POST['removeFromCart'])) {
 
 // Handle Cart Payment
 if (isset($_POST['cartPayment'])) {
+    // Get all cart items
     $config = require "./core/config.php";
     $cartItems = openssl_decrypt($_POST['items'], $config['openssl']['algo'], $config['openssl']['pass'], 0, $config['openssl']['iv']);
     if (!$cartItems) {
@@ -656,6 +715,8 @@ if (isset($_POST['cartPayment'])) {
     }
     $cartItems = explode('&', $cartItems);
     unset($cartItems[0]);
+
+    // Validate card details
     $validation = new ValidateData();
     $isDataValid = true;
     $err = [
@@ -672,10 +733,14 @@ if (isset($_POST['cartPayment'])) {
             'condition' => 'quantity.book_id = books.book_uuid'
         ]
     ];
+
+    // Validate return dates
     foreach ($cartItems as $itemId) {
         $bookData = $query->selectOneJoin('books', $joins, '*', $itemId, 'book_uuid');
         $err[$bookData['title'] . 'returnDateErr'] = $validation->validateNumber($_POST["returnDate-" . str_replace(" ", "_", $bookData['title'])], $isDataValid, "Period");
     }
+
+    // Id data is not valid, show error message
     if (!$isDataValid) {
         $_SESSION['refresh'] = true;
         setcookie('err', serialize($err), time() + 2);
@@ -684,6 +749,7 @@ if (isset($_POST['cartPayment'])) {
         exit;
     }
 
+    // Add payment data to payment table
     $paymentId = uniqid("pay-");
     $paymentData = [
         'payment_id' => $paymentId,
@@ -692,14 +758,18 @@ if (isset($_POST['cartPayment'])) {
         'card' => substr($_POST['cardNumber'], -4)
     ];
     $query->add('payment', $paymentData);
+    
     $totalRent = 0;
     foreach ($cartItems as $itemId) {
+        // Get book data
         $bookData = $query->selectOneJoin('books', $joins, '*', $itemId, 'book_uuid');
         $days = $_POST['returnDate-' . str_replace(" ", "_", $bookData['title'])];
         $currentDate = new DateTime();
         $dueDate = $currentDate->add(new DateInterval("P" . $days . "D"));
         $dueDate = $dueDate->format("Y-m-d");
-        $totalRent += ($bookData['rent'] * $days);
+        $totalRent += ($bookData['rent'] * $days); // Add rent
+
+        // Add order details to order table
         $rentStatus = [
             'book_id' => $itemId,
             'user_id' => $_SESSION['user'][0],
@@ -707,9 +777,13 @@ if (isset($_POST['cartPayment'])) {
             'due_date' => $dueDate
         ];
         $query->add('orders', $rentStatus);
+
+        // Decrease quantity of book
         $availableBooks = $bookData['available'];
         $availableBooks--;
         $query->update('quantity', "available=$availableBooks", $bookData['book_id'], 'book_id');
+
+        // remove item from the cart
         $conditions = [
             'user_id' => $_SESSION['user'][0],
             'book_id' => $itemId,
@@ -718,6 +792,7 @@ if (isset($_POST['cartPayment'])) {
         $cartId = $query->selectColumnMultiCondition('id', 'cart', $conditions);
         $cart->removeItem($cartId);
 
+        // Add book data to paid_items table
         $paidItems = [
             'payment_id' => $paymentId,
             'book_id' => $bookData['book_uuid'],
@@ -725,8 +800,10 @@ if (isset($_POST['cartPayment'])) {
         $query->add('paid_items', $paidItems);
     }
 
+    // Update total rent paid in payment table
     $query->update("payment", "amount = $totalRent", $paymentId, "payment_id");
 
+    // Redirect and show message
     setcookie('message', 'Payment is Successful', time() + 2);
     header("Location: /mybooks");
     exit;
