@@ -1,6 +1,6 @@
 <?php
 setcookie('prevPage', $uri);
-if (!isset($_SESSION['user']) || $_SESSION['user'][1] !== '1') {
+if (!isset($_SESSION['user']) || $_SESSION['user'][1] != 1) {
     header("Location: /login");
     exit;
 }
@@ -37,8 +37,8 @@ if (isset($_COOKIE['err'])) {
                     <li class="px-3 py-3 rounded-md <?= $bookData['available'] ? 'bg-white' : 'bg-slate-300/80'; ?>">
                         <article class="flex items-center gap-7 h-32">
                             <div class="h-full w-24">
-                                <img src="<?= $bookData['cover']; ?>"
-                                    alt="<?= $bookData['title']; ?>" class="h-full w-full object-fill">
+                                <img src="<?= $bookData['cover']; ?>" alt="<?= $bookData['title']; ?>"
+                                    class="h-full w-full object-fill">
                             </div>
                             <div class="flex-1 flex flex-col justify-between h-full">
                                 <div class="flex justify-between">
@@ -47,14 +47,8 @@ if (isset($_COOKIE['err'])) {
                                         <?php
                                         $config = require "./core/config.php";
                                         $conditions = [
-                                            [
-                                                'criteria' => 'user_id',
-                                                'id' => $_SESSION['user'][0]
-                                            ],
-                                            [
-                                                'criteria' => 'book_id',
-                                                'id' => $itemId
-                                            ]
+                                            'user_id' => $_SESSION['user'][0],
+                                            'book_id' => $itemId,
                                         ];
                                         $id = $query->selectColumnMultiCondition('id', 'cart', $conditions);
                                         ?>
@@ -143,13 +137,13 @@ if (isset($_COOKIE['err'])) {
                     ?>
                     <?php if ($bookData['available']): ?>
                         <div class="flex items-center gap-7">
-                            <label for="returnDate-<?= $bookData['title']; ?>" class="font-medium cursor-pointer w-1/2">Choose
-                                Return Date of <?= $bookData['title'] ?>:</label>
+                            <label for="returnDate-<?= $bookData['title']; ?>" class="font-medium cursor-pointer w-1/2">Enter
+                                Rent Period of <?= $bookData['title'] ?>:</label>
                             <div class="flex-1">
-                                <input type="date" name="returnDate-<?= str_replace(" ", "_", $bookData['title']); ?>"
+                                <input type="text" name="returnDate-<?= str_replace(" ", "_", $bookData['title']); ?>"
                                     id="returnDate-<?= $bookData['title']; ?>"
                                     value="<?= $cardDetails["returnDate-" . str_replace(" ", "_", $bookData['title'])] ?? ''; ?>"
-                                    class="w-full px-4 py-2 cursor-pointer border border-gray-600 rounded outline-indigo-600 placeholder:text-gray-500">
+                                    class="w-full px-4 py-2 border border-gray-600 rounded outline-indigo-600 placeholder:text-gray-500">
                                 <span
                                     class="text-red-600 text-sm font-medium"><?= $err[$bookData['title'] . "returnDateErr"] ?? ''; ?></span>
                             </div>

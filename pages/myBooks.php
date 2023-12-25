@@ -1,6 +1,6 @@
 <?php
 setcookie('prevPage', $uri);
-if (!isset($_SESSION['user']) || $_SESSION['user'][1] !== '1') {
+if (!isset($_SESSION['user']) || $_SESSION['user'][1] != 1) {
     header("Location: /login");
 }
 $query = new DatabaseQuery();
@@ -31,15 +31,15 @@ $previousReads = $query->selectAllJoinSpecific('books', $joins, $_SESSION['user'
             <?php if (!$currentReads): ?>
                 <p class="font-semibold text-4xl text-gray-500 text-center">You are not reading any book currently...</p>
             <?php else: ?>
-                <ul class="flex items-center gap-x-20 gap-y-12 flex-wrap px-16">
+                <ul class="grid grid-cols-5 items-center gap-x-16 gap-y-12 flex-wrap px-16">
                     <?php foreach ($currentReads as $book): ?>
                         <li class="border rounded-lg divide-y relative hover:shadow-lg">
                             <figure>
-                                <div class="h-72 w-56 border">
+                                <div class="h-72 w-full border">
                                     <img src="<?= $book['cover']; ?>" alt="<?= $book['title']; ?>"
                                         class="h-full w-full object-fill">
                                 </div>
-                                <figcaption class="p-2 max-w-[14rem] space-y-4">
+                                <figcaption class="p-2 max-w-full space-y-4">
                                     <h3 class="font-semibold text-xl text-blue-700 truncate"><?= $book['title']; ?></h3>
                                     <h4 class="font-medium truncate"><?= $book['author']; ?></h4>
                                 </figcaption>
@@ -62,15 +62,15 @@ $previousReads = $query->selectAllJoinSpecific('books', $joins, $_SESSION['user'
             <?php if (!$previousReads): ?>
                 <p class="font-semibold text-4xl text-gray-500 text-center">You have not completed any book yet...</p>
             <?php else: ?>
-                <ul class="flex items-center gap-x-20 gap-y-12 flex-wrap px-16">
+                <ul class="grid grid-cols-5 items-center gap-x-20 gap-y-12 flex-wrap px-16">
                     <?php foreach ($previousReads as $book): ?>
                         <li class="border rounded-lg divide-y relative hover:shadow-lg">
                             <figure>
-                                <div class="h-72 w-56 border">
+                                <div class="h-72 w-full border">
                                     <img src="<?= $book['cover']; ?>" alt="<?= $book['title']; ?>"
                                         class="h-full w-full object-fill">
                                 </div>
-                                <figcaption class="p-2 max-w-[14rem] space-y-4">
+                                <figcaption class="p-2 max-w-full space-y-4">
                                     <h3 class="font-semibold text-xl text-blue-700 truncate"><?= $book['title']; ?></h3>
                                     <h4 class="font-medium truncate"><?= $book['author']; ?></h4>
                                 </figcaption>

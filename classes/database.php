@@ -92,7 +92,7 @@ class DatabaseQuery implements CRUD
     public function update(string $table, string $updateStr, mixed $searchId, string $searchCriteria = 'id'): void
     {
         $date = date("Y-m-d H:i:s");
-        $sql = "UPDATE $table SET $updateStr modification_date = '$date' WHERE $searchCriteria='$searchId'";
+        $sql = "UPDATE $table SET $updateStr, modification_date = '$date' WHERE $searchCriteria='$searchId'";
         if (!$this->conn->query($sql)) {
             die("Error locking user: " . $this->conn->error);
         }
@@ -213,11 +213,11 @@ class DatabaseQuery implements CRUD
      */
     public function selectAllMultiCondition(string $table, array $conditions): mixed
     {
-        $sql = "SELECT * FROM $table WHERE {$conditions[0]['criteria']} = '{$conditions[0]['id']}'";
-        unset($conditions[0]);
-        foreach ($conditions as $condition) {
-            $sql .= " AND {$condition['criteria']} = '{$condition['id']}'";
+        $sql = "SELECT * FROM $table WHERE ";
+        foreach ($conditions as $column => $value) {
+            $sql .= "$column = '$value' AND ";
         }
+        $sql=rtrim($sql, " AND ");
         $result = $this->conn->query($sql);
         if (!$result) {
             die("Some Error Occured: " . $this->conn->error);
@@ -236,11 +236,11 @@ class DatabaseQuery implements CRUD
      */
     public function selectColumnMultiCondition(string $column, string $table, array $conditions): mixed
     {
-        $sql = "SELECT $column FROM $table WHERE {$conditions[0]['criteria']} = '{$conditions[0]['id']}'";
-        unset($conditions[0]);
-        foreach ($conditions as $condition) {
-            $sql .= " AND {$condition['criteria']} = '{$condition['id']}'";
+        $sql = "SELECT $column FROM $table WHERE ";
+        foreach ($conditions as $column => $value) {
+            $sql .= "$column = '$value' AND ";
         }
+        $sql=rtrim($sql, " AND ");
         $result = $this->conn->query($sql);
         if (!$result) {
             die("Some Error Occured: " . $this->conn->error);
@@ -376,9 +376,10 @@ class DatabaseQuery implements CRUD
             $sql .= " OR $column LIKE '%$search%'";
         }
         $sql .= ")";
-        foreach ($conditions as $condition) {
-            $sql .= " AND {$condition['criteria']} = {$condition['id']}";
+        foreach ($conditions as $column => $value) {
+            $sql .= " AND $column = '$value'";
         }
+        $sql=rtrim($sql, " AND ");
         $result = $this->conn->query($sql);
         if (!$result) {
             die("Error searching: " . $this->conn->error);

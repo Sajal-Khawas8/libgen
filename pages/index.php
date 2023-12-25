@@ -1,6 +1,6 @@
 <?php
 setcookie('prevPage', $uri);
-if (isset($_SESSION['isAdmin'])) {
+if (isset($_SESSION['user']) && ($_SESSION['user'][1] != 1)) {
     header("Location: /admin");
     exit;
 }
@@ -17,7 +17,8 @@ if (isset($_COOKIE['data'])) {
         </section>
     <?php else: ?>
         <!-- Books -->
-        <section class="bg-[url(/libgen/assets/images/banner.jpeg)] h-[calc(100vh-4rem)] bg-no-repeat bg-cover flex flex-col items-center gap-28">
+        <section
+            class="bg-[url(/libgen/assets/images/banner.jpeg)] h-[calc(100vh-4rem)] bg-no-repeat bg-cover flex flex-col items-center gap-28">
             <header class="text-center text-2xl font-semibold text-white space-y-8 mt-40">
                 <h1 class="text-4xl">Welcome to <a href="/libgen" class="text-red-600 text-5xl">LibGen</a>
                 </h1>
@@ -61,20 +62,19 @@ if (isset($_COOKIE['data'])) {
                 exit;
             }
             $bookIds = explode("&", $bookIds);
-            unset($bookIds[0]);
             ?>
             <section id="search">
                 <h2 class="font-medium text-3xl pl-16 text-center">Search Results</h2>
-                <ul class="flex items-center gap-x-20 gap-y-12 flex-wrap px-16 py-8">
+                <ul class="grid grid-cols-5 items-center gap-x-20 gap-y-12 flex-wrap px-16 py-8">
                     <?php foreach ($bookIds as $bookId): ?>
                         <?php $book = $query->selectOne('books', $bookId, 'id'); ?>
                         <li class="border rounded-lg divide-y relative hover:shadow-lg">
                             <figure>
-                                <div class="h-72 w-56 border">
-                                    <img src="<?= $book['cover']; ?>"
-                                        alt="<?= $book['title']; ?>" class="h-full w-full object-fill">
+                                <div class="h-72 w-full border">
+                                    <img src="<?= $book['cover']; ?>" alt="<?= $book['title']; ?>"
+                                        class="h-full w-full object-fill">
                                 </div>
-                                <figcaption class="p-2 max-w-[14rem] space-y-4">
+                                <figcaption class="p-2 max-w-full space-y-4">
                                     <h3 class="font-semibold text-xl text-blue-700 truncate"><?= $book['title']; ?></h3>
                                     <h4 class="font-medium truncate"><?= $book['author']; ?></h4>
                                 </figcaption>
@@ -92,32 +92,26 @@ if (isset($_COOKIE['data'])) {
             <?php
             $categories = $query->selectAll('Category');
             foreach ($categories as $category):
-                $conditions=[
-                    [
-                        'criteria'=>'category_id',
-                        'id'=>$category['id']
-                    ],
-                    [
-                        'criteria'=>'active',
-                        'id'=>true
-                    ]
+                $conditions = [
+                    'category_id' => $category['id'],
+                    'active' => true,
                 ];
                 $books = $query->selectAllMultiCondition('books', $conditions);
                 if ($books):
                     ?>
                     <Section>
                         <h2 class="font-medium text-2xl pl-16"><?= $category['name'] ?></h2>
-                        <ul class="flex items-center gap-x-20 gap-y-12 flex-wrap px-16 py-8">
+                        <ul class="grid grid-cols-5 items-center gap-x-20 gap-y-12 flex-wrap px-16 py-8">
                             <?php
                             foreach ($books as $book):
                                 ?>
                                 <li class="border rounded-lg divide-y relative hover:shadow-lg">
                                     <figure>
-                                        <div class="h-72 w-56 border">
-                                            <img src="<?= $book['cover']; ?>"
-                                                alt="<?= $book['title']; ?>" class="h-full w-full object-fill">
+                                        <div class="h-72 w-full border">
+                                            <img src="<?= $book['cover']; ?>" alt="<?= $book['title']; ?>"
+                                                class="h-full w-full object-fill">
                                         </div>
-                                        <figcaption class="p-2 max-w-[14rem] space-y-4">
+                                        <figcaption class="p-2 max-w-full space-y-4">
                                             <h3 class="font-semibold text-xl text-blue-700 truncate"><?= $book['title']; ?></h3>
                                             <h4 class="font-medium truncate"><?= $book['author']; ?></h4>
                                         </figcaption>

@@ -25,21 +25,14 @@ if (isset($_COOKIE['data'])) {
 
 <?php
 $conditions = [
-    [
-        'criteria' => 'active',
-        'id' => true
-    ],
-    [
-        'criteria' => 'role',
-        'id' => 1
-    ]
+    'active' => true,
+    'role' => 1,
 ];
 $users = $query->selectAllMultiCondition('users', $conditions);
 $config = require "./core/config.php";
 $userIds = openssl_decrypt($_SERVER['QUERY_STRING'], $config['openssl']['algo'], $config['openssl']['pass'], 0, $config['openssl']['iv']);
 if ($_SERVER['QUERY_STRING'] && $userIds) {
     $userIds = explode("&", $userIds);
-    unset($userIds[0]);
     $users = array_filter($users, function ($user) {
         global $userIds;
         return in_array($user['id'], $userIds);

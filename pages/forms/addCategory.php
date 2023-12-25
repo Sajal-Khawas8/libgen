@@ -5,7 +5,7 @@ if (!empty($_SERVER['QUERY_STRING'])) {
     $id = openssl_decrypt($_SERVER['QUERY_STRING'], $config['openssl']['algo'], $config['openssl']['pass'], 0, $config['openssl']['iv']);
     if (!$id) {
         setcookie('user', '', time() - 1);
-        unset($_SESSION['isAdmin']);
+        unset($_SESSION['user']);
         $_SESSION['refresh'] = true;
         header("Location: /libgen");
         exit;

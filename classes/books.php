@@ -41,36 +41,37 @@ class Book
         ];
 
         // If data is valid, add it to table else set and display the error messages
-        if ($isDataValid) {
-            // Upload the book cover image
-            $file = new File($_FILES['cover']);
-            $data['cover'] = $file->moveFile('books');
-            $data['cover']="http://localhost/libgen/assets/uploads/images/books/" . $data['cover'];
-
-            $copies = $data['copies'];
-            unset($data['copies']);
-            $query = new DatabaseQuery();
-
-            // Add the book data to the table
-            $query->add('books', $data);
-            $bookId = $query->lastEntry('books', 'book_uuid');
-            $quantity = [
-                'book_id' => $bookId,
-                'copies' => $copies,
-                'available' => $copies
-            ];
-
-            // Add the number of books to the quantity table
-            $query->add('quantity', $quantity);
-
-            // Redirect to dashboard
-            header("Location: admin/books");
+        if (!$isDataValid) {
+            $_SESSION['refresh'] = true;
+            setcookie('err', serialize($err), time() + 2);
+            setcookie('data', serialize($data), time() + 2);
+            header("Location: admin/books/addBook");
             exit;
         }
-        $_SESSION['refresh'] = true;
-        setcookie('err', serialize($err), time() + 2);
-        setcookie('data', serialize($data), time() + 2);
-        header("Location: admin/books/addBook");
+
+        // Upload the book cover image
+        $file = new File($_FILES['cover']);
+        $data['cover'] = $file->moveFile('books');
+        $data['cover'] = "http://localhost/libgen/assets/uploads/images/books/" . $data['cover'];
+
+        $copies = $data['copies'];
+        unset($data['copies']);
+        $query = new DatabaseQuery();
+
+        // Add the book data to the table
+        $query->add('books', $data);
+        $bookId = $query->lastEntry('books', 'book_uuid');
+        $quantity = [
+            'book_id' => $bookId,
+            'copies' => $copies,
+            'available' => $copies
+        ];
+
+        // Add the number of books to the quantity table
+        $query->add('quantity', $quantity);
+
+        // Redirect to dashboard
+        header("Location: admin/books");
         exit;
     }
 
@@ -98,47 +99,50 @@ class Book
         ];
 
         // If data is valid, update it in the table else set and display error messages
-        if ($isDataValid) {
-            $updateStr = '';
-            $copies = $data['copies'];
-            unset($data['copies']);
-
-            // Update the cover picture
-            $file = new File($_FILES['cover']);
-            if ($file->fileExist) {
-                $data['cover'] = $file->moveFile('books');
-                $data['cover']="http://localhost/libgen/assets/uploads/images/books/" . $data['cover'];
-
-                // Search and delete the old picture
-                $query = new DatabaseQuery();
-                $oldImage = $query->selectColumn('cover', 'books', $id, 'book_uuid');
-                $oldImage=str_replace('http://localhost/libgen/', '', $oldImage);
-                unlink($oldImage);
-            }
-
-            // Update the data
-            foreach ($data as $key => $value) {
-                if (!empty($value)) {
-                    $updateStr .= $key . " = '" . $value . "', ";
-                }
-            }
-            $query = new DatabaseQuery();
-            $query->update('books', $updateStr, $id, 'book_uuid');
-            $joins = [
-                [
-                    'table' => 'books',
-                    'condition' => 'books.id = quantity.book_id'
-                ]
-            ];
-            $quantity = $query->selectOneJoin('quantity', $joins, '*', $id, 'book_uuid');
-            $updateStr = "copies = $copies, available = " . ($quantity['available'] + ($copies - $quantity['copies'])) . ", ";
-            $query->update('quantity', $updateStr, $id, 'book_id');
-            return true;
+        if (!$isDataValid) {
+            $_SESSION['refresh'] = true;
+            setcookie('err', serialize($err), time() + 2);
+            setcookie('data', serialize($data), time() + 2);
+            return false;
         }
-        $_SESSION['refresh'] = true;
-        setcookie('err', serialize($err), time() + 2);
-        setcookie('data', serialize($data), time() + 2);
-        return false;
+
+        $updateStr = '';
+        $copies = $data['copies'];
+        unset($data['copies']);
+
+        // Update the cover picture
+        $file = new File($_FILES['cover']);
+        if ($file->fileExist) {
+            $data['cover'] = $file->moveFile('books');
+            $data['cover'] = "http://localhost/libgen/assets/uploads/images/books/" . $data['cover'];
+
+            // Search and delete the old picture
+            $query = new DatabaseQuery();
+            $oldImage = $query->selectColumn('cover', 'books', $id, 'book_uuid');
+            $oldImage = str_replace('http://localhost/libgen/', '', $oldImage);
+            unlink($oldImage);
+        }
+
+        // Update the data
+        foreach ($data as $key => $value) {
+            if (!empty($value)) {
+                $updateStr .= $key . " = '" . $value . "', ";
+            }
+        }
+        $updateStr = rtrim($updateStr, ", ");
+        $query = new DatabaseQuery();
+        $query->update('books', $updateStr, $id, 'book_uuid');
+        $joins = [
+            [
+                'table' => 'books',
+                'condition' => 'books.book_uuid = quantity.book_id'
+            ]
+        ];
+        $quantity = $query->selectOneJoin('quantity', $joins, '*', $id, 'book_uuid');
+        $copies = $copies ? $copies : $quantity['copies'];
+        $updateStr = "copies = $copies, available = " . ($quantity['available'] + ($copies - $quantity['copies']));
+        $query->update('quantity', $updateStr, $id, 'book_id');
+        return true;
     }
 
     /**
@@ -167,7 +171,7 @@ class Book
         }
 
         // Delete the book from the books table
-        $query->update('books', 'active=0, ', $id, 'book_uuid');
+        $query->update('books', 'active=0', $id, 'book_uuid');
 
         // Delete the book from the carts
         $query->delete('cart', $id, 'book_id');

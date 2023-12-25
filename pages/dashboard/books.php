@@ -72,7 +72,6 @@ $config = require "./core/config.php";
 $bookIds = openssl_decrypt($_SERVER['QUERY_STRING'], $config['openssl']['algo'], $config['openssl']['pass'], 0, $config['openssl']['iv']);
 if ($_SERVER['QUERY_STRING'] && $bookIds) {
     $bookIds = explode("&", $bookIds);
-    unset($bookIds[0]);
     $books = array_filter($books, function ($book) {
         global $bookIds;
         return in_array($book['id'], $bookIds);

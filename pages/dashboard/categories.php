@@ -39,7 +39,6 @@ $config = require "./core/config.php";
 $categoryIds = openssl_decrypt($_SERVER['QUERY_STRING'], $config['openssl']['algo'], $config['openssl']['pass'], 0, $config['openssl']['iv']);
 if ($_SERVER['QUERY_STRING'] && $categoryIds) {
     $categoryIds = explode("&", $categoryIds);
-    unset($categoryIds[0]);
     $categories = array_filter($categories, function ($category) {
         global $categoryIds;
         return in_array($category['id'], $categoryIds);

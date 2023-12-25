@@ -40,27 +40,28 @@ class User
         ];
 
         // If data is valid, add it to table else set and display the error messages
-        if ($isDataValid) {
-            unset($data['confirmPassword']);
-
-            // Upload profile picture
-            $file = new File($_FILES['profilePicture']);
-            if ($file->fileExist) {
-                $data['image'] = $file->moveFile('users');
-                $data['image']="http://localhost/libgen/assets/uploads/images/users/" . $data['image'];
-            }
-
-            // Add data to table
-            $query = new DatabaseQuery();
-            $query->add('users', $data);
-            return $query->lastEntry('users');
+        if (!$isDataValid) {
+            $_SESSION['refresh'] = true;
+            setcookie('err', serialize($err), time() + 2);
+            setcookie('data', serialize($data), time() + 2);
+            $location = isset($data['role']) ? 'admin/addMember' : '/signUp';
+            header("Location: $location");
+            exit;
         }
-        $_SESSION['refresh'] = true;
-        setcookie('err', serialize($err), time() + 2);
-        setcookie('data', serialize($data), time() + 2);
-        $location = isset($data['role']) ? 'admin/addMember' : '/signUp';
-        header("Location: $location");
-        exit;
+
+        unset($data['confirmPassword']);
+
+        // Upload profile picture
+        $file = new File($_FILES['profilePicture']);
+        if ($file->fileExist) {
+            $data['image'] = $file->moveFile('users');
+            $data['image'] = "http://localhost/libgen/assets/uploads/images/users/" . $data['image'];
+        }
+
+        // Add data to table
+        $query = new DatabaseQuery();
+        $query->add('users', $data);
+        return $query->lastEntry('users');
     }
 
     /**
@@ -89,35 +90,37 @@ class User
         ];
 
         // If data is valid, update it in the table else set and display error messages
-        if ($isDataValid) {
-            unset($data['oldPassword']);
-
-            // Delete the old image and upload the new image
-            $file = new File($_FILES['profilePicture']);
-            if ($file->fileExist) {
-                $data['image'] = $file->moveFile('users');
-                $data['image'] = "http://localhost/libgen/assets/uploads/images/users/" . $data['image'];
-                $query = new DatabaseQuery();
-                $oldImage = $query->selectColumn('image', 'users', $uuid, 'uuid');
-                $oldImage= str_replace('http://localhost/libgen/', '', $oldImage);
-                unlink($oldImage);
-            }
-
-            // update data
-            $updateStr = '';
-            foreach ($data as $key => $value) {
-                if (!empty($value)) {
-                    $updateStr .= $key . " = '" . $value . "', ";
-                }
-            }
-            $query = new DatabaseQuery();
-            $query->update('users', $updateStr, $uuid, 'uuid');
-            return true;
+        if (!$isDataValid) {
+            $_SESSION['refresh'] = true;
+            setcookie('err', serialize($err), time() + 2);
+            setcookie('data', serialize($data), time() + 2);
+            return false;
         }
-        $_SESSION['refresh'] = true;
-        setcookie('err', serialize($err), time() + 2);
-        setcookie('data', serialize($data), time() + 2);
-        return false;
+
+        unset($data['oldPassword']);
+
+        // Delete the old image and upload the new image
+        $file = new File($_FILES['profilePicture']);
+        if ($file->fileExist) {
+            $data['image'] = $file->moveFile('users');
+            $data['image'] = "http://localhost/libgen/assets/uploads/images/users/" . $data['image'];
+            $query = new DatabaseQuery();
+            $oldImage = $query->selectColumn('image', 'users', $uuid, 'uuid');
+            $oldImage = str_replace('http://localhost/libgen/', '', $oldImage);
+            unlink($oldImage);
+        }
+
+        // update data
+        $updateStr = '';
+        foreach ($data as $key => $value) {
+            if (!empty($value)) {
+                $updateStr .= $key . " = '" . $value . "', ";
+            }
+        }
+        $updateStr = rtrim($updateStr, ", ");
+        $query = new DatabaseQuery();
+        $query->update('users', $updateStr, $uuid, 'uuid');
+        return true;
     }
 
     /**
@@ -130,11 +133,12 @@ class User
     {
         $query = new DatabaseQuery();
         $rentedBooks = count($query->selectAllSpecific('orders', $id, 'user_id'));
-        if ($_SESSION['user'][1]==='1' && $rentedBooks) {
+        if ($_SESSION['user'][1] == 1 && $rentedBooks) {
             setcookie('error', true, time() + 2);
-            setcookie('message', "This account can't be deleted as you have taken $rentedBooks books on rent. Please login to your account.", time() + 2);
+            setcookie('message', "This account can't be deleted as you have taken $rentedBooks books on rent. Please login again to your account.", time() + 2);
             return;
         }
-        $query->update('users', 'active=false, ', $id, 'uuid');
+
+        $query->update('users', 'active=false', $id, 'uuid');
     }
 }

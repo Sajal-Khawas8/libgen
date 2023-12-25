@@ -153,6 +153,7 @@ class ValidateData
                 break;
             case 'Rent':
             case 'Copies':
+            case 'Period':
                 if (!preg_match("/^[0-9]*$/", $data)) {
                     $msg = "*Invalid $field";
                     return true;
@@ -441,15 +442,15 @@ class ValidateData
      * Santizes and Checks if the input data is valid or not
      * It checks for empty data, format and minimum value of data
      * 
-     * @param string $rent The input data that is to be checked
+     * @param string $num The input data that is to be checked
      * @param bool $isDataValid The variable to track if the data is valid or not
      * @param string $field The type of input field which is to be checked
      * @return string|void Returns the error message if the data is not valid, or null otherwise
      */
-    public function validateNumber(string &$rent, bool &$isDataValid, string $field)
+    public function validateNumber(string &$num, bool &$isDataValid, string $field)
     {
-        $this->cleanData($rent);
-        if ($this->isEmpty($rent, $errMsg, $field) || $this->isInvalidFormat($rent, $errMsg, $field) || $this->isInvalidMinRent($rent, $errMsg)) {
+        $this->cleanData($num);
+        if ($this->isEmpty($num, $errMsg, $field) || $this->isInvalidFormat($num, $errMsg, $field) || $this->isInvalidMinRent($num, $errMsg)) {
             $isDataValid = false;
             return $errMsg;
         }

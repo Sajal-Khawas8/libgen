@@ -1,6 +1,6 @@
 <?php
 setcookie('prevPage', $uri);
-if (!isset($_SESSION['user']) || $_SESSION['user'][1] === '1') {
+if (!isset($_SESSION['user']) || $_SESSION['user'][1] == 1) {
     $_SESSION['refresh'] = true;
     header("Location: /masterLogin");
     exit;

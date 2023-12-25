@@ -66,7 +66,6 @@ if (isset($_COOKIE['data'])) {
                 $userIds = openssl_decrypt($_SERVER['QUERY_STRING'], $config['openssl']['algo'], $config['openssl']['pass'], 0, $config['openssl']['iv']);
                 if ($_SERVER['QUERY_STRING'] && $userIds) {
                     $userIds = explode("&", $userIds);
-                    unset($userIds[0]);
                     $paymentData = array_filter($paymentData, function ($data) {
                         global $userIds;
                         return in_array($data['user_id'], $userIds);

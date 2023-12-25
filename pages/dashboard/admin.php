@@ -38,7 +38,6 @@ $config = require "./core/config.php";
 $adminIds = openssl_decrypt($_SERVER['QUERY_STRING'], $config['openssl']['algo'], $config['openssl']['pass'], 0, $config['openssl']['iv']);
 if ($_SERVER['QUERY_STRING'] && $adminIds) {
     $adminIds = explode("&", $adminIds);
-    unset($adminIds[0]);
     $admins = array_filter($admins, function ($admin) {
         global $adminIds;
         return in_array($admin['id'], $adminIds);

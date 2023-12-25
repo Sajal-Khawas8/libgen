@@ -67,7 +67,6 @@ $config = require "./core/config.php";
 $rentedBookIds = openssl_decrypt($_SERVER['QUERY_STRING'], $config['openssl']['algo'], $config['openssl']['pass'], 0, $config['openssl']['iv']);
 if ($_SERVER['QUERY_STRING'] && $rentedBookIds) {
     $rentedBookIds = explode("&", $rentedBookIds);
-    unset($rentedBookIds[0]);
     $rentedBooks = array_filter($rentedBooks, function ($book) {
         global $rentedBookIds;
         return in_array($book['book_uuid'], $rentedBookIds);
@@ -127,7 +126,7 @@ if ($_SERVER['QUERY_STRING'] && $rentedBookIds) {
                     <div id="modal-<?= $bookKey; ?>" class="absolute inset-0 bg-gray-200/90 justify-center px-6 py-4 hidden">
                         <article class="space-y-4 flex flex-col">
                             <h2 class="font-semibold text-2xl text-center">Readers of <?= $book['title']; ?></h2>
-                            <div class="flex-1 overflow-auto">
+                            <div class="flex-1 flex items-center justify-center overflow-auto">
                                 <?php
                                 $users = $query->selectAllSpecific('orders', $book['book_uuid'], 'book_id');
                                 ?>

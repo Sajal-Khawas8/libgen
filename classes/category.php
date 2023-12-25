@@ -34,16 +34,17 @@ class Category
         ];
 
         // If data is valid, add it to table else set and display the error messages
-        if ($isDataValid) {
-            $query = new DatabaseQuery();
-            $query->add('category', $data);
-            header("Location: admin/categories");
+        if (!$isDataValid) {
+            $_SESSION['refresh'] = true;
+            setcookie('err', serialize($err), time() + 2);
+            setcookie('data', serialize($data), time() + 2);
+            header("Location: admin/categories/addCategory");
             exit;
         }
-        $_SESSION['refresh'] = true;
-        setcookie('err', serialize($err), time() + 2);
-        setcookie('data', serialize($data), time() + 2);
-        header("Location: admin/categories/addCategory");
+
+        $query = new DatabaseQuery();
+        $query->add('category', $data);
+        header("Location: admin/categories");
         exit;
     }
 
@@ -64,21 +65,16 @@ class Category
         ];
 
         // If data is valid, update it in the table else set and display error messages
-        if ($isDataValid) {
-            $updateStr = '';
-            foreach ($data as $key => $value) {
-                if (!empty($value)) {
-                    $updateStr .= $key . " = '" . $value . "', ";
-                }
-            }
-            $query = new DatabaseQuery();
-            $query->update('category', $updateStr, $id, 'id');
-            return true;
+        if (!$isDataValid) {
+            $_SESSION['refresh'] = true;
+            setcookie('err', serialize($err), time() + 2);
+            setcookie('data', serialize($data), time() + 2);
+            return false;
         }
-        $_SESSION['refresh'] = true;
-        setcookie('err', serialize($err), time() + 2);
-        setcookie('data', serialize($data), time() + 2);
-        return false;
+
+        $query = new DatabaseQuery();
+        $query->update('category', "name = '{$data['name']}'", $id, 'id');
+        return true;
     }
 
     /**

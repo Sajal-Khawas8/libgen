@@ -43,14 +43,8 @@
                     class="text-6xl border-4 border-sky-500 rounded-full h-28 w-28 flex items-center justify-center text-sky-500">
                     <?php
                     $conditions = [
-                        [
-                            'criteria' => 'role',
-                            'id' => 1
-                        ],
-                        [
-                            'criteria' => 'active',
-                            'id' => 1
-                        ],
+                        'role' => 1,
+                        'active' => 1,
                     ];
                     ?>
                     <span><?= count($query->selectAllMultiCondition('users', $conditions)); ?></span>
