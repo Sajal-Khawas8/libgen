@@ -152,6 +152,12 @@ class ValidateData
                 }
                 break;
             case 'Rent':
+            case 'Fine':
+                if (!preg_match("/^[0-9.]*$/", $data)) {
+                    $msg = "*Invalid $field";
+                    return true;
+                }
+                break;
             case 'Copies':
             case 'Period':
                 if (!preg_match("/^[0-9]*$/", $data)) {

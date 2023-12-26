@@ -71,28 +71,28 @@
             ?>
             <div class="flex-1 bg-sky-800 h-full flex flex-col items-center justify-evenly">
                 <h2 class="text-4xl">Income</h2>
-                <p class="text-8xl text-white"><span
-                        class="text-6xl">&#x20B9;</span><?= $income = array_sum(array_column($transactions, 'amount')); ?>
+                <p class="text-6xl text-white"><span
+                        class="text-3xl">&#x20B9;</span><?= $income = array_sum(array_column($transactions, 'amount')); ?>
                 </p>
             </div>
             <dl class="flex-1 h-full flex flex-col justify-center bg-gray-700 divide-y divide-white">
                 <div class="flex-1 grid grid-cols-3 items-center px-4">
-                    <dt class="text-2xl col-span-2">Transactions</dt>
-                    <dd class="text-4xl text-right text-slate-200">
+                    <dt class="text-xl col-span-2">Transactions</dt>
+                    <dd class="text-2xl text-right text-slate-200">
                         <span><?= count($transactions); ?></span>
                     </dd>
                 </div>
                 <div class="flex-1 grid grid-cols-3 items-center px-4">
-                    <dt class="text-2xl col-span-2">Rent Collected</dt>
-                    <dd class="text-4xl text-right text-slate-200">
+                    <dt class="text-xl col-span-2">Rent Collected</dt>
+                    <dd class="text-2xl text-right text-slate-200">
                         <span
-                            class="text-2xl font-medium">&#x20B9;</span><?= $rent = array_sum(array_column($rent, 'amount')); ?>
+                            class="text-xl font-medium">&#x20B9;</span><?= $rent = array_sum(array_column($rent, 'amount')); ?>
                     </dd>
                 </div>
                 <div class="flex-1 grid grid-cols-3 items-center px-4">
-                    <dt class="text-2xl col-span-2">Fine Collected</dt>
-                    <dd class="text-4xl text-right text-slate-200">
-                        <span class="text-2xl font-medium">&#x20B9;</span><?= $income - $rent; ?>
+                    <dt class="text-xl col-span-2">Fine Collected</dt>
+                    <dd class="text-2xl text-right text-slate-200">
+                        <span class="text-xl font-medium">&#x20B9;</span><?= $income - $rent; ?>
                     </dd>
                 </div>
             </dl>
