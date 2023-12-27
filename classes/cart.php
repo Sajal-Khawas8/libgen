@@ -15,7 +15,7 @@ class Cart
     {
         $query = new DatabaseQuery();
         $cartData = [
-            'user_id' => $_SESSION['user'][0],
+            'user_id' => $_SESSION['user']['id'],
             'book_id' => $itemId,
         ];
         $query->add('cart', $cartData);

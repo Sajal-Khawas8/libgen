@@ -2,7 +2,38 @@
 if (isset($_COOKIE['data'])) {
     $data = unserialize($_COOKIE['data']);
 }
+
+$rentedBooks = $query->selectNegate('quantity', 'available', 'copies');
+$rentedBookIds = array_map(function ($book) {
+    return $book['book_id'];
+}, $rentedBooks);
+$joins = [
+    [
+        'table' => 'category',
+        'condition' => 'books.category_id = category.id'
+    ],
+    [
+        'table' => 'quantity',
+        'condition' => 'books.book_uuid = quantity.book_id'
+    ]
+];
+$books = $query->selectAllJoin('books', $joins);
+$rentedBooks = array_filter($books, function ($book) {
+    global $rentedBookIds;
+    return in_array($book['book_uuid'], $rentedBookIds);
+});
+
+$config = require "./core/config.php";
+$rentedBookIds = openssl_decrypt($_SERVER['QUERY_STRING'], $config['openssl']['algo'], $config['openssl']['pass'], 0, $config['openssl']['iv']);
+if ($_SERVER['QUERY_STRING'] && $rentedBookIds) {
+    $rentedBookIds = explode("&", $rentedBookIds);
+    $rentedBooks = array_filter($rentedBooks, function ($book) {
+        global $rentedBookIds;
+        return in_array($book['book_uuid'], $rentedBookIds);
+    });
+}
 ?>
+
 <header class="py-2.5 px-6">
     <h1 class="my-2.5 text-2xl font-medium text-center xl:text-left">Books given on Rent</h1>
     <div class="flex items-center gap-2">
@@ -42,37 +73,7 @@ if (isset($_COOKIE['data'])) {
         <span class="text-red-600 text-sm font-medium"><?= $_COOKIE['err'] ?? '' ?></span>
     </div>
 </header>
-<?php
-$rentedBooks = $query->selectNegate('quantity', 'available', 'copies');
-$rentedBookIds = array_map(function ($book) {
-    return $book['book_id'];
-}, $rentedBooks);
-$joins = [
-    [
-        'table' => 'category',
-        'condition' => 'books.category_id = category.id'
-    ],
-    [
-        'table' => 'quantity',
-        'condition' => 'books.book_uuid = quantity.book_id'
-    ]
-];
-$books = $query->selectAllJoin('books', $joins);
-$rentedBooks = array_filter($books, function ($book) {
-    global $rentedBookIds;
-    return in_array($book['book_uuid'], $rentedBookIds);
-});
 
-$config = require "./core/config.php";
-$rentedBookIds = openssl_decrypt($_SERVER['QUERY_STRING'], $config['openssl']['algo'], $config['openssl']['pass'], 0, $config['openssl']['iv']);
-if ($_SERVER['QUERY_STRING'] && $rentedBookIds) {
-    $rentedBookIds = explode("&", $rentedBookIds);
-    $rentedBooks = array_filter($rentedBooks, function ($book) {
-        global $rentedBookIds;
-        return in_array($book['book_uuid'], $rentedBookIds);
-    });
-}
-?>
 <?php if (!count($rentedBooks)): ?>
     <section class="flex items-center justify-center h-full">
         <h2 class="text-5xl font-medium text-gray-500">No book is given on rent...</h2>

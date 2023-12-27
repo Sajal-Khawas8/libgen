@@ -2,6 +2,30 @@
 if (isset($_COOKIE['data'])) {
     $data = unserialize($_COOKIE['data']);
 }
+
+$joins = [
+    [
+        'table' => 'category',
+        'condition' => 'books.category_id = category.id'
+    ],
+    [
+        'table' => 'quantity',
+        'condition' => 'quantity.book_id = books.book_uuid'
+    ],
+];
+$books = $query->selectAllJoin('books', $joins);
+$books = array_filter($books, function ($book) {
+    return $book['active'];
+});
+$config = require "./core/config.php";
+$bookIds = openssl_decrypt($_SERVER['QUERY_STRING'], $config['openssl']['algo'], $config['openssl']['pass'], 0, $config['openssl']['iv']);
+if ($_SERVER['QUERY_STRING'] && $bookIds) {
+    $bookIds = explode("&", $bookIds);
+    $books = array_filter($books, function ($book) {
+        global $bookIds;
+        return in_array($book['id'], $bookIds);
+    });
+}
 ?>
 
 <header class="py-2.5 px-6">
@@ -53,31 +77,6 @@ if (isset($_COOKIE['data'])) {
         </a>
     </div>
 </header>
-<?php
-$joins = [
-    [
-        'table' => 'category',
-        'condition' => 'books.category_id = category.id'
-    ],
-    [
-        'table' => 'quantity',
-        'condition' => 'quantity.book_id = books.book_uuid'
-    ],
-];
-$books = $query->selectAllJoin('books', $joins);
-$books = array_filter($books, function ($book) {
-    return $book['active'];
-});
-$config = require "./core/config.php";
-$bookIds = openssl_decrypt($_SERVER['QUERY_STRING'], $config['openssl']['algo'], $config['openssl']['pass'], 0, $config['openssl']['iv']);
-if ($_SERVER['QUERY_STRING'] && $bookIds) {
-    $bookIds = explode("&", $bookIds);
-    $books = array_filter($books, function ($book) {
-        global $bookIds;
-        return in_array($book['id'], $bookIds);
-    });
-}
-?>
 <?php if (!count($books)): ?>
     <section class="flex-1 flex items-center justify-center">
         <h1 class="font-bold text-5xl text-gray-500">There Are No Books In LibGen...</h1>

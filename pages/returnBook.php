@@ -1,6 +1,6 @@
 <?php
 setcookie('prevPage', "$uri?{$_SERVER['QUERY_STRING']}");
-if (!isset($_SESSION['user']) || $_SESSION['user'][1] != 1) {
+if (!isset($_SESSION['user']) || $_SESSION['user']['role'] != 1) {
     header("Location: /login");
     exit;
 }
@@ -9,7 +9,7 @@ $config = require "./core/config.php";
 $bookId = openssl_decrypt($_SERVER['QUERY_STRING'], $config['openssl']['algo'], $config['openssl']['pass'], 0, $config['openssl']['iv']);
 $conditions = [
     'book_id' => $bookId,
-    'user_id' => $_SESSION['user'][0],
+    'user_id' => $_SESSION['user']['id'],
 ];
 $rentedBookId = $query->selectColumnMultiCondition('id', 'orders', $conditions);
 $joins = [

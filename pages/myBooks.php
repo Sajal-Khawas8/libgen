@@ -1,6 +1,6 @@
 <?php
 setcookie('prevPage', $uri);
-if (!isset($_SESSION['user']) || $_SESSION['user'][1] != 1) {
+if (!isset($_SESSION['user']) || $_SESSION['user']['role'] != 1) {
     header("Location: /login");
 }
 $query = new DatabaseQuery();
@@ -10,14 +10,14 @@ $joins = [
         'condition' => 'books.book_uuid = orders.book_id'
     ]
 ];
-$currentReads = $query->selectAllJoinSpecific('orders', $joins, $_SESSION['user'][0], 'user_id');
+$currentReads = $query->selectAllJoinSpecific('orders', $joins, $_SESSION['user']['id'], 'user_id');
 $joins = [
     [
         'table' => 'rent_history',
         'condition' => 'books.book_uuid = rent_history.book_id'
     ]
 ];
-$previousReads = $query->selectAllJoinSpecific('books', $joins, $_SESSION['user'][0], 'user_id');
+$previousReads = $query->selectAllJoinSpecific('books', $joins, $_SESSION['user']['id'], 'user_id');
 ?>
 <main class="container border-x min-h-[calc(100vh-4rem-3.5rem)]">
     <h1 class="text-4xl font-semibold pt-8 pl-16">My Books</h1>

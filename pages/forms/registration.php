@@ -9,7 +9,7 @@ if (!empty($_SERVER['QUERY_STRING'])) {
     $query = new DatabaseQuery();
     $config = require "./core/config.php";
     $uuid = openssl_decrypt($_SERVER['QUERY_STRING'], $config['openssl']['algo'], $config['openssl']['pass'], 0, $config['openssl']['iv']);
-    if (!$uuid || $uuid !== $_SESSION['user'][0]) {
+    if (!$uuid || $uuid !== $_SESSION['user']['id']) {
         setcookie('user', '', time() - 1);
         unset($_SESSION['user']);
         $_SESSION['refresh'] = true;

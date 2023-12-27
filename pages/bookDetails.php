@@ -22,7 +22,7 @@ if (isset($_COOKIE['err'])) {
                 $isRented = $id = false;
                 if (isset($_SESSION['user'])) {
                     $conditions = [
-                        'user_id' => $_SESSION['user'][0],
+                        'user_id' => $_SESSION['user']['id'],
                         'book_id' => openssl_decrypt($_SERVER['QUERY_STRING'], $config['openssl']['algo'], $config['openssl']['pass'], 0, $config['openssl']['iv']),
                     ];
                     $id = $query->selectColumnMultiCondition('id', 'cart', $conditions);

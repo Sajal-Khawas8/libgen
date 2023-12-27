@@ -1,9 +1,9 @@
 <?php
 $query = new DatabaseQuery();
-$user = $query->selectOne('users', $_SESSION['user'][0], 'uuid');
+$user = $query->selectOne('users', $_SESSION['user']['id'], 'uuid');
 ?>
 <article
-    class="mx-auto <?= ($_SESSION['user'][1] != 1) ? 'bg-white' : 'bg-slate-200' ?> rounded-md px-4 py-6 w-4/5 max-w-md space-y-4 relative">
+    class="mx-auto <?= ($_SESSION['user']['role'] != 1) ? 'bg-white' : 'bg-slate-200' ?> rounded-md px-4 py-6 w-4/5 max-w-md space-y-4 relative">
     <?php if (empty($user['image'])): ?>
         <div class="w-60 h-60 rounded-md mx-auto bg-gray-600 flex items-center justify-center">
             <svg class="w-60 h-60 text-white" xmlns="http://www.w3.org/2000/svg" docname="user.svg" version="0.48.4 r9939"
@@ -38,7 +38,7 @@ $user = $query->selectOne('users', $_SESSION['user'][0], 'uuid');
             <form action="/formHandler" method="post" class="flex-1">
                 <input type="hidden" name="id"
                     value="<?= openssl_encrypt($user['uuid'], $config['openssl']['algo'], $config['openssl']['pass'], 0, $config['openssl']['iv']) ?>">
-                <button name="<?= $_SESSION['user'][1] != 1 ? 'updateAdmin' : 'updateUser' ?>"
+                <button name="<?= $_SESSION['user']['role'] != 1 ? 'updateAdmin' : 'updateUser' ?>"
                     class="px-3 py-1 bg-indigo-600 text-white text-lg rounded-md hover:bg-indigo-800 min-w-full">Update
                     Info</button>
             </form>

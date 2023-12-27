@@ -1,6 +1,6 @@
 <?php
 setcookie('prevPage', $uri);
-if (!isset($_SESSION['user']) || $_SESSION['user'][1] == 1) {
+if (!isset($_SESSION['user']) || $_SESSION['user']['role'] == 1) {
     $_SESSION['refresh'] = true;
     header("Location: /masterLogin");
     exit;
@@ -130,7 +130,7 @@ require "./templates/header.php"; ?>
         <header class="flex justify-between items-center text-sm py-2.5 px-6">
             <?php
             $query = new DatabaseQuery();
-            $userData = $query->selectOne('users', $_SESSION['user'][0], 'uuid');
+            $userData = $query->selectOne('users', $_SESSION['user']['id'], 'uuid');
             $svgBgColors = ['text-stone-600', 'text-red-500', 'text-red-700', 'text-orange-500', 'text-orange-700', 'text-amber-400', 'text-amber-700', 'text-yellow-400', 'text-yellow-600', 'text-lime-400', 'text-lime-600', 'text-green-500', 'text-green-700', 'text-teal-400', 'text-cyan-400', 'text-cyan-600', 'text-sky-500', 'text-sky-700', 'text-blue-600', 'text-blue-800', 'text-indigo-600', 'text-fuchsia-500', 'text-rose-500'];
             ?>
             <h3 class="text-lg font-medium">Welcome, <?= $userData['name'] ?></h3>

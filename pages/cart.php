@@ -1,11 +1,11 @@
 <?php
 setcookie('prevPage', $uri);
-if (!isset($_SESSION['user']) || $_SESSION['user'][1] != 1) {
+if (!isset($_SESSION['user']) || $_SESSION['user']['role'] != 1) {
     header("Location: /login");
     exit;
 }
 $query = new DatabaseQuery();
-$cartItems = $query->selectAllSpecific('cart', $_SESSION['user'][0], 'user_id');
+$cartItems = $query->selectAllSpecific('cart', $_SESSION['user']['id'], 'user_id');
 $cartItems = array_map(function ($cartItem) {
     return $cartItem['book_id'];
 }, $cartItems);
@@ -47,7 +47,7 @@ if (isset($_COOKIE['err'])) {
                                         <?php
                                         $config = require "./core/config.php";
                                         $conditions = [
-                                            'user_id' => $_SESSION['user'][0],
+                                            'user_id' => $_SESSION['user']['id'],
                                             'book_id' => $itemId,
                                         ];
                                         $id = $query->selectColumnMultiCondition('id', 'cart', $conditions);

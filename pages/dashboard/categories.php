@@ -2,7 +2,20 @@
 if (isset($_COOKIE['data'])) {
     $data = unserialize($_COOKIE['data']);
 }
+
+$query = new DatabaseQuery();
+$categories = $query->selectAll('category');
+$config = require "./core/config.php";
+$categoryIds = openssl_decrypt($_SERVER['QUERY_STRING'], $config['openssl']['algo'], $config['openssl']['pass'], 0, $config['openssl']['iv']);
+if ($_SERVER['QUERY_STRING'] && $categoryIds) {
+    $categoryIds = explode("&", $categoryIds);
+    $categories = array_filter($categories, function ($category) {
+        global $categoryIds;
+        return in_array($category['id'], $categoryIds);
+    });
+}
 ?>
+
 <header class="py-2.5 px-6">
     <h1 class="my-2.5 text-2xl font-medium text-center xl:text-left">Book Categories</h1>
     <div class="flex items-center gap-2">
@@ -32,19 +45,6 @@ if (isset($_COOKIE['data'])) {
         </a>
     </div>
 </header>
-<?php
-$query = new DatabaseQuery();
-$categories = $query->selectAll('category');
-$config = require "./core/config.php";
-$categoryIds = openssl_decrypt($_SERVER['QUERY_STRING'], $config['openssl']['algo'], $config['openssl']['pass'], 0, $config['openssl']['iv']);
-if ($_SERVER['QUERY_STRING'] && $categoryIds) {
-    $categoryIds = explode("&", $categoryIds);
-    $categories = array_filter($categories, function ($category) {
-        global $categoryIds;
-        return in_array($category['id'], $categoryIds);
-    });
-}
-?>
 <?php if (!count($categories)): ?>
     <section class="flex-1 flex items-center justify-center gap-8">
         <h1 class="font-bold text-5xl text-gray-500">There Are No Categories...</h1>

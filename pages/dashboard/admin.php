@@ -87,7 +87,7 @@ $admins = array_filter($admins, function ($admin) {
                                 </dl>
                             </div>
                         </div>
-                        <?php if ($admin['uuid'] !== $_SESSION['user'][0]): ?>
+                        <?php if ($admin['uuid'] !== $_SESSION['user']['id']): ?>
                             <div class="space-y-4">
                                 <?php
                                 $config = require "./core/config.php";

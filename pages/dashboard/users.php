@@ -2,7 +2,23 @@
 if (isset($_COOKIE['data'])) {
     $data = unserialize($_COOKIE['data']);
 }
+
+$conditions = [
+    'active' => true,
+    'role' => 1,
+];
+$users = $query->selectAllMultiCondition('users', $conditions);
+$config = require "./core/config.php";
+$userIds = openssl_decrypt($_SERVER['QUERY_STRING'], $config['openssl']['algo'], $config['openssl']['pass'], 0, $config['openssl']['iv']);
+if ($_SERVER['QUERY_STRING'] && $userIds) {
+    $userIds = explode("&", $userIds);
+    $users = array_filter($users, function ($user) {
+        global $userIds;
+        return in_array($user['id'], $userIds);
+    });
+}
 ?>
+
 <header class="py-2.5 px-6">
     <h1 class="my-2.5 text-2xl font-medium text-center xl:text-left">LibGen Readers</h1>
     <div class="flex items-center gap-2">
@@ -22,23 +38,6 @@ if (isset($_COOKIE['data'])) {
         <span class="text-red-600 text-sm font-medium"><?= $_COOKIE['err'] ?? '' ?></span>
     </div>
 </header>
-
-<?php
-$conditions = [
-    'active' => true,
-    'role' => 1,
-];
-$users = $query->selectAllMultiCondition('users', $conditions);
-$config = require "./core/config.php";
-$userIds = openssl_decrypt($_SERVER['QUERY_STRING'], $config['openssl']['algo'], $config['openssl']['pass'], 0, $config['openssl']['iv']);
-if ($_SERVER['QUERY_STRING'] && $userIds) {
-    $userIds = explode("&", $userIds);
-    $users = array_filter($users, function ($user) {
-        global $userIds;
-        return in_array($user['id'], $userIds);
-    });
-}
-?>
 
 <?php if (!count($users)): ?>
     <section class="flex items-center justify-center h-full">
